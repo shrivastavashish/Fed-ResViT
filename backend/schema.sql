@@ -1,0 +1,17 @@
+PRAGMA foreign_keys=ON;
+CREATE TABLE IF NOT EXISTS dataset(id TEXT PRIMARY KEY,name TEXT NOT NULL,classes INTEGER NOT NULL,train_count INTEGER NOT NULL,val_count INTEGER NOT NULL,test_count INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS configuration(id TEXT PRIMARY KEY,profile TEXT NOT NULL,source_hash TEXT NOT NULL,payload TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS experiment(id TEXT PRIMARY KEY,dataset_id TEXT NOT NULL REFERENCES dataset(id),configuration_id TEXT NOT NULL REFERENCES configuration(id),seed INTEGER NOT NULL,aggregator TEXT NOT NULL,malicious_fraction REAL NOT NULL,state TEXT NOT NULL CHECK(state IN ('EXECUTED','SUPPORTED','PLANNED','DEMONSTRATION')));
+CREATE TABLE IF NOT EXISTS client(experiment_id TEXT NOT NULL REFERENCES experiment(id),client_id INTEGER NOT NULL,sample_count INTEGER NOT NULL,class_distribution TEXT NOT NULL,malicious INTEGER NOT NULL,PRIMARY KEY(experiment_id,client_id));
+CREATE TABLE IF NOT EXISTS federated_round(experiment_id TEXT NOT NULL REFERENCES experiment(id),round INTEGER NOT NULL,payload TEXT NOT NULL,PRIMARY KEY(experiment_id,round));
+CREATE TABLE IF NOT EXISTS client_update(experiment_id TEXT NOT NULL,round INTEGER NOT NULL,client_id INTEGER NOT NULL,tensor_available INTEGER NOT NULL DEFAULT 0,rms_distance REAL,PRIMARY KEY(experiment_id,round,client_id),FOREIGN KEY(experiment_id,round) REFERENCES federated_round(experiment_id,round),FOREIGN KEY(experiment_id,client_id) REFERENCES client(experiment_id,client_id));
+CREATE TABLE IF NOT EXISTS trust_score(experiment_id TEXT NOT NULL,round INTEGER NOT NULL,client_id INTEGER NOT NULL,phi REAL NOT NULL,flagged INTEGER NOT NULL,threshold_low REAL,threshold_high REAL,PRIMARY KEY(experiment_id,round,client_id),FOREIGN KEY(experiment_id,round,client_id) REFERENCES client_update(experiment_id,round,client_id));
+CREATE TABLE IF NOT EXISTS reputation(experiment_id TEXT NOT NULL,round INTEGER NOT NULL,client_id INTEGER NOT NULL,value REAL NOT NULL,PRIMARY KEY(experiment_id,round,client_id),FOREIGN KEY(experiment_id,round,client_id) REFERENCES client_update(experiment_id,round,client_id));
+CREATE TABLE IF NOT EXISTS aggregation(experiment_id TEXT NOT NULL,round INTEGER NOT NULL,client_id INTEGER NOT NULL,effective_weight REAL,contribution REAL,precision TEXT NOT NULL,PRIMARY KEY(experiment_id,round,client_id),FOREIGN KEY(experiment_id,round,client_id) REFERENCES client_update(experiment_id,round,client_id));
+CREATE TABLE IF NOT EXISTS attack(experiment_id TEXT PRIMARY KEY REFERENCES experiment(id),kind TEXT NOT NULL,source_classes TEXT NOT NULL,target TEXT,flip_probability REAL);
+CREATE TABLE IF NOT EXISTS evaluation(experiment_id TEXT NOT NULL REFERENCES experiment(id),scope TEXT NOT NULL,source_cell INTEGER NOT NULL,payload TEXT NOT NULL,PRIMARY KEY(experiment_id,scope));
+CREATE TABLE IF NOT EXISTS prediction(id TEXT PRIMARY KEY,experiment_id TEXT NOT NULL REFERENCES experiment(id),artifact_id TEXT,probabilities TEXT,availability TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS artifact(id TEXT PRIMARY KEY,experiment_id TEXT REFERENCES experiment(id),name TEXT NOT NULL,availability TEXT NOT NULL,source_cell INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS research_evidence(id TEXT PRIMARY KEY,experiment_id TEXT REFERENCES experiment(id),source_hash TEXT NOT NULL,source_cell INTEGER NOT NULL,precision TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS idx_experiment_condition_seed ON experiment(malicious_fraction,seed,aggregator);
+PRAGMA optimize;

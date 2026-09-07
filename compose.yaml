@@ -1,0 +1,12 @@
+services:
+  web:
+    build: .
+    ports: ["127.0.0.1:3000:3000"]
+  evidence-api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports: ["127.0.0.1:8000:8000"]
+    volumes: ["evidence-db:/data"]
+volumes:
+  evidence-db:
