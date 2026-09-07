@@ -1,3 +1,4 @@
+/* oxlint-disable jsx-a11y/no-noninteractive-tabindex -- Scrollable research tables must be keyboard-scrollable. */
 /* oxlint-disable jsx-a11y/prefer-tag-over-role -- Interactive SVG geometry uses roles with keyboard support. */
 'use client';
 import { useState } from 'react';
@@ -19,6 +20,7 @@ export function LineChart({
   selectedRound?: number;
   onRound?: (n: number) => void;
 }) {
+  const [labelScale, setLabelScale] = useState(86);
   const [hover, setHover] = useState<{
     x: number;
     y: number;
@@ -128,6 +130,67 @@ export function LineChart({
           Federated communication round
         </text>
       </svg>
+      <div className="data-label-toolbar">
+        <strong>Every recorded value</strong>
+        <label>
+          Column width <output>{labelScale}px</output>
+          <input
+            aria-label="Data label column width"
+            type="range"
+            min="68"
+            max="130"
+            value={labelScale}
+            onChange={(e) => setLabelScale(Number(e.target.value))}
+          />
+        </label>
+      </div>
+      <div
+        className="round-data-scroll"
+        tabIndex={0}
+        role="region"
+        aria-label={`${title}: all data labels`}
+      >
+        <table className="round-data">
+          <thead>
+            <tr>
+              <th>Round</th>
+              {[
+                ...new Set(series.flatMap((s) => s.points.map((p) => p.x))),
+              ].map((r) => (
+                <th key={r} style={{ minWidth: labelScale }}>
+                  {r}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {series.map((s) => (
+              <tr key={s.name}>
+                <th>
+                  <i style={{ background: s.color }} />
+                  {s.name}
+                </th>
+                {[
+                  ...new Set(series.flatMap((v) => v.points.map((p) => p.x))),
+                ].map((r) => {
+                  const value = s.points.find((p) => p.x === r)?.y;
+                  return (
+                    <td key={r}>
+                      <button
+                        className={selectedRound === r ? 'selected-value' : ''}
+                        onClick={() => onRound?.(r)}
+                        aria-label={`${s.name}, round ${r}, ${value == null ? 'Not available' : pct(value)}`}
+                      >
+                        {value == null ? '—' : pct(value)}
+                      </button>
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       <div className="chart-readout">
         {hover
           ? `${hover.name} · Round ${hover.x} · ${pct(hover.y)}`
@@ -299,6 +362,20 @@ export function TrustScatter({
           RMS-normalized update distance
         </text>
       </svg>
+      <div className="trust-point-labels">
+        {record.clients.map((c) => (
+          <button
+            key={c.id}
+            onClick={() => onClient(c.id)}
+            className={client === c.id ? 'active' : ''}
+          >
+            <strong>Client {c.id + 1}</strong>
+            <span>D = {c.distance.toExponential(3)}</span>
+            <span>φ = {c.phi.toFixed(3)}</span>
+            <span>r = {c.reputation.toFixed(3)}</span>
+          </button>
+        ))}
+      </div>
       <div className="source-caption">
         Cell 46 printed trust snapshots · round {record.round} · Click a client
         to inspect its history

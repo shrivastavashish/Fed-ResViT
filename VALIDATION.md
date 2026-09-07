@@ -10,3 +10,9 @@
 - An optional feature-detected WebMCP round-inspection tool is included. No supported modelContext validation surface was available, so its browser registration was not verified.
 
 Scientific availability is recorded in the application: only the embedded matrix/per-class run has those granular artifacts. Other original checkpoints and prediction arrays remain listed-only. No unavailable metrics were synthesized.
+
+## Dimensional research redesign — 7 September 2026
+
+Added interactive CSS 3D methodology diagrams to all seven workspaces, with keyboard-accessible rotation and depth controls. Quantitative plots retain undistorted axes. Added labeled comparison bars, all-round value tables with adjustable column widths, trust point readouts, robustness point labels, and count-plus-percentage confusion cells. Updated surface depth, colors, sliders, responsive layouts and reduced-motion behavior. Evidence JSON and exported measurements are unchanged.
+
+Validation: TypeScript, authored-code lint, production build, 27 server-render workspace/diagram checks, and 12 evidence/API tests passed. Local HTTP returned 200. Browser visual inspection was not performed; no clinical inference or training backend was added.

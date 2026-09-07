@@ -527,72 +527,137 @@ export function Comparison({
     (r) => r.aggregation === 'trust' && r.malicious_fraction === condition,
   );
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Research metric</TableHead>
-          <TableHead>FedAvg</TableHead>
-          <TableHead className="trust-column">Trust-aware</TableHead>
-          <TableHead>Δ percentage points</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {metrics.map(([k, l]) => {
-          const a = numeric(f?.[k]),
-            b = numeric(t?.[k]);
-          const delta = a !== null && b !== null ? (b - a) * 100 : null;
-          const improved =
-            delta !== null &&
-            (k === 'test_asr' || k === 'test_false_positive_rate'
-              ? delta < 0
-              : delta > 0);
-          return (
-            <TableRow key={k}>
-              <TableCell>
-                <button
-                  className="table-value"
-                  onClick={() =>
-                    inspect(
-                      seed === 'mean' ? 48 : 46,
-                      l,
-                      JSON.stringify(
-                        { condition, seed, fedavg: f?.[k], trust: t?.[k] },
-                        null,
-                        2,
-                      ),
-                    )
+    <>
+      <div
+        className="comparison-terraces"
+        aria-label="Labeled comparison charts on a shared zero to 100 percent scale"
+      >
+        {metrics
+          .filter(([k]) =>
+            [
+              'test_accuracy',
+              'test_macro_f1',
+              'test_asr',
+              'test_malignant_safety',
+            ].includes(k),
+          )
+          .map(([k, l]) => (
+            <div className="comparison-terrace" key={k}>
+              <h3>{l}</h3>
+              {([
+                [f, 'FedAvg'],
+                [t, 'Trust-aware'],
+              ] as const).map(([row, name]) => {
+                const r = row as typeof f;
+                const v = numeric(r?.[k]);
+                return (
+                  <button
+                    key={String(name)}
+                    className="terrace-row"
+                    onClick={() =>
+                      inspect(
+                        seed === 'mean' ? 48 : 46,
+                        l,
+                        JSON.stringify(
+                          { condition, seed, aggregation: name, value: v },
+                          null,
+                          2,
+                        ),
+                      )
+                    }
+                  >
+                    <span>{String(name)}</span>
+                    <div className="terrace-track">
+                      {v !== null && (
+                        <i
+                          className={name === 'Trust-aware' ? 'trust' : ''}
+                          style={{ width: `${v * 100}%` }}
+                        />
+                      )}
+                    </div>
+                    <strong>{v === null ? 'Unavailable' : pct(v)}</strong>
+                  </button>
+                );
+              })}
+              <div className="terrace-axis">
+                <span>0%</span>
+                <span>50%</span>
+                <span>100%</span>
+              </div>
+            </div>
+          ))}
+      </div>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Research metric</TableHead>
+            <TableHead>FedAvg</TableHead>
+            <TableHead className="trust-column">Trust-aware</TableHead>
+            <TableHead>Δ percentage points</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {metrics.map(([k, l]) => {
+            const a = numeric(f?.[k]),
+              b = numeric(t?.[k]);
+            const delta = a !== null && b !== null ? (b - a) * 100 : null;
+            const improved =
+              delta !== null &&
+              (k === 'test_asr' || k === 'test_false_positive_rate'
+                ? delta < 0
+                : delta > 0);
+            return (
+              <TableRow key={k}>
+                <TableCell>
+                  <button
+                    className="table-value"
+                    onClick={() =>
+                      inspect(
+                        seed === 'mean' ? 48 : 46,
+                        l,
+                        JSON.stringify(
+                          { condition, seed, fedavg: f?.[k], trust: t?.[k] },
+                          null,
+                          2,
+                        ),
+                      )
+                    }
+                  >
+                    {l}
+                    <ArrowUpRight size={12} />
+                  </button>
+                </TableCell>
+                <TableCell>
+                  {pct(a)}
+                  {seed === 'mean' && f && 'std' in f && a !== null && (
+                    <small>± {pct((f.std as Record<string, number>)[k])}</small>
+                  )}
+                </TableCell>
+                <TableCell className="trust-column">
+                  {pct(b)}
+                  {seed === 'mean' && t && 'std' in t && b !== null && (
+                    <small>± {pct((t.std as Record<string, number>)[k])}</small>
+                  )}
+                </TableCell>
+                <TableCell
+                  className={
+                    delta === null
+                      ? ''
+                      : improved
+                        ? 'improvement'
+                        : 'degradation'
                   }
                 >
-                  {l}
-                  <ArrowUpRight size={12} />
-                </button>
-              </TableCell>
-              <TableCell>
-                {pct(a)}
-                {seed === 'mean' && f && 'std' in f && a !== null && (
-                  <small>± {pct((f.std as Record<string, number>)[k])}</small>
-                )}
-              </TableCell>
-              <TableCell className="trust-column">
-                {pct(b)}
-                {seed === 'mean' && t && 'std' in t && b !== null && (
-                  <small>± {pct((t.std as Record<string, number>)[k])}</small>
-                )}
-              </TableCell>
-              <TableCell
-                className={
-                  delta === null ? '' : improved ? 'improvement' : 'degradation'
-                }
-              >
-                {delta === null
-                  ? 'Not comparable'
-                  : `${delta > 0 ? '+' : ''}${delta.toFixed(2)} pp`}
-              </TableCell>
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
+                  {delta === null
+                    ? 'Not comparable'
+                    : `${delta > 0 ? '+' : ''}${delta.toFixed(2)} pp`}
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </>
   );
 }
 function EndpointChart({
@@ -670,6 +735,14 @@ function EndpointChart({
               (r.aggregation === 'trust' ? 5 : -5);
             return (
               <g key={r.malicious_fraction + r.aggregation}>
+                <text
+                  x={x + (r.aggregation === 'trust' ? 10 : -10)}
+                  y={185 - v * 145 + (r.aggregation === 'trust' ? -12 : 19)}
+                  textAnchor={r.aggregation === 'trust' ? 'start' : 'end'}
+                  className="plot-value"
+                >
+                  {pct(v)}
+                </text>
                 <circle
                   cx={x}
                   cy={185 - v * 145}
@@ -784,6 +857,11 @@ function Confusion({ inspect }: { inspect: Props['inspect'] }) {
                         {normalized === 'Count'
                           ? n
                           : (ratio * 100).toFixed(1) + '%'}
+                        <small className="matrix-secondary">
+                          {normalized === 'Count'
+                            ? (ratio * 100).toFixed(1) + '%'
+                            : `${n} images`}
+                        </small>
                       </button>
                     );
                   })}

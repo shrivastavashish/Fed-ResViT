@@ -1,3 +1,4 @@
+import { DimensionalScene } from '../components/research/dimensional';
 import { renderToString } from 'react-dom/server';
 import Home from '../app/page';
 import Clinical from '../components/research/clinical';
@@ -37,6 +38,7 @@ const p: ReplayProps = {
   inspect: noop,
 };
 const views = [
+  ...["overview", "clinical", "federation", "security", "research", "studio", "reproducibility"].map(page => <DimensionalScene page={page} />),
   <Home />,
   <Studio onReplay={noop} />,
   <Reproducibility inspect={noop} />,
