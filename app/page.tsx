@@ -431,9 +431,9 @@ function Platform() {
             <small>HAM10000 · 5 simulated institutions</small>
           </div>
           <div className="researcher">
-            <span className="avatar">AS</span>
+            <span className="avatar">FS</span>
             <span>
-              Ashish Shrivastav<small>M.Sc. Artificial Intelligence</small>
+              Federated Skin Cancer Detection System
             </span>
           </div>
         </SidebarFooter>
