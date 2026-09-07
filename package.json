@@ -10,7 +10,9 @@
     "build": "vinext build",
     "start": "wrangler dev --config dist/server/wrangler.json",
     "lint": "oxlint app components/research lib/research.ts",
-    "format": "oxfmt"
+    "format": "oxfmt",
+    "build:cloudflare": "vinext build --mode cloudflare",
+    "deploy:cloudflare": "wrangler deploy --config dist/server/wrangler.json"
   },
   "dependencies": {
     "react": "19.2.6",
