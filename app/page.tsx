@@ -437,10 +437,6 @@ function Platform() {
             <span className="live-dot" /> Executed research
             <small>HAM10000 · 5 simulated institutions</small>
           </div>
-          <div className="researcher">
-            <span className="avatar">FS</span>
-            <span>Federated Skin Cancer Detection System</span>
-          </div>
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>

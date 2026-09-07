@@ -19,7 +19,7 @@ export function About({
     <div className="about-page">
       <Panel
         title="Fed-ResViT"
-        kicker="FEDERATED SKIN CANCER DETECTION SYSTEM"
+        kicker="Trust-Aware Federated Learning for Robust Skin Lesion Classification"
         dark
       >
         <p className="about-lead">
