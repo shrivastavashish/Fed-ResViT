@@ -3908,3 +3908,7 @@ main {
 .about-workflow li>span { display:grid; place-items:center; width:36px; height:36px; flex-shrink:0; border-radius:10px; color:#5545DA; background:#F5F3FF; font-weight:700; }.about-workflow h3,.about-audience h3 { color:#242D62; font-size:16px; font-weight:650; }.about-workflow p { font-size:14px; margin-bottom:0; }
 .about-audience>div { display:flex; gap:13px; padding:12px 0; }.about-audience svg { color:#6B5CF6; flex-shrink:0; margin-top:3px; }.about-audience p { font-size:14px; }
 @media(max-width:800px) { .about-workflow { grid-template-columns:1fr; } }
+
+.mentor-profile { display:grid; grid-template-columns:200px minmax(0,1fr); gap:28px; align-items:start; }
+.mentor-portrait { width:200px; height:200px; object-fit:cover; border-radius:14px; border:1px solid #EDF1F7; box-shadow:0 4px 0 #EDF1F7; }
+@media(max-width:650px) { .mentor-profile { grid-template-columns:1fr; gap:22px; } }

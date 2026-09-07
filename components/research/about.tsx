@@ -1,4 +1,5 @@
 'use client';
+import Image from 'next/image';
 import {
   ArrowUpRight,
   Target,
@@ -224,39 +225,51 @@ export function About({
         </Panel>
       </div>
       <Panel title="Project mentor" kicker="MENTORSHIP">
-        <h3 style={{ color: '#242D62', fontSize: 22, fontWeight: 650 }}>
-          Shriram Kris Vasudevan Ph.D.
-        </h3>
-        <p>
-          <strong>Agentic AI &amp; GenAI Leader</strong>
-          <br />
-          Fellow - IE(I), IETE, Senior Member - IEEE
-          <br />
-          CSM, CSPO
-        </p>
-        <div className="about-actions">
-          <a className="secondary-btn" href="mailto:shriramkv@gmail.com">
-            Email: shriramkv@gmail.com
-          </a>
-          <a className="secondary-btn" href="tel:+918939918562">
-            Mobile: +91 89399 18562
-          </a>
-          <a
-            className="secondary-btn"
-            href="https://www.linkedin.com/in/shriramkvasudevan"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            LinkedIn <ArrowUpRight size={16} />
-          </a>
-          <a
-            className="secondary-btn"
-            href="https://www.youtube.com/shriramvasudevan"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            YouTube <ArrowUpRight size={16} />
-          </a>
+        <div className="mentor-profile">
+          <Image
+            src="/images/shriram.webp"
+            alt="Dr. Shriram Kris Vasudevan speaking at an event"
+            width={480}
+            height={480}
+            unoptimized
+            className="mentor-portrait"
+          />
+          <div>
+            <h3 style={{ color: '#242D62', fontSize: 22, fontWeight: 650 }}>
+              Dr. Shriram Kris Vasudevan, Ph.D.
+            </h3>
+            <p>
+              <strong>Agentic AI &amp; GenAI Leader</strong>
+              <br />
+              Fellow - IE(I), IETE, Senior Member - IEEE
+              <br />
+              CSM, CSPO
+            </p>
+            <div className="about-actions">
+              <a className="secondary-btn" href="mailto:shriramkv@gmail.com">
+                Email: shriramkv@gmail.com
+              </a>
+              <a className="secondary-btn" href="tel:+918939918562">
+                Mobile: +91 89399 18562
+              </a>
+              <a
+                className="secondary-btn"
+                href="https://www.linkedin.com/in/shriramkvasudevan"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                LinkedIn <ArrowUpRight size={16} />
+              </a>
+              <a
+                className="secondary-btn"
+                href="https://www.youtube.com/shriramvasudevan"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                YouTube <ArrowUpRight size={16} />
+              </a>
+            </div>
+          </div>
         </div>
       </Panel>
       <Panel title="Scope and limitations" kicker="SCIENTIFIC CONTEXT">
