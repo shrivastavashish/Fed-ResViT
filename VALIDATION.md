@@ -22,3 +22,7 @@ Validation: TypeScript, authored-code lint, production build, 27 server-render w
 Removed the standalone methodology scene and its rotation/depth controls. Applied petroleum-teal, blue, and emerald tokens throughout the application. Shared panels now use restrained pointer-responsive perspective, with disabled movement for touch/reduced-motion preferences. Builder fields, tabs, registry tables, artifact lists, clinical viewer, charts, and evidence surfaces use raised edges and layered shading. No research measurements changed.
 
 TypeScript, authored-code lint, production build and 21 server-render checks passed, including both Experiment Studio tabs. Render checks reject the removed design-feature label and controls. Local route returned HTTP 200. Browser visual QA was not requested or performed.
+
+## User-specified white / navy / violet theme — 7 September 2026
+
+Applied a pure-white page canvas and the requested navy (#111936), blue-purple (#242D62), violet (#6B5CF6 / #5545DA), cyan (#19B8C7) and semantic status palette. Rebuilt tabs using the existing default segmented primitive, with consistent 40px controls, violet selection, keyboard focus, horizontal overflow and no legacy line indicator. Updated quantitative-series and topology colors to match. Production build, authored lint, TypeScript and local HTTP check passed. No evidence values changed; browser visual QA not performed.

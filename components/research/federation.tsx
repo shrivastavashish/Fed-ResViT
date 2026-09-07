@@ -75,7 +75,7 @@ export function Topology({
               d={`M ${x} ${y + 22} C ${x < 300 ? 260 : 510} ${y + 22},${x < 300 ? 270 : 490} 160,377 160`}
               fill="none"
               stroke={
-                record.malicious_fraction > 0 && i === 3 ? '#c27b85' : '#7fb9b8'
+                record.malicious_fraction > 0 && i === 3 ? '#C5424F' : '#7fb9b8'
               }
               strokeOpacity=".5"
               strokeWidth="1.5"
@@ -89,7 +89,7 @@ export function Topology({
                 fill={
                   i === 3 && record.malicious_fraction > 0
                     ? '#ef94a0'
-                    : '#62e5d3'
+                    : '#2FC2CF'
                 }
               >
                 <animateMotion
@@ -113,11 +113,11 @@ export function Topology({
           cx="377"
           cy="160"
           r="60"
-          fill="#164b58"
-          stroke="#48c8b7"
+          fill="#242D62"
+          stroke="#2FC2CF"
           strokeWidth="1.5"
         />
-        <ShieldCheck x={359} y={126} width={36} height={36} color="#6ce0c9" />
+        <ShieldCheck x={359} y={126} width={36} height={36} color="#2FC2CF" />
         <text
           x="377"
           y="182"
@@ -158,9 +158,9 @@ export function Topology({
                 width="170"
                 height="83"
                 rx="10"
-                fill={client === i ? '#23566a' : '#173e52'}
+                fill={client === i ? '#242D62' : '#111936'}
                 stroke={
-                  malicious ? '#ba727b' : client === i ? '#5ed9c5' : '#355b6b'
+                  malicious ? '#C5424F' : client === i ? '#2FC2CF' : '#5545DA'
                 }
                 strokeWidth={client === i ? 1.5 : 1}
               />
@@ -169,7 +169,7 @@ export function Topology({
                 y={y - 9}
                 width="20"
                 height="20"
-                color={malicious ? '#e39aa4' : '#6dd8c8'}
+                color={malicious ? '#e39aa4' : '#2FC2CF'}
               />
               <text
                 x={x - 37}
@@ -188,7 +188,7 @@ export function Topology({
                 x={x - 67}
                 y={y + 24}
                 fill={
-                  malicious ? '#e49fa6' : c?.flagged ? '#e2bc73' : '#a2c2cb'
+                  malicious ? '#e49fa6' : c?.flagged ? '#FFB267' : '#a2c2cb'
                 }
                 fontSize="10"
               >
@@ -757,7 +757,7 @@ export function TrustWorkspace(p: ReplayProps & { initialTab?: string }) {
                   onRound={p.setRound}
                   series={['phi', 'reputation'].map((k, i) => ({
                     name: i ? 'Reputation' : 'Soft trust φ',
-                    color: i ? '#7d8bbb' : '#0eaaa0',
+                    color: i ? '#7d8bbb' : '#19B8C7',
                     points: data.rounds
                       .filter(
                         (r) =>

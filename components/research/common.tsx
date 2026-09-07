@@ -69,7 +69,7 @@ export function TabBar({
 }) {
   return (
     <Tabs value={value} onValueChange={(v) => onChange(String(v))}>
-      <TabsList variant="line" className="workspace-tabs">
+      <TabsList variant="default" className="workspace-tabs">
         {items.map((i) => (
           <TabsTrigger key={i} value={i}>
             {i}

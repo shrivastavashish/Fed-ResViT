@@ -544,10 +544,12 @@ export function Comparison({
           .map(([k, l]) => (
             <div className="comparison-terrace" key={k}>
               <h3>{l}</h3>
-              {([
-                [f, 'FedAvg'],
-                [t, 'Trust-aware'],
-              ] as const).map(([row, name]) => {
+              {(
+                [
+                  [f, 'FedAvg'],
+                  [t, 'Trust-aware'],
+                ] as const
+              ).map(([row, name]) => {
                 const r = row as typeof f;
                 const v = numeric(r?.[k]);
                 return (
@@ -677,11 +679,11 @@ function EndpointChart({
     <div className="endpoint-chart">
       <div className="chart-legend">
         <span>
-          <i style={{ background: '#7592b9' }} />
+          <i style={{ background: '#6B5CF6' }} />
           FedAvg
         </span>
         <span>
-          <i style={{ background: '#0eaaa0' }} />
+          <i style={{ background: '#19B8C7' }} />
           Trust-aware
         </span>
       </div>
@@ -747,7 +749,7 @@ function EndpointChart({
                   cx={x}
                   cy={185 - v * 145}
                   r="6"
-                  fill={r.aggregation === 'trust' ? '#0eaaa0' : '#7592b9'}
+                  fill={r.aggregation === 'trust' ? '#19B8C7' : '#6B5CF6'}
                 >
                   <title>{`${r.aggregation} · ${r.malicious_fraction * 100}% malicious · ${pct(v)}`}</title>
                 </circle>
@@ -849,7 +851,7 @@ function Confusion({ inspect }: { inspect: Props['inspect'] }) {
                             i === j
                               ? `rgba(13,146,135,${0.18 + ratio * 0.65})`
                               : `rgba(91,124,157,${0.07 + ratio * 0.7})`,
-                          color: i === j && ratio > 0.65 ? 'white' : '#24455a',
+                          color: i === j && ratio > 0.65 ? 'white' : '#20264A',
                         }}
                         onClick={() => setCell([i, j])}
                         aria-label={`${classes[i]} predicted as ${classes[j]}: ${n}, ${(ratio * 100).toFixed(2)} percent`}

@@ -214,7 +214,7 @@ export function Convergence({
 }) {
   const series = ['fedavg', 'trust'].map((agg, i) => ({
     name: agg === 'trust' ? 'Trust-aware' : 'FedAvg',
-    color: i ? '#0eaaa0' : '#7592b9',
+    color: i ? '#19B8C7' : '#6B5CF6',
     points: Array.from({ length: 30 }, (_, j) => {
       const rows = data.rounds.filter(
         (r) =>
@@ -299,7 +299,7 @@ export function TrustScatter({
               x2={x(t)}
               y1="25"
               y2="210"
-              stroke={i ? '#bd6370' : '#dbad50'}
+              stroke={i ? '#C5424F' : '#FFB267'}
               strokeDasharray="5 4"
             />
             <text
@@ -328,10 +328,10 @@ export function TrustScatter({
               r={client === c.id ? 12 : 8}
               fill={
                 c.ground_truth_malicious
-                  ? '#d96771'
+                  ? '#C5424F'
                   : c.flagged
-                    ? '#daa547'
-                    : '#18ae9c'
+                    ? '#DF6949'
+                    : '#148664'
               }
               stroke="white"
               strokeWidth="2"
