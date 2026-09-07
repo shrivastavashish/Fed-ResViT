@@ -1,4 +1,5 @@
 'use client';
+import { About } from '@/components/research/about';
 import { useState, useEffect, lazy, Suspense } from 'react';
 import {
   Activity,
@@ -58,6 +59,12 @@ import { Studio, Reproducibility } from '@/components/research/studio';
 const Clinical = lazy(() => import('@/components/research/clinical'));
 const Observatory = lazy(() => import('@/components/research/observatory'));
 const nav = [
+  [
+    'about',
+    'About',
+    BookOpen,
+    'The purpose, progress and evidence behind Fed-ResViT.',
+  ],
   [
     'overview',
     'Intelligence Overview',
@@ -432,9 +439,7 @@ function Platform() {
           </div>
           <div className="researcher">
             <span className="avatar">FS</span>
-            <span>
-              Federated Skin Cancer Detection System
-            </span>
+            <span>Federated Skin Cancer Detection System</span>
           </div>
         </SidebarFooter>
       </Sidebar>
@@ -487,7 +492,11 @@ function Platform() {
             ) : (
               <Badge
                 state={
-                  page === 'clinical' ? 'RESEARCH USE' : 'EXECUTED EVIDENCE'
+                  page === 'clinical'
+                    ? 'RESEARCH USE'
+                    : page === 'about'
+                      ? 'PROJECT SUMMARY'
+                      : 'EXECUTED EVIDENCE'
                 }
               />
             )}
@@ -535,6 +544,9 @@ function Platform() {
               </div>
             }
           >
+            {page === 'about' && (
+              <About navigate={navigate} inspect={inspect} />
+            )}
             {page === 'overview' && <Overview p={p} navigate={navigate} />}
             {page === 'clinical' && <Clinical inspect={inspect} />}
             {page === 'federation' && (

@@ -3898,3 +3898,13 @@ main {
 .overview-context .workspace-tabs [role='tab'][aria-selected='true'] {
   color: #111936 !important;
 }
+
+.about-page .about-lead { font-size:clamp(20px,2.1vw,28px); line-height:1.4; color:#fff; max-width:920px; margin:12px 0 18px; }
+.about-page p { line-height:1.8; margin:12px 0; }.about-page .dark-panel>p:not(.about-lead) { color:#d6daf0; }
+.about-actions { display:flex; gap:12px; flex-wrap:wrap; margin-top:22px; }.about-icon { color:#6B5CF6; margin:12px 0; }
+.about-page .metric strong { font-size:clamp(18px,1.7vw,25px); }.about-page .metric small { display:block; line-height:1.5; }
+.about-workflow { list-style:none; padding:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:22px; margin:16px 0 24px; }
+.about-workflow li { display:flex; align-items:flex-start; gap:14px; padding:18px; background:#F8F9FD; border:1px solid #EDF1F7; border-radius:12px; box-shadow:0 3px 0 #EDF1F7; }
+.about-workflow li>span { display:grid; place-items:center; width:36px; height:36px; flex-shrink:0; border-radius:10px; color:#5545DA; background:#F5F3FF; font-weight:700; }.about-workflow h3,.about-audience h3 { color:#242D62; font-size:16px; font-weight:650; }.about-workflow p { font-size:14px; margin-bottom:0; }
+.about-audience>div { display:flex; gap:13px; padding:12px 0; }.about-audience svg { color:#6B5CF6; flex-shrink:0; margin-top:3px; }.about-audience p { font-size:14px; }
+@media(max-width:800px) { .about-workflow { grid-template-columns:1fr; } }
