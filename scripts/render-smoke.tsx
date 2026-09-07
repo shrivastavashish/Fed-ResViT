@@ -1,4 +1,3 @@
-import { DimensionalScene } from '../components/research/dimensional';
 import { renderToString } from 'react-dom/server';
 import Home from '../app/page';
 import Clinical from '../components/research/clinical';
@@ -38,9 +37,9 @@ const p: ReplayProps = {
   inspect: noop,
 };
 const views = [
-  ...["overview", "clinical", "federation", "security", "research", "studio", "reproducibility"].map(page => <DimensionalScene page={page} />),
   <Home />,
   <Studio onReplay={noop} />,
+  <Studio onReplay={noop} initialTab="Executed run registry" />,
   <Reproducibility inspect={noop} />,
   ...['Lesion analysis', 'Research samples', 'Explainable AI'].map((t) => (
     <Clinical initialTab={t} inspect={noop} />
@@ -82,6 +81,11 @@ for (const [i, view] of views.entries()) {
     throw Error(
       `Invalid research rendering in view ${i}: ${html.slice(Math.max(0, html.search(/NaN|\[object Object\]/) - 120), html.search(/NaN|\[object Object\]/) + 180)}`,
     );
+  if (
+    html.includes('INTERACTIVE 3D / METHODOLOGY') ||
+    html.includes('Diagram rotation')
+  )
+    throw Error('Removed design controls must not appear');
   if (html.length < 200) throw Error(`Empty view ${i}`);
 }
 console.log(

@@ -1,5 +1,4 @@
 'use client';
-import { DimensionalScene } from '@/components/research/dimensional';
 import { useState, useEffect, lazy, Suspense } from 'react';
 import {
   Activity,
@@ -493,7 +492,6 @@ function Platform() {
               />
             )}
           </div>
-          <DimensionalScene page={page} />
           {tour !== null && (
             <div className="tour-banner">
               <div>

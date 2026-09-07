@@ -95,7 +95,30 @@ export function Panel({
   className?: string;
 }) {
   return (
-    <section className={'panel ' + (dark ? 'dark-panel ' : '') + className}>
+    <section
+      className={'panel ' + (dark ? 'dark-panel ' : '') + className}
+      onPointerMove={(event) => {
+        if (
+          event.pointerType !== 'mouse' ||
+          window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        )
+          return;
+        const el = event.currentTarget;
+        const box = el.getBoundingClientRect();
+        el.style.setProperty(
+          '--surface-x',
+          `${((event.clientY - box.top) / box.height - 0.5) * -1.4}deg`,
+        );
+        el.style.setProperty(
+          '--surface-y',
+          `${((event.clientX - box.left) / box.width - 0.5) * 1.4}deg`,
+        );
+      }}
+      onPointerLeave={(event) => {
+        event.currentTarget.style.setProperty('--surface-x', '0deg');
+        event.currentTarget.style.setProperty('--surface-y', '0deg');
+      }}
+    >
       <div className="section-heading">
         <div>
           {kicker && <div className="eyebrow">{kicker}</div>}

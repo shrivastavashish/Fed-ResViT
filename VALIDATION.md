@@ -16,3 +16,9 @@ Scientific availability is recorded in the application: only the embedded matrix
 Added interactive CSS 3D methodology diagrams to all seven workspaces, with keyboard-accessible rotation and depth controls. Quantitative plots retain undistorted axes. Added labeled comparison bars, all-round value tables with adjustable column widths, trust point readouts, robustness point labels, and count-plus-percentage confusion cells. Updated surface depth, colors, sliders, responsive layouts and reduced-motion behavior. Evidence JSON and exported measurements are unchanged.
 
 Validation: TypeScript, authored-code lint, production build, 27 server-render workspace/diagram checks, and 12 evidence/API tests passed. Local HTTP returned 200. Browser visual inspection was not performed; no clinical inference or training backend was added.
+
+## Integrated workspace depth — 7 September 2026
+
+Removed the standalone methodology scene and its rotation/depth controls. Applied petroleum-teal, blue, and emerald tokens throughout the application. Shared panels now use restrained pointer-responsive perspective, with disabled movement for touch/reduced-motion preferences. Builder fields, tabs, registry tables, artifact lists, clinical viewer, charts, and evidence surfaces use raised edges and layered shading. No research measurements changed.
+
+TypeScript, authored-code lint, production build and 21 server-render checks passed, including both Experiment Studio tabs. Render checks reject the removed design-feature label and controls. Local route returned HTTP 200. Browser visual QA was not requested or performed.

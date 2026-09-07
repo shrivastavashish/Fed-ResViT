@@ -42,10 +42,16 @@ const initial = {
   best_validation: true,
   seeds: [42, 43],
 };
-export function Studio({ onReplay }: { onReplay: () => void }) {
+export function Studio({
+  onReplay,
+  initialTab = 'Experiment builder',
+}: {
+  onReplay: () => void;
+  initialTab?: string;
+}) {
   const [config, setConfig] = useState(initial);
   const [message, setMessage] = useState('');
-  const [tab, setTab] = useState('Experiment builder');
+  const [tab, setTab] = useState(initialTab);
   const change = (k: string, v: unknown) => {
     setConfig((c) => ({ ...c, [k]: v }));
     setMessage('');
