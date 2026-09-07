@@ -3887,3 +3887,14 @@ main {
     border-radius: 10px;
   }
 }
+
+/* Selected tab text must override legacy and dark-mode text utilities. */
+.workspace-tabs [role='tab'][data-active],
+.workspace-tabs [role='tab'][aria-selected='true'] {
+  color: #FFFFFF !important;
+}
+/* The overview condition tabs retain their existing pale active surface. */
+.overview-context .workspace-tabs [role='tab'][data-active],
+.overview-context .workspace-tabs [role='tab'][aria-selected='true'] {
+  color: #111936 !important;
+}
