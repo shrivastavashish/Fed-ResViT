@@ -4,7 +4,7 @@ An evidence-grounded research application built from the executed `FedResViT_HAM
 
 ## Scope
 
-- Seven connected research workspaces with a guided academic demonstration.
+- An About page and seven connected research workspaces with a guided academic demonstration.
 - Eight executed runs: 5 clients × 30 rounds, 2 local epochs, seeds 42/43, FedAvg/Trust, 0%/20% malicious clients.
 - 240 recovered round records; 120 trust snapshots; interactive client inspection and explanatory replay.
 - Actual summary comparisons, original embedded image gallery, a verified transcription of the saved Trust/20%/seed43 confusion matrix and per-class report.
@@ -68,3 +68,7 @@ npm run build
 ```
 
 Do not present configuration changes, replay animation or browser normalization previews as new experimental measurements. No differential privacy, cryptographic secure aggregation, live hospital deployment, calibrated uncertainty or implemented XAI is claimed.
+
+## Original research notebook
+
+The complete executed training and evaluation notebook is included in `notebooks/FedResViT_HAM10000_Fixed_v2.ipynb`. Its saved outputs are preserved. Running it requires its dataset and ML environment; the web application can explore the recovered evidence without retraining. Model checkpoints and original prediction archives were not supplied and are not included.
