@@ -9,12 +9,14 @@ export function LineChart({
   yLabel = 'Percentage (%)',
   selectedRound,
   onRound,
+  showPointLabels = false,
 }: {
   series: {
     name: string;
     color: string;
     points: { x: number; y: number | null }[];
   }[];
+  showPointLabels?: boolean;
   title: string;
   yLabel?: string;
   selectedRound?: number;
@@ -30,8 +32,12 @@ export function LineChart({
   const xs = valid.map((p) => p.x);
   const minX = Math.min(...xs),
     maxX = Math.max(...xs);
-  const x = (v: number) => 58 + ((v - minX) / Math.max(maxX - minX, 1)) * 575;
-  const y = (v: number) => 215 - v * 180;
+  const plotWidth = showPointLabels
+    ? Math.max(680, new Set(xs).size * 64 + 105)
+    : 680;
+  const x = (v: number) =>
+    58 + ((v - minX) / Math.max(maxX - minX, 1)) * (plotWidth - 105);
+  const y = (v: number) => showPointLabels ? 195 - v * 150 : 215 - v * 180;
   return (
     <div className="chart-wrap">
       <div className="chart-legend">
@@ -42,94 +48,162 @@ export function LineChart({
           </span>
         ))}
       </div>
-      <svg viewBox="0 0 680 265" role="img" aria-label={title}>
-        <text x="12" y="15" className="chart-label">
-          {yLabel}
-        </text>
-        {[0, 0.25, 0.5, 0.75, 1].map((v) => (
-          <g key={v}>
-            <line
-              x1="58"
-              x2="633"
-              y1={y(v)}
-              y2={y(v)}
-              stroke="var(--border)"
-              strokeDasharray="3 5"
-            />
-            <text x="44" y={y(v) + 4} textAnchor="end" className="chart-label">
-              {v * 100}
+      <div
+        style={{ overflowX: 'auto' }}
+        tabIndex={showPointLabels ? 0 : undefined}
+        role="region"
+        aria-label={`${title} chart${showPointLabels ? ' — scroll horizontally to see all labeled rounds' : ''}`}
+      >
+        <svg
+          viewBox={`0 0 ${plotWidth} 265`}
+          style={
+            showPointLabels ? { minWidth: plotWidth, height: 265 } : undefined
+          }
+          role="img"
+          aria-label={title}
+        >
+          <text x="12" y="15" className="chart-label">
+            {yLabel}
+          </text>
+          {[0, 0.25, 0.5, 0.75, 1].map((v) => (
+            <g key={v}>
+              <line
+                x1="58"
+                x2={plotWidth - 47}
+                y1={y(v)}
+                y2={y(v)}
+                stroke="var(--border)"
+                strokeDasharray="3 5"
+              />
+              <text
+                x="44"
+                y={y(v) + 4}
+                textAnchor="end"
+                className="chart-label"
+              >
+                {v * 100}
+              </text>
+            </g>
+          ))}
+          {[
+            ...new Set(
+              showPointLabels
+                ? xs
+                : [minX, Math.round((minX + maxX) / 2), maxX],
+            ),
+          ].map((v) => (
+            <text
+              key={v}
+              x={x(v)}
+              y="236"
+              textAnchor="middle"
+              className="chart-label"
+            >
+              {v}
             </text>
-          </g>
-        ))}
-        {[...new Set([minX, Math.round((minX + maxX) / 2), maxX])].map((v) => (
+          ))}
+          {selectedRound && (
+            <line
+              x1={x(selectedRound)}
+              x2={x(selectedRound)}
+              y1="35"
+              y2="216"
+              stroke="#97aeb7"
+              strokeDasharray="4 4"
+            />
+          )}
+          {series.map((s) => (
+            <g key={s.name}>
+              <path
+                fill="none"
+                stroke={s.color}
+                strokeWidth="2.6"
+                strokeLinejoin="round"
+                d={s.points
+                  .map((p, i) =>
+                    p.y === null
+                      ? ''
+                      : `${i === 0 || s.points[i - 1].y === null ? 'M' : 'L'}${x(p.x)},${y(p.y)}`,
+                  )
+                  .join(' ')}
+              />
+              {s.points.map((p) =>
+                p.y === null ? null : (
+                  <g
+                    key={p.x}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`${s.name}, round ${p.x}, ${pct(p.y)}`}
+                    onFocus={() => setHover({ x: p.x, y: p.y!, name: s.name })}
+                    onBlur={() => setHover(null)}
+                    onMouseEnter={() =>
+                      setHover({ x: p.x, y: p.y!, name: s.name })
+                    }
+                    onMouseLeave={() => setHover(null)}
+                    onClick={() => onRound?.(p.x)}
+                    onKeyDown={(e) => e.key === 'Enter' && onRound?.(p.x)}
+                  >
+                    <circle cx={x(p.x)} cy={y(p.y)} r="8" fill="transparent" />
+                    <circle
+                      cx={x(p.x)}
+                      cy={y(p.y)}
+                      r={hover?.x === p.x ? 4 : 2}
+                      fill={s.color}
+                    />
+                    {showPointLabels && (
+                      <text
+                        x={x(p.x)}
+                        y={
+                          y(p.y) +
+                          (series.some(
+                            (other) =>
+                              other !== s &&
+                              (other.points.find((point) => point.x === p.x)
+                                ?.y ?? -1) > p.y!,
+                          ) ||
+                          (series.indexOf(s) > 0 &&
+                            series[0].points.find((point) => point.x === p.x)
+                              ?.y === p.y)
+                            ? 19
+                            : -12)
+                        }
+                        textAnchor="middle"
+                        style={{
+                          fontSize: 12,
+                          fontWeight: 650,
+                          fill: s.color === '#19B8C7' ? '#087987' : s.color,
+                          paintOrder: 'stroke',
+                          stroke: '#F8F9FD',
+                          strokeWidth: 4,
+                          strokeLinejoin: 'round',
+                          pointerEvents: 'none',
+                        }}
+                      >
+                        {pct(p.y)}
+                      </text>
+                    )}
+                    <title>{`${s.name} · Round ${p.x} · ${pct(p.y)}`}</title>
+                  </g>
+                ),
+              )}
+            </g>
+          ))}
           <text
-            key={v}
-            x={x(v)}
-            y="236"
+            x={plotWidth / 2}
+            y="261"
             textAnchor="middle"
             className="chart-label"
           >
-            {v}
+            Federated communication round
           </text>
-        ))}
-        {selectedRound && (
-          <line
-            x1={x(selectedRound)}
-            x2={x(selectedRound)}
-            y1="35"
-            y2="216"
-            stroke="#97aeb7"
-            strokeDasharray="4 4"
-          />
-        )}
-        {series.map((s) => (
-          <g key={s.name}>
-            <path
-              fill="none"
-              stroke={s.color}
-              strokeWidth="2.6"
-              strokeLinejoin="round"
-              d={s.points
-                .map((p, i) =>
-                  p.y === null
-                    ? ''
-                    : `${i === 0 || s.points[i - 1].y === null ? 'M' : 'L'}${x(p.x)},${y(p.y)}`,
-                )
-                .join(' ')}
-            />
-            {s.points.map((p) =>
-              p.y === null ? null : (
-                <g
-                  key={p.x}
-                  tabIndex={0}
-                  role="button"
-                  aria-label={`${s.name}, round ${p.x}, ${pct(p.y)}`}
-                  onFocus={() => setHover({ x: p.x, y: p.y!, name: s.name })}
-                  onBlur={() => setHover(null)}
-                  onMouseEnter={() =>
-                    setHover({ x: p.x, y: p.y!, name: s.name })
-                  }
-                  onMouseLeave={() => setHover(null)}
-                  onClick={() => onRound?.(p.x)}
-                  onKeyDown={(e) => e.key === 'Enter' && onRound?.(p.x)}
-                >
-                  <circle cx={x(p.x)} cy={y(p.y)} r="8" fill="transparent" />
-                  <circle
-                    cx={x(p.x)}
-                    cy={y(p.y)}
-                    r={hover?.x === p.x ? 4 : 2}
-                    fill={s.color}
-                  />
-                  <title>{`${s.name} · Round ${p.x} · ${pct(p.y)}`}</title>
-                </g>
-              ),
-            )}
-          </g>
-        ))}
-        <text x="345" y="261" textAnchor="middle" className="chart-label">
-          Federated communication round
-        </text>
-      </svg>
+        </svg>
+      </div>
+      {showPointLabels && (
+        <p className="source-caption">
+          Values are labeled on both curves. Scroll horizontally to inspect all
+          30 rounds.
+        </p>
+      )}
       <div className="data-label-toolbar">
         <strong>Every recorded value</strong>
         <label>
@@ -238,6 +312,7 @@ export function Convergence({
     <>
       <LineChart
         series={series}
+        showPointLabels
         selectedRound={round}
         onRound={onRound}
         title={`${metric} by federated round`}
