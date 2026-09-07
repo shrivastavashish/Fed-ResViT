@@ -752,6 +752,7 @@ export function TrustWorkspace(p: ReplayProps & { initialTab?: string }) {
               >
                 <LineChart
                   title="Soft trust and reputation across rounds"
+                  showPointLabels
                   yLabel="Score × 100 (%)"
                   selectedRound={p.round}
                   onRound={p.setRound}
