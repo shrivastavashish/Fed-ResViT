@@ -3,7 +3,7 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'Fed-ResViT | Research & Clinical Intelligence',
   description:
-    'Explore executed federated skin lesion research, targeted poisoning, trust-aware aggregation, and traceable evidence.',
+    'Explore the revised ten-client Fed-ResViT protocol, robust baselines, adaptive poisoning and Trust sensitivity, with original measured evidence kept separate from pending results.',
 };
 export default function RootLayout({
   children,

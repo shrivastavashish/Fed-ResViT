@@ -91,5 +91,5 @@ export const limitations = [
   'Classification uses the best validation checkpoint; reported detection and FPR use the final round’s five-round flag window.',
   '“Malignant safety” is 1 − ASR: avoidance of the NV target on source-class images, not a measure of clinical safety. AKIEC is the dataset source category used by the attack.',
   'Round evidence has saved display precision. Raw model updates, all per-image probabilities and most seed-level F1 values are not embedded in this notebook.',
-  'Hardware-constrained study: the current five-client, two-seed experiment is the baseline. No additional training is required to explore this platform.',
+  'These limitations describe the original imported study. The revised ten-client/five-seed protocol is available separately, with new result ingestion pending.',
 ];

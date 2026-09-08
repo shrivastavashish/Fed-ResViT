@@ -1,5 +1,12 @@
 import { renderToString } from 'react-dom/server';
 import Home from '../app/page';
+import {
+  RevisionWorkspace,
+  RevisionStudio,
+  RevisionObservatory,
+  RevisionReproducibility,
+} from '../components/research/revision';
+import { studyPlan, uniqueStudyCount } from '../lib/protocol';
 import Clinical from '../components/research/clinical';
 import Observatory from '../components/research/observatory';
 import {
@@ -36,7 +43,48 @@ const p: ReplayProps = {
   setCondition: noop,
   inspect: noop,
 };
+if (
+  studyPlan('main').length !== 200 ||
+  studyPlan('adaptive').length !== 25 ||
+  studyPlan('sensitivity').length !== 45 ||
+  uniqueStudyCount() !== 265 ||
+  uniqueStudyCount(true) !== 310
+)
+  throw Error('Revised study count mismatch');
+const defaults = studyPlan('sensitivity').filter(
+  (j) => j.setting === 'default',
+);
+const canonical = (j: ReturnType<typeof studyPlan>[number]) =>
+  JSON.stringify({ ...j, stage: undefined });
+if (
+  !defaults.every((d) =>
+    studyPlan('main').some((j) => canonical(j) === canonical(d)),
+  )
+)
+  throw Error('Sensitivity defaults must match main jobs');
 const views = [
+  ...[
+    'overview',
+    'federation',
+    'security',
+    'research',
+    'studio',
+    'reproducibility',
+  ].map((page) => (
+    <RevisionWorkspace page={page} navigate={noop} showOriginal={noop} />
+  )),
+  ...['Study plan', 'Run registry'].map((tab) => (
+    <RevisionStudio initialTab={tab} />
+  )),
+  ...[
+    'Robustness',
+    'Confusion & classes',
+    'Statistics',
+    'Definitions & limitations',
+  ].map((tab) => <RevisionObservatory initialTab={tab} showOriginal={noop} />),
+  ...['Recovery & execution', 'Evidence handoff'].map((tab) => (
+    <RevisionReproducibility initialTab={tab} />
+  )),
   <Home />,
   <Studio onReplay={noop} />,
   <Studio onReplay={noop} initialTab="Executed run registry" />,
@@ -91,3 +139,11 @@ for (const [i, view] of views.entries()) {
 console.log(
   `Server-render smoke checks passed for ${views.length} workspace states.`,
 );
+
+const revised = renderToString(
+  <RevisionWorkspace page="overview" navigate={noop} showOriginal={noop} />,
+);
+if (revised.includes('36.96') || revised.includes('0.834254'))
+  throw Error('Legacy or new metrics leaked into revised overview');
+if (!revised.includes('Results ingestion pending'))
+  throw Error('Pending evidence label missing');

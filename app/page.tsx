@@ -1,4 +1,6 @@
 'use client';
+import { RevisionWorkspace } from '@/components/research/revision';
+import type { StudyView } from '@/lib/protocol';
 import { About } from '@/components/research/about';
 import { useState, useEffect, lazy, Suspense } from 'react';
 import {
@@ -179,6 +181,7 @@ export default function Home() {
 }
 function Platform() {
   const [page, setPage] = useState('overview');
+  const [study, setStudy] = useState<StudyView>('revision');
   const [condition, setCondition] = useState(0.2);
   const [seed, setSeed] = useState('43');
   const [agg, setAgg] = useState('trust');
@@ -370,6 +373,7 @@ function Platform() {
   };
   const active = nav.find((n) => n[0] === page) ?? nav[0];
   function tourStep(n: number) {
+    setStudy('original');
     setTour(n);
     navigate(demo[n][0]);
     if (demo[n][0] === 'security') {
@@ -427,15 +431,21 @@ function Platform() {
               in a guided presentation.
             </p>
             <button onClick={() => tourStep(0)}>
-              Start guided demo
+              Original-study demo
               <ArrowUpRight size={14} />
             </button>
           </div>
         </SidebarContent>
         <SidebarFooter>
           <div className="side-study">
-            <span className="live-dot" /> Executed research
-            <small>HAM10000 · 5 simulated institutions</small>
+            <span className="live-dot" />{' '}
+            {study === 'revision' ? 'Revised protocol' : 'Original evidence'}
+            <small>
+              HAM10000 ·{' '}
+              {study === 'revision'
+                ? '10 configured clients'
+                : '5 simulated clients'}
+            </small>
           </div>
         </SidebarFooter>
       </Sidebar>
@@ -492,10 +502,33 @@ function Platform() {
                     ? 'RESEARCH USE'
                     : page === 'about'
                       ? 'PROJECT SUMMARY'
-                      : 'EXECUTED EVIDENCE'
+                      : study === 'revision'
+                        ? 'RESULTS PENDING'
+                        : 'ORIGINAL EVIDENCE'
                 }
               />
             )}
+          </div>
+          <div className="study-scope">
+            <div>
+              <span className="eyebrow">STUDY CONTEXT</span>
+              <TabBar
+                value={
+                  study === 'revision' ? 'Revised protocol' : 'Original study'
+                }
+                items={['Revised protocol', 'Original study']}
+                onChange={(v) => {
+                  setStudy(v === 'Revised protocol' ? 'revision' : 'original');
+                  setPlaying(false);
+                  setTour(null);
+                }}
+              />
+            </div>
+            <p>
+              {study === 'revision'
+                ? '10 clients · 5 seeds · expanded defenses. Training external; results awaiting ingestion.'
+                : 'Imported original results only · 5 clients · 2 seeds · controlled partition. These are not revised-study results.'}
+            </p>
           </div>
           {tour !== null && (
             <div className="tour-banner">
@@ -540,26 +573,45 @@ function Platform() {
               </div>
             }
           >
-            {page === 'about' && (
-              <About navigate={navigate} inspect={inspect} />
+            {study === 'revision' && !['about', 'clinical'].includes(page) && (
+              <RevisionWorkspace
+                key={page}
+                page={page}
+                navigate={navigate}
+                showOriginal={() => {
+                  setStudy('original');
+                  navigate('research');
+                }}
+              />
             )}
-            {page === 'overview' && <Overview p={p} navigate={navigate} />}
+            {page === 'about' && (
+              <About
+                navigate={(id, tab) => {
+                  if (tab === 'Model comparison') setStudy('original');
+                  navigate(id, tab);
+                }}
+                inspect={inspect}
+              />
+            )}
+            {study === 'original' && page === 'overview' && (
+              <Overview p={p} navigate={navigate} />
+            )}
             {page === 'clinical' && <Clinical inspect={inspect} />}
-            {page === 'federation' && (
+            {study === 'original' && page === 'federation' && (
               <Federation
                 key={federationTab}
                 initialTab={federationTab}
                 {...p}
               />
             )}
-            {page === 'security' && (
+            {study === 'original' && page === 'security' && (
               <TrustWorkspace
                 key={securityTab}
                 initialTab={securityTab}
                 {...p}
               />
             )}
-            {page === 'research' && (
+            {study === 'original' && page === 'research' && (
               <Observatory
                 key={researchTab}
                 initialTab={researchTab}
@@ -568,7 +620,7 @@ function Platform() {
                 setCondition={setCondition}
               />
             )}
-            {page === 'studio' && (
+            {study === 'original' && page === 'studio' && (
               <Studio
                 onReplay={() => {
                   setCondition(0.2);
@@ -579,14 +631,14 @@ function Platform() {
                 }}
               />
             )}
-            {page === 'reproducibility' && (
+            {study === 'original' && page === 'reproducibility' && (
               <Reproducibility inspect={inspect} />
             )}
           </Suspense>
           <footer>
             <ShieldCheck size={13} />
             Research / Educational Demonstration — Not a standalone diagnostic
-            system<span>Fed-ResViT · Evidence edition</span>
+            system<span>Fed-ResViT · Research protocol & evidence</span>
           </footer>
         </main>
       </SidebarInset>
@@ -599,8 +651,8 @@ function Platform() {
             <div className="eyebrow">RESEARCH EVIDENCE / TRACEABILITY</div>
             <SheetTitle>{evidence?.title}</SheetTitle>
             <SheetDescription>
-              Source notebook, executed configuration and code. No generated
-              research values.
+              Original-study notebook, executed configuration and code. No
+              generated research values.
             </SheetDescription>
           </SheetHeader>
           <div className="evidence-body">
@@ -683,14 +735,18 @@ function Overview({
   const summaryMetrics = [
     ['test_accuracy', 'Classification accuracy', 'Overall test accuracy'],
     ['test_macro_f1', 'Macro-F1', 'Equal weight for all 7 classes'],
-    ['test_malignant_safety', 'Malignant safety', '1 − ASR · target avoidance'],
+    [
+      'test_malignant_safety',
+      'Target avoidance · derived',
+      '1 − ASR · target avoidance',
+    ],
     ['test_asr', 'Attack Success Rate', 'Source classes predicted as NV'],
   ];
   return (
     <>
       <section className="finding">
         <div>
-          <span className="eyebrow">THE RESEARCH FINDING</span>
+          <span className="eyebrow">ORIGINAL STUDY · PRELIMINARY FINDING</span>
           <h2>
             A stronger defense.
             <br />
@@ -735,7 +791,7 @@ function Overview({
       </section>
       <div className="overview-context">
         <div>
-          <h3>Research performance</h3>
+          <h3>Original-study performance</h3>
           <span>Trust-aware aggregation · test results · mean ± SD</span>
         </div>
         <TabBar

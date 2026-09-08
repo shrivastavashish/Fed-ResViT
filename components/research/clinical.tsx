@@ -136,7 +136,7 @@ export default function Clinical({
       </Note>
       {tab === 'Research samples' ? (
         <Panel
-          title="HAM10000 examples from the executed notebook"
+          title="HAM10000 examples · original notebook gallery"
           kicker="SEVEN DATASET CLASSES"
           action={<Badge />}
         >

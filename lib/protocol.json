@@ -1,0 +1,220 @@
+{
+  "protocol_id": "mentor-revision-v2",
+  "source_notebook": "FedResViT (1).ipynb",
+  "source_sha256": "7ad5089cf0f47e05f52824f65049d321cc39717f378890d4e76ea6df92cecea0",
+  "source_scope": "Implementation and main-stage configuration only. No training outputs ingested.",
+  "results_ingested": false,
+  "config": {
+    "DATASET_REF": "kmader/skin-cancer-mnist-ham10000",
+    "IMG_SIZE": 224,
+    "TEST_SIZE": 0.15,
+    "VAL_SIZE": 0.15,
+    "SPLIT_SEED": 42,
+    "DIRICHLET_ALPHA": 0.5,
+    "PARTITION_METHOD": "stratified_balanced",
+    "USE_CLIENT_BALANCED_SAMPLER": false,
+    "FREEZE_BATCHNORM_STATS": true,
+    "ROUND_LR_SCHEDULE": "cosine",
+    "MIN_LR_MULT": 0.05,
+    "INIT_CLASSIFIER_BIAS": true,
+    "NUM_WORKERS": 2,
+    "PIN_MEMORY": true,
+    "PERSISTENT_WORKERS": false,
+    "PREFETCH_FACTOR": 2,
+    "USE_CHANNELS_LAST": true,
+    "USE_STRONG_AUG": true,
+    "USE_RANDOM_ERASING": true,
+    "TTA_EVAL": true,
+    "USE_BEST_VAL_MODEL": true,
+    "BEST_MODEL_METRIC": "accuracy",
+    "BEST_MODEL_MIN_ROUND": 5,
+    "UNFREEZE_RESNET_LAYER3": true,
+    "UNFREEZE_RESNET_LAYER4": true,
+    "UNFREEZE_VIT_LAST_N_BLOCKS": 4,
+    "UNFREEZE_VIT_NORM": true,
+    "BACKBONE_LR_MULT": 0.08,
+    "EVAL_EVERY": 1,
+    "MAX_VAL_BATCHES": null,
+    "CLEAR_CUDA_EACH_CLIENT": true,
+    "MAX_TRAIN_BATCHES_PER_CLIENT": null,
+    "MAX_TEST_BATCHES": null,
+    "SAVE_RUN_ARTIFACTS_IN_MEMORY": false,
+    "SAVE_PREDICTIONS_TO_DISK": true,
+    "SAVE_MODEL_CHECKPOINTS": true,
+    "RESUME_FROM_PARTIAL": true,
+    "NUM_CLASSES": 7,
+    "RESNET_PRETRAINED": true,
+    "VIT_PRETRAINED": true,
+    "VIT_BACKBONE": "vit_small_patch16_224",
+    "FUSION_DIM": 768,
+    "DROPOUT": 0.2,
+    "FREEZE_BACKBONES": true,
+    "OPTIMIZER": "adamw",
+    "LR": 0.0002,
+    "WEIGHT_DECAY": 0.0001,
+    "LABEL_SMOOTHING": 0.05,
+    "LR_WARMUP_ROUNDS": 3,
+    "USE_AMP": true,
+    "USE_FOCAL_LOSS": false,
+    "FOCAL_GAMMA": 2.0,
+    "USE_CLASS_WEIGHTED_LOSS": false,
+    "CLASS_WEIGHT_POWER": 0.5,
+    "FLIP_PROB": 1.0,
+    "MALICIOUS_CLASSES": [
+      "mel",
+      "bcc",
+      "akiec"
+    ],
+    "TARGET_BENIGN_CLASS": "nv",
+    "AGGREGATORS": [
+      "fedavg",
+      "krum",
+      "trimmed_mean",
+      "coordinate_median",
+      "trust"
+    ],
+    "TRIM_RATIO": 0.2,
+    "TRUST_T_LOW": 0.01,
+    "TRUST_T_HIGH": 0.1,
+    "TRUST_MOMENTUM": 0.85,
+    "TRUST_FLAG_PHI_THRESHOLD": 0.5,
+    "TRUST_FLAG_ROUNDS": 5,
+    "TRUST_GEOM_MEDIAN_ITERS": 3,
+    "TRUST_DISTANCE_MODE": "rms",
+    "TRUST_ADAPTIVE_THRESHOLDS": true,
+    "TRUST_MAD_LOW_MULT": 0.5,
+    "TRUST_MAD_HIGH_MULT": 3.0,
+    "RUN_CENTRALIZED_BASELINE": false,
+    "CENTRALIZED_EPOCHS": 15,
+    "SMOKE_TEST": false,
+    "SMOKE_MAX_IMAGES": null,
+    "NUM_CLIENTS": 10,
+    "NUM_ROUNDS": 30,
+    "LOCAL_EPOCHS": 2,
+    "BATCH_SIZE": 16,
+    "MALICIOUS_FRACTIONS": [
+      0.0,
+      0.1,
+      0.2,
+      0.3
+    ],
+    "SEEDS": [
+      42,
+      43,
+      44,
+      45,
+      46
+    ],
+    "MIN_CLIENT_SAMPLES": 16,
+    "ATTACK_MODE": "targeted_label_flipping",
+    "ADAPTIVE_BLEND_GRID": [
+      1.0,
+      0.75,
+      0.5,
+      0.25,
+      0.1,
+      0.0
+    ],
+    "SETTING": "default",
+    "MULTI_KRUM_M": null
+  },
+  "sources": {
+    "cell-8.py": {
+      "cell": 8,
+      "definitions": [
+        "scientific_source",
+        "jsonable",
+        "canonical",
+        "atomic_json",
+        "capture_rng",
+        "restore_rng",
+        "environment_record",
+        "save_recovery",
+        "file_sha",
+        "load_recovery",
+        "validate_updates",
+        "aggregate_krum_checked",
+        "aggregate_coordinate",
+        "additional_metrics",
+        "detector_counts",
+        "validate_partition",
+        "adaptive_camouflage",
+        "data_manifest",
+        "SessionBudgetReached",
+        "run_identified",
+        "build_plan",
+        "collect_results",
+        "run_study",
+        "statistical_report"
+      ],
+      "sha256": "5822b3364136fb005b9bfc86785c051c80c941937b306aaa654f3dae3446d57f"
+    },
+    "cell-12.py": {
+      "cell": 12,
+      "definitions": [
+        "set_seed",
+        "set_seed"
+      ],
+      "sha256": "3101f514ea4a763d90adda9a5de791b4644644ed23b430bc15d7ed071e2f44c2"
+    },
+    "cell-28.py": {
+      "cell": 28,
+      "definitions": [
+        "dirichlet_partition",
+        "stratified_balanced_partition",
+        "make_client_indices"
+      ],
+      "sha256": "57cc0ea7d09d969083eaafbdd7b1324059f5c9adfc97cfa5406a6099e1bf9246"
+    },
+    "cell-32.py": {
+      "cell": 32,
+      "definitions": [
+        "FedResViT",
+        "build_model"
+      ],
+      "sha256": "f5e1e7686707f6e40d34a2638c5f96793f83c42ad42f40e818d4d5bd1a7f90a1"
+    },
+    "cell-34.py": {
+      "cell": 34,
+      "definitions": [
+        "compute_specificity_macro",
+        "compute_asr",
+        "compute_malignant_safety",
+        "compute_metrics",
+        "compute_metrics"
+      ],
+      "sha256": "62903caaa38c132efe5a381a5906fd94eb551a9f97da035fd0eb2c78568badfd"
+    },
+    "cell-40.py": {
+      "cell": 40,
+      "definitions": [
+        "clone_state_dict",
+        "is_float_tensor",
+        "subtract_state_dict",
+        "add_delta_to_state",
+        "aggregate_weighted_average",
+        "aggregate_fedavg_delta",
+        "state_distance_sq",
+        "aggregate_krum_delta",
+        "aggregate_trimmed_mean_delta",
+        "aggregate_geometric_median",
+        "TrustAwareAggregator"
+      ],
+      "sha256": "2eb4e0d68055996dae0b0e97c642bd5e586187a8c3923ae815a60fbc1dc0d537"
+    },
+    "cell-42.py": {
+      "cell": 42,
+      "definitions": [
+        "make_client_dataframes",
+        "choose_malicious_clients",
+        "detection_metrics",
+        "_clean_asr_if_no_attack",
+        "_safe_model_filename",
+        "_weighted_delta_accumulate",
+        "_finalize_weighted_delta",
+        "_run_federated_core"
+      ],
+      "sha256": "bac97668b3ed57ddda17b58632165b942332b4e105b982148eb05b1225a1ff68"
+    }
+  }
+}
