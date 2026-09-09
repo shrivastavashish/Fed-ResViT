@@ -7,14 +7,12 @@ import {
   ShieldCheck,
   BookOpen,
 } from 'lucide-react';
-import { Panel, Badge, Note, EvidenceButton } from './common';
+import { Panel, Badge, Note } from './common';
 
 export function About({
   navigate,
-  inspect,
 }: {
   navigate: (page: string, tab?: string) => void;
-  inspect: (cell: number, title: string, detail?: string) => void;
 }) {
   return (
     <div className="about-page">
@@ -41,7 +39,7 @@ export function About({
             className="secondary-btn"
             onClick={() => navigate('research', 'Model comparison')}
           >
-            View measured results <ArrowUpRight size={16} />
+            Explore research evaluation <ArrowUpRight size={16} />
           </button>
         </div>
       </Panel>
@@ -50,9 +48,9 @@ export function About({
           <Target className="about-icon" size={26} />
           <p>
             Reduce targeted poisoning attack success while preserving overall
-            classification performance. The revised protocol compares Trust
-            against FedAvg, Krum, Trimmed Mean and coordinate-wise Median, with
-            optional Multi-Krum, under balanced and Dirichlet data partitions.
+            classification performance. The protocol compares Trust against
+            FedAvg, Krum, Trimmed Mean and coordinate-wise Median, with optional
+            Multi-Krum, under balanced and Dirichlet data partitions.
           </p>
           <p>
             The attack changes labels from MEL, BCC and AKIEC to the benign
@@ -62,15 +60,14 @@ export function About({
         </Panel>
         <Panel
           title="What have we built?"
-          kicker="IMPLEMENTATION & IMPORTED EVIDENCE"
+          kicker="IMPLEMENTED RESEARCH FRAMEWORK"
         >
-          <Badge />
+          <Badge state="SUPPORTED" />
           <p>
             A ResNet-50 + ViT-small hybrid and a ten-client research protocol
             with five seeds, robust baselines, targeted label flipping, an
-            omniscient adaptive attacker and Trust sensitivity sweeps. The
-            earlier five-client study contributes eight imported runs; the
-            expanded study’s result artifacts have not yet been ingested.
+            omniscient adaptive attacker and Trust sensitivity sweeps. Result
+            artifacts have not yet been ingested.
           </p>
           <p>
             The web platform brings those notebook outputs together with client
@@ -80,56 +77,20 @@ export function About({
         </Panel>
       </div>
       <Panel
-        title="What did we achieve?"
-        kicker="ORIGINAL STUDY ONLY · 20% MALICIOUS · TWO-SEED MEANS"
-        action={
-          <EvidenceButton
-            label="Inspect result evidence"
-            onClick={() =>
-              inspect(
-                48,
-                'About · measured outcomes',
-                'FedAvg versus Trust; controlled stratified-balanced partition; seeds 42 and 43; 20% malicious clients.',
-              )
-            }
-          />
-        }
+        title="What have we achieved so far?"
+        kicker="IMPLEMENTATION STATUS"
       >
-        <div className="metric-grid">
-          <div className="metric">
-            <span>Attack Success Rate</span>
-            <strong>36.96% → 23.93%</strong>
-            <small>FedAvg → Trust · lower is better</small>
-          </div>
-          <div className="metric">
-            <span>ASR reduction</span>
-            <strong>13.03 pp</strong>
-            <small>Approximately 35.3% relative reduction</small>
-          </div>
-          <div className="metric">
-            <span>Target avoidance · derived</span>
-            <strong>63.04% → 76.07%</strong>
-            <small>1 − ASR · not clinical safety</small>
-          </div>
-          <div className="metric">
-            <span>Test accuracy under attack</span>
-            <strong>81.24% → 82.60%</strong>
-            <small>FedAvg → Trust · two-seed mean</small>
-          </div>
-        </div>
+        <Badge state="SUPPORTED" />
         <p>
-          Under the executed attack condition, Trust reduced malignant-to-NV
-          misclassification while preserving overall performance. Macro-F1
-          increased from 63.77% to 65.96%, while macro-precision fell from
-          74.83% to 71.78%. This is evidence for the tested setting, not a
-          universal robustness or clinical safety guarantee.
+          The notebook implements the hybrid model, five aggregation methods,
+          static and adaptive attacks, Trust sensitivity analysis, resumable
+          training and reproducible artifact export. The platform makes this
+          methodology inspectable.
         </p>
         <Note>
-          Detection also has a cost: the original Trust detection rate was 100%
-          (1 of 1 malicious client), with a 25% false positive rate under attack
-          (1 of 4 honest clients) and a 20% false positive rate in the clean
-          condition. These detection summaries use the notebook’s flagging
-          window; they are distinct from checkpoint classification results.
+          Training runs outside this application. Performance, robustness and
+          statistical conclusions will be reported after completed artifacts are
+          imported and verified.
         </Note>
       </Panel>
       <Panel
@@ -140,7 +101,7 @@ export function About({
           {[
             [
               'Prepare the data',
-              'HAM10000 provides seven classes. The revised notebook retains a lesion-disjoint split (approximately 70:15:15) and compares balanced and Dirichlet alpha 0.5 allocations across ten clients. Actual split counts are artifact-specific.',
+              'HAM10000 provides seven classes. The notebook uses a lesion-disjoint split (approximately 70:15:15) and compares balanced and Dirichlet alpha 0.5 allocations across ten clients. Actual split counts are artifact-specific.',
             ],
             [
               'Learn complementary features',
@@ -148,7 +109,7 @@ export function About({
             ],
             [
               'Train across the federation',
-              'Each client receives the global model and trains locally for two epochs. Full revised experiments run for 30 communication rounds with batch size 16 and seeds 42–46.',
+              'Each client receives the global model and trains locally for two epochs. Full experiments run for 30 communication rounds with batch size 16 and seeds 42–46.',
             ],
             [
               'Introduce the controlled attack',
@@ -160,7 +121,7 @@ export function About({
             ],
             [
               'Evaluate and inspect the evidence',
-              'Best validation checkpoints are evaluated with test-time augmentation. Binary malignant recall, subtype recalls, precision, F1, ASR and raw detector counts form the revised evaluation. Results will be linked to verified artifacts after ingestion.',
+              'Best validation checkpoints are evaluated with test-time augmentation. Binary malignant recall, subtype recalls, precision, F1, ASR and raw detector counts form the evaluation. Results will be linked to verified artifacts after ingestion.',
             ],
           ].map(([title, body], i) => (
             <li key={title}>
@@ -194,7 +155,7 @@ export function About({
               title="Security researchers"
             >
               Compare poisoning impact, client trust, detection and false
-              positives using the executed evidence.
+              positives once completed evidence is imported.
             </Stated>
             <Stated
               icon={<BookOpen size={20} />}
@@ -211,15 +172,15 @@ export function About({
         >
           <p>
             <strong>Available:</strong> notebook-derived research dashboards,
-            local image viewing and preprocessing, client histories, labeled
-            charts, confusion-matrix exploration, configuration export and
+            local image viewing and preprocessing, an interactive federation
+            simulation, research evaluation workspaces, configuration export and
             methodology replay.
           </p>
           <p>
             <strong>Requires further integration:</strong> live image prediction
             needs the trained checkpoint and an inference service. Changing
-            builder settings does not launch training. Replay explains the saved
-            experiment; it is not a new training run.
+            builder settings does not launch training. Replay illustrates the
+            methodology; it is not a training run.
           </p>
           <p>
             <strong>Planned:</strong> explanation maps such as Grad-CAM or
@@ -278,11 +239,9 @@ export function About({
       </Panel>
       <Panel title="Scope and limitations" kicker="SCIENTIFIC CONTEXT">
         <p>
-          The imported original evidence uses two seeds, five clients and only
-          0%/20% malicious fractions under controlled partitioning. The revised
-          protocol configures five seeds, ten clients, both partition types and
-          a wider attack sweep. These new settings are not evidence of completed
-          evaluations.
+          The study configures five seeds, ten clients, balanced and Dirichlet
+          partitions, and 0–30% malicious clients. Configured settings are not
+          evidence of completed evaluations.
         </p>
         <p>
           No differential privacy, secure aggregation, real hospital deployment

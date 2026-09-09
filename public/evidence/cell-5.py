@@ -1,1 +1,0 @@
-!pip -q install --upgrade kagglehub timm scikit-learn scipy matplotlib pandas==2.2.2 pillow==11.0.0 tqdm

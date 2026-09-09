@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { Panel, Note, Badge, TabBar, EvidenceButton } from './common';
-import { classes, classNames } from '@/lib/research';
+import { classes, classNames } from '@/lib/project';
 export default function Clinical({
   inspect,
   initialTab,
@@ -136,24 +136,15 @@ export default function Clinical({
       </Note>
       {tab === 'Research samples' ? (
         <Panel
-          title="HAM10000 examples · original notebook gallery"
+          title="HAM10000 research samples"
           kicker="SEVEN DATASET CLASSES"
-          action={<Badge />}
+          action={<Badge state="AWAITING ARTIFACTS" />}
         >
           <p>
-            This original notebook figure shows research examples selected
-            before training. Ground-truth class labels are shown. No per-image
-            predictions or image IDs are attached to these examples.
+            A verified sample gallery will be available with the experiment
+            artifacts. Use Lesion analysis to view your own dermoscopic image.
+            No sample predictions have been imported.
           </p>
-          <img
-            className="sample-gallery"
-            src="/evidence/ham10000-research-gallery.png"
-            alt="Notebook gallery showing three HAM10000 images for each of the seven lesion classes"
-            loading="lazy"
-          />
-          <EvidenceButton
-            onClick={() => inspect(21, 'Research image gallery')}
-          />
         </Panel>
       ) : tab === 'Explainable AI' ? (
         <>

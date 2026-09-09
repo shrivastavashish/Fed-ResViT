@@ -1,6 +1,5 @@
 import snapshot from './protocol.json';
 export const protocol = snapshot;
-export type StudyView = 'revision' | 'original';
 export const methods = [
   'fedavg',
   'krum',
@@ -135,7 +134,7 @@ export const revisedLimitations = [
   'Binary malignant recall, subtype recall and malignant-to-NV errors must be reported alongside accuracy. The derived 1−ASR value is not clinical safety.',
   'No differential privacy, cryptographic secure aggregation, external clinical validation, regulatory approval or standalone diagnosis.',
   'Classification uses the best validation checkpoint. Trust detection uses the final training round’s rolling flag window; these may refer to different rounds.',
-  'Training takes place outside this application. Revised checkpoints, prediction files and verified results have not been ingested. No live progress or new measurements are implied.',
+  'Training takes place outside this application. Checkpoints, prediction files and verified results have not been ingested. No live progress or new measurements are implied.',
 ];
 export const metricDefinitions = [
   ['Accuracy', 'Correct seven-class predictions / all evaluated images.'],

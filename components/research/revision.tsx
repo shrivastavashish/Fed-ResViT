@@ -12,7 +12,7 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { Panel, Badge, Note, Pick, TabBar } from './common';
-import { Architecture } from './federation';
+import { Architecture, FederationSimulation } from './simulation';
 import {
   protocol,
   methods,
@@ -24,12 +24,11 @@ import {
   revisedLimitations,
   metricDefinitions,
 } from '@/lib/protocol';
-import { download, classes } from '@/lib/research';
+import { download, classes } from '@/lib/project';
 
 type Props = {
   page: string;
   navigate: (page: string, tab?: string) => void;
-  showOriginal: () => void;
 };
 const pending = 'AWAITING ARTIFACTS';
 function SourceLink() {
@@ -53,7 +52,7 @@ function EmptyEvidence({
       <Badge state={pending} />
       <p>
         {children ??
-          'Training is external to this app. Revised measurements will appear after the completed artifacts are ingested and verified.'}
+          'Training is external to this app. Measurements will appear after the completed artifacts are ingested and verified.'}
       </p>
     </div>
   );
@@ -67,7 +66,7 @@ export function RevisionWorkspace(p: Props) {
     case 'security':
       return <RevisionSecurity />;
     case 'research':
-      return <RevisionObservatory showOriginal={p.showOriginal} />;
+      return <RevisionObservatory />;
     case 'studio':
       return <RevisionStudio />;
     case 'reproducibility':
@@ -76,12 +75,12 @@ export function RevisionWorkspace(p: Props) {
       return null;
   }
 }
-export function RevisionOverview({ navigate, showOriginal }: Props) {
+export function RevisionOverview({ navigate }: Props) {
   return (
     <>
       <section className="finding">
         <div>
-          <span className="eyebrow">REVISED RESEARCH PROTOCOL</span>
+          <span className="eyebrow">RESEARCH PROTOCOL</span>
           <h2>
             Test the defense.
             <br />
@@ -96,12 +95,12 @@ export function RevisionOverview({ navigate, showOriginal }: Props) {
             Explore the experiment plan <ArrowUpRight size={16} />
           </button>
           <span className="finding-note">
-            Implementation verified from the revised notebook · Results
-            ingestion pending
+            Implementation verified from the notebook · Results ingestion
+            pending
           </span>
         </div>
         <div className="finding-number">
-          <span>EXPANDED STUDY</span>
+          <span>STUDY DESIGN</span>
           <strong>
             10<small> clients</small>
           </strong>
@@ -126,7 +125,7 @@ export function RevisionOverview({ navigate, showOriginal }: Props) {
             '40',
             'Additional runs; 5 defaults reused from main',
           ],
-          ['Revised metrics', 'Pending', 'No new experiment values ingested'],
+          ['Research metrics', 'Pending', 'No new experiment values ingested'],
         ].map(([name, value, detail]) => (
           <div className="metric" key={name}>
             <span>{name}</span>
@@ -137,8 +136,8 @@ export function RevisionOverview({ navigate, showOriginal }: Props) {
       </div>
       <div className="chart-grid">
         <Panel
-          title="What changes in the research?"
-          kicker="IMPLEMENTED EXTENSIONS"
+          title="What does the study investigate?"
+          kicker="IMPLEMENTED METHODS"
         >
           <ul className="revision-list">
             <li>
@@ -163,19 +162,13 @@ export function RevisionOverview({ navigate, showOriginal }: Props) {
         <Panel title="What can we conclude today?" kicker="EVIDENCE BOUNDARY">
           <Badge state={pending} />
           <p>
-            The expanded main study is being trained externally, as reported by
-            the researcher. This application has no live connection to that
-            session and does not infer completed runs from the plan.
+            The main study is being trained externally, as reported by the
+            researcher. This application has no live connection to that session
+            and does not infer completed runs from the plan.
           </p>
-          <p>
-            The earlier two-seed study remains available as a separate evidence
-            set. Its numbers are not results of this expanded protocol.
-          </p>
-          <button className="secondary-btn" onClick={showOriginal}>
-            Open original measured study <ArrowUpRight size={15} />
-          </button>
         </Panel>
       </div>
+      <FederationSimulation />
       <Panel title="Research questions to resolve">
         <div className="revision-questions">
           {[
@@ -281,14 +274,15 @@ function RevisionFederation() {
         <>
           <Architecture />
           <Note>
-            Architecture is retained from the original recipe: partial backbone
-            fine-tuning, fusion dimension 768, dropout 0.2, AdamW and backbone
-            LR multiplier 0.08. A new checkpoint is required before inference
-            can use the revised training.
+            The hybrid model uses partial backbone fine-tuning, fusion dimension
+            768, dropout 0.2, AdamW and backbone LR multiplier 0.08. A new
+            checkpoint is required before inference can produce model
+            predictions.
           </Note>
         </>
       ) : tab === 'Ten-client protocol' ? (
         <>
+          <FederationSimulation />
           <Panel
             title="Ten simulated healthcare clients"
             kicker="PROTOCOL TOPOLOGY · NOT LIVE TELEMETRY"
@@ -363,7 +357,7 @@ function RevisionFederation() {
           <Badge state="DEMONSTRATION" />
           <p>
             This step selector explains the implementation. It does not replay
-            measured revised rounds or indicate training progress.
+            measured rounds or indicate training progress.
           </p>
           <Range
             label="Methodology step"
@@ -677,10 +671,8 @@ function TrustCalculator() {
   );
 }
 export function RevisionObservatory({
-  showOriginal,
   initialTab = 'Performance',
 }: {
-  showOriginal: () => void;
   initialTab?: string;
 }) {
   const [tab, setTab] = useState(initialTab);
@@ -828,7 +820,7 @@ export function RevisionObservatory({
           <div className="metric-grid">
             {[
               ['Planned pairs', '5'],
-              ['Imported revised pairs', '0'],
+              ['Imported paired seeds', '0'],
               ['Paired t-test', 'Pending'],
               ['Wilcoxon test', 'Pending'],
             ].map(([k, v]) => (
@@ -858,9 +850,9 @@ export function RevisionObservatory({
             </li>
           </ol>
           <Note>
-            Do not pool the earlier two-seed experiment with this revision. No
-            statistical significance, completed checklist or detection rate is
-            claimed from the configured plan.
+            Pair only matched configurations and completed seeds. No statistical
+            significance, completed checklist or detection rate is claimed from
+            the configured plan.
           </Note>
         </Panel>
       )}
@@ -876,12 +868,6 @@ export function RevisionObservatory({
           </Panel>
         </>
       )}
-      <div className="revision-legacy-link">
-        <p>Looking for the earlier two-seed measurements?</p>
-        <button className="secondary-btn" onClick={showOriginal}>
-          Open original evidence <ArrowUpRight size={15} />
-        </button>
-      </div>
     </>
   );
 }
@@ -984,7 +970,7 @@ export function RevisionStudio({
             <div className="secondary-metrics">
               <span>{jobs.length} configured in this stage</span>
               <span>{uniqueStudyCount(multi)} distinct full-study runs</span>
-              <span>0 revised artifacts ingested</span>
+              <span>0 artifacts ingested</span>
             </div>
             <Note>
               The current notebook selects one stage at a time. This app lists
@@ -1054,12 +1040,11 @@ export function RevisionStudio({
       )}
       {tab === 'Run registry' && (
         <>
-          <Panel title="Revised execution registry">
+          <Panel title="Execution registry">
             <EmptyEvidence title="Verified run artifacts have not been imported">
               The researcher has reported external training progress. No live
               session connection, completion count or run-level metric is
-              inferred from that report. The original eight-run registry remains
-              in the Original study view.
+              inferred from that report.
             </EmptyEvidence>
           </Panel>
           <IngestionContract />
@@ -1095,7 +1080,7 @@ function ExperimentBuilder() {
       SETTING: setting,
       ...selectedSetting.values,
     };
-    download('fed-resvit-revised-config-draft.json', {
+    download('fed-resvit-config-draft.json', {
       protocol_id: protocol.protocol_id,
       state: 'SUPPORTED',
       execution_backend_connected: false,
@@ -1162,8 +1147,8 @@ function ExperimentBuilder() {
             </div>
           </dl>
           <p>
-            Only alpha 0.5 and ten clients are in the default revised main plan.
-            Other supported values create a different protocol.
+            Only alpha 0.5 and ten clients are in the default main plan. Other
+            supported values create a different protocol.
           </p>
         </Panel>
         <Panel title="Model & aggregation" kicker="02">
@@ -1311,10 +1296,7 @@ function IngestionContract() {
         ))}
       </div>
       <ol className="revision-list">
-        <li>
-          Keep the original study, short pilots and full revised runs in
-          separate evidence sets.
-        </li>
+        <li>Keep short validation pilots separate from full research runs.</li>
         <li>
           Validate completion, checksums, class order, model recipe, partition,
           attack, seed and selected checkpoint before displaying metrics.
@@ -1347,11 +1329,10 @@ export function RevisionReproducibility({
       />
       {tab === 'Active protocol' && (
         <>
-          <Panel title="Revised notebook protocol" action={<SourceLink />}>
+          <Panel title="Notebook protocol" action={<SourceLink />}>
             <p>
-              The model recipe is retained from target90_v4_multirun, with the
-              mentor-revision overrides shown below. This is a configuration
-              snapshot, not a completion record.
+              The active model and experiment settings are shown below. This is
+              a configuration snapshot, not a completion record.
             </p>
             <dl className="detail-list">
               <div>

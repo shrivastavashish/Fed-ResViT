@@ -1,1 +1,0 @@
-print(CONFIG["NUM_ROUNDS"])
