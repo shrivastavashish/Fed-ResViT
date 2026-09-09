@@ -13,6 +13,7 @@ import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { Panel, Badge, Note, Pick, TabBar } from './common';
 import { Architecture, FederationSimulation } from './simulation';
+import { RoundMethodology } from './round-methodology';
 import {
   protocol,
   methods,
@@ -246,19 +247,9 @@ function Range({
     </div>
   );
 }
-const roundStages = [
-  'Broadcast global model',
-  'Local training · two epochs',
-  'Generate client updates',
-  'Apply attack, when configured',
-  'Aggregate using selected method',
-  'Evaluate validation set',
-  'Save current & best state',
-];
 function RevisionFederation() {
   const [tab, setTab] = useState('Ten-client protocol');
   const [client, setClient] = useState(0);
-  const [step, setStep] = useState(0);
   return (
     <>
       <TabBar
@@ -350,45 +341,7 @@ function RevisionFederation() {
           </div>
         </>
       ) : (
-        <Panel
-          title="What happens in a federated round?"
-          kicker="METHODOLOGY WALKTHROUGH"
-        >
-          <Badge state="DEMONSTRATION" />
-          <p>
-            This step selector explains the implementation. It does not replay
-            measured rounds or indicate training progress.
-          </p>
-          <Range
-            label="Methodology step"
-            value={step + 1}
-            min={1}
-            max={7}
-            onChange={(v) => setStep(v - 1)}
-          />
-          <div className="revision-step">
-            <span>{String(step + 1).padStart(2, '0')}</span>
-            <h3>{roundStages[step]}</h3>
-            <p>
-              {
-                [
-                  'All clients start from the same current global state.',
-                  'Each client trains sequentially on its partition. Local optimizers and AMP scalers are recreated for each invocation.',
-                  'Floating state differences become updates; integer buffers retain the base-state handling.',
-                  'Static label flipping happens in local data. The adaptive variant then blends malicious deltas toward a reference.',
-                  'FedAvg uses sample weights. Robust baselines use their own rules; Trust uses geometric-median distance, soft trust and reputation.',
-                  'The best eligible validation-accuracy checkpoint is retained. Full validation/test evaluation has no batch cap in main runs.',
-                  'Alternating checksummed recovery files preserve round, model, best checkpoint, Trust history and RNG state. Resume begins at the next completed-round boundary.',
-                ][step]
-              }
-            </p>
-          </div>
-          <Note>
-            The notebook runs 30 rounds per full experiment. Revised round
-            histories and replay controls will be populated after ingestion; no
-            synthetic convergence curve is shown.
-          </Note>
-        </Panel>
+        <RoundMethodology />
       )}
     </>
   );
