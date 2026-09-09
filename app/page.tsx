@@ -1,4 +1,8 @@
 'use client';
+import {
+  WorkspaceSearch,
+  GuidedWalkthrough,
+} from '@/components/research/navigation-tools';
 import { useState, useEffect, lazy, Suspense } from 'react';
 import {
   Activity,
@@ -69,7 +73,7 @@ const nav = [
     'studio',
     'Experiment Studio',
     FlaskConical,
-    'Configure research questions. Compare and replay executed experiments.',
+    'Build configurations and inspect the planned experiment matrix.',
   ],
   [
     'reproducibility',
@@ -87,6 +91,7 @@ export default function Home() {
 }
 function Platform() {
   const [page, setPage] = useState('overview');
+  const [tour, setTour] = useState<number | null>(null);
   const { setOpenMobile } = useSidebar();
   function navigate(id: string) {
     setPage(id);
@@ -104,12 +109,23 @@ function Platform() {
     return () => window.removeEventListener('hashchange', sync);
   }, []);
   const active = nav.find((n) => n[0] === page) ?? nav[1];
-  function tourStep(_n: number) {
-    navigate('federation');
+  function tourStep(n: number) {
+    setTour(n);
+    navigate('overview');
   }
   const inspect = () => navigate('reproducibility');
   return (
     <>
+      <a
+        href="#main-content"
+        className="skip-content"
+        onClick={(e) => {
+          e.preventDefault();
+          document.getElementById('main-content')?.focus();
+        }}
+      >
+        Skip to workspace
+      </a>
       <Sidebar className="research-sidebar">
         <SidebarHeader>
           <button
@@ -175,6 +191,7 @@ function Platform() {
             </span>
           </div>
           <div>
+            <WorkspaceSearch navigate={navigate} />
             <span className="status-chip">
               <span className="live-dot" />
               RESEARCH EDITION
@@ -188,15 +205,7 @@ function Platform() {
             </button>
           </div>
         </header>
-        <main className="workspace">
-          <div className="eyebrow">
-            FEDERATED AI /{' '}
-            {page === 'clinical'
-              ? 'CLINICAL RESEARCH'
-              : page === 'overview'
-                ? 'SYSTEM INTELLIGENCE'
-                : 'RESEARCH WORKSPACE'}
-          </div>
+        <main className="workspace" id="main-content" tabIndex={-1}>
           <div className="page-title">
             <div>
               <h1>{active[1]}</h1>
@@ -208,7 +217,7 @@ function Platform() {
                 onClick={() => navigate('clinical')}
               >
                 <Stethoscope size={16} />
-                Analyze a lesion
+                Open image viewer
                 <ArrowUpRight size={15} />
               </button>
             ) : (
@@ -223,6 +232,16 @@ function Platform() {
               />
             )}
           </div>
+          {tour !== null && (
+            <GuidedWalkthrough
+              step={tour}
+              onStep={(n, id) => {
+                setTour(n);
+                navigate(id);
+              }}
+              onClose={() => setTour(null)}
+            />
+          )}
           <Suspense fallback={<p>Loading research workspace…</p>}>
             {page === 'about' ? (
               <About navigate={navigate} />

@@ -134,6 +134,7 @@ export function RevisionOverview({ navigate }: Props) {
           </div>
         ))}
       </div>
+      <FederationSimulation />
       <div className="chart-grid">
         <Panel
           title="What does the study investigate?"
@@ -168,7 +169,6 @@ export function RevisionOverview({ navigate }: Props) {
           </p>
         </Panel>
       </div>
-      <FederationSimulation />
       <Panel title="Research questions to resolve">
         <div className="revision-questions">
           {[
@@ -696,13 +696,21 @@ export function RevisionObservatory({
         <Pick
           label="Partition"
           value={partition}
-          items={['stratified_balanced', 'dirichlet']}
+          items={[
+            ['stratified_balanced', 'Stratified-balanced'],
+            ['dirichlet', 'Dirichlet · non-IID'],
+          ]}
           onChange={setPartition}
         />
         <Pick
           label="Malicious fraction"
           value={fraction}
-          items={['0', '0.1', '0.2', '0.3']}
+          items={[
+            ['0', '0% · clean'],
+            ['0.1', '10%'],
+            ['0.2', '20%'],
+            ['0.3', '30%'],
+          ]}
           onChange={setFraction}
         />
         <Pick
@@ -1099,7 +1107,7 @@ function ExperimentBuilder() {
     <>
       <div className="studio-toolbar">
         <Badge state="SUPPORTED" />
-        <span>Revised notebook parameters · configuration draft only</span>
+        <span>Notebook parameters · configuration draft only</span>
       </div>
       <div className="studio-grid">
         <Panel title="Dataset & federation" kicker="01">
@@ -1114,7 +1122,10 @@ function ExperimentBuilder() {
             <Pick
               label="Partition"
               value={partition}
-              items={['stratified_balanced', 'dirichlet']}
+              items={[
+                ['stratified_balanced', 'Stratified-balanced'],
+                ['dirichlet', 'Dirichlet · non-IID'],
+              ]}
               onChange={setPartition}
             />
           </div>
@@ -1186,7 +1197,12 @@ function ExperimentBuilder() {
           <Pick
             label="Malicious fraction"
             value={fraction}
-            items={['0', '0.1', '0.2', '0.3']}
+            items={[
+              ['0', '0% · clean'],
+              ['0.1', '10%'],
+              ['0.2', '20%'],
+              ['0.3', '30%'],
+            ]}
             onChange={setFraction}
           />
           <Range

@@ -121,8 +121,8 @@ export function Panel({
     >
       <div className="section-heading">
         <div>
-          {kicker && <div className="eyebrow">{kicker}</div>}
           <h2>{title}</h2>
+          {kicker && <div className="panel-context">{kicker}</div>}
         </div>
         {action}
       </div>

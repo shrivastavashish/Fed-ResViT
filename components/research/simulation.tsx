@@ -9,6 +9,8 @@ import {
   RotateCcw,
   ArrowRight,
   Activity,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { Panel, Badge, Note, Pick } from './common';
 import { Slider } from '@/components/ui/slider';
@@ -27,7 +29,16 @@ export function FederationSimulation() {
   const [playing, setPlaying] = useState(false),
     [tick, setTick] = useState(0),
     [client, setClient] = useState(0),
-    [fraction, setFraction] = useState('0.2');
+    [fraction, setFraction] = useState('0.2'),
+    [speed, setSpeed] = useState('1'),
+    [reducedMotion, setReducedMotion] = useState(false);
+  useEffect(() => {
+    const query = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const sync = () => setReducedMotion(query.matches);
+    sync();
+    query.addEventListener('change', sync);
+    return () => query.removeEventListener('change', sync);
+  }, []);
   const id = useId().replaceAll(':', '');
   const round = Math.floor(tick / stages.length) + 1,
     stage = tick % stages.length,
@@ -43,10 +54,10 @@ export function FederationSimulation() {
           }
           return v + 1;
         }),
-      1400,
+      1400 / Number(speed),
     );
     return () => clearInterval(t);
-  }, [playing]);
+  }, [playing, speed]);
   const positions = Array.from({ length: 10 }, (_, i) => [
     i < 5 ? 115 : 665,
     50 + (i % 5) * 90,
@@ -108,7 +119,7 @@ export function FederationSimulation() {
                   strokeOpacity=".55"
                   strokeDasharray={i >= 10 - malicious ? '5 5' : undefined}
                 />
-                {playing && (
+                {playing && !reducedMotion && (
                   <circle
                     r="3.5"
                     fill={i >= 10 - malicious ? '#FFB267' : '#2FC2CF'}
@@ -242,6 +253,38 @@ export function FederationSimulation() {
           {playing ? <Pause size={16} /> : <Play size={16} />}{' '}
           {playing ? 'Pause' : 'Play'} simulation
         </button>
+        <button
+          className="secondary-btn"
+          aria-label="Previous simulation step"
+          disabled={tick === 0}
+          onClick={() => {
+            setPlaying(false);
+            setTick((v) => v - 1);
+          }}
+        >
+          <ChevronLeft size={16} />
+        </button>
+        <button
+          className="secondary-btn"
+          aria-label="Next simulation step"
+          disabled={tick === 269}
+          onClick={() => {
+            setPlaying(false);
+            setTick((v) => v + 1);
+          }}
+        >
+          <ChevronRight size={16} />
+        </button>
+        <Pick
+          label="Playback speed"
+          value={speed}
+          items={[
+            ['0.5', '0.5×'],
+            ['1', '1×'],
+            ['2', '2×'],
+          ]}
+          onChange={setSpeed}
+        />
         <strong>Illustrative round {round} / 30</strong>
         <span>
           Step {stage + 1} / {stages.length}
