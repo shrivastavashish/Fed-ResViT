@@ -7,7 +7,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
-import { Panel, Badge, Note, Pick } from './common';
+import { Panel, Badge, Note } from './common';
 import { ConnectedRound } from './connected-round';
 import { Slider } from '@/components/ui/slider';
 const phases = [
@@ -44,7 +44,6 @@ const phases = [
 export function RoundMethodology() {
   const [step, setStep] = useState(0),
     [play, setPlay] = useState(false),
-    [speed, setSpeed] = useState('1'),
     [client, setClient] = useState(8),
     [distance, setDistance] = useState(0.075);
   const [motion, setMotion] = useState(false);
@@ -60,15 +59,19 @@ export function RoundMethodology() {
   useEffect(() => {
     if (!play) return;
     const timer = setTimeout(() => {
-      if (progress + 1 < (step === 2 ? 20 : 10)) { setProgress(progress + 1); return; }
+      if (progress + 1 < (step === 2 ? 20 : 10)) {
+        setProgress(progress + 1);
+        return;
+      }
       setProgress(0);
       if (step < 7) setStep(step + 1);
-      else if (round < 30) { setRound(round + 1); setStep(0); }
-      else setPlay(false);
-    }, 300 / Number(speed));
+      else if (round < 30) {
+        setRound(round + 1);
+        setStep(0);
+      } else setPlay(false);
+    }, 300);
     return () => clearTimeout(timer);
-  }, [play, speed, progress, step, round]);
-
+  }, [play, progress, step, round]);
 
   const distances = [
     0.018,
@@ -155,16 +158,6 @@ export function RoundMethodology() {
           >
             <ChevronRight size={16} />
           </button>
-          <Pick
-            label="Stage speed"
-            value={speed}
-            items={[
-              ['0.5', '0.5×'],
-              ['1', '1×'],
-              ['2', '2×'],
-            ]}
-            onChange={setSpeed}
-          />
           <strong>
             Illustrative round {round} / 30 · stage {step + 1} / 8
           </strong>

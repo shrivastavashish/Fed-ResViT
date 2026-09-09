@@ -7,12 +7,11 @@ import {
   Play,
   Pause,
   RotateCcw,
-  ArrowRight,
-  Activity,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
 import { Panel, Badge, Note, Pick } from './common';
+import { HybridSimulation } from './hybrid-simulation';
 import { Slider } from '@/components/ui/slider';
 const stages = [
   'Broadcast global model',
@@ -30,7 +29,6 @@ export function FederationSimulation() {
     [tick, setTick] = useState(0),
     [client, setClient] = useState(0),
     [fraction, setFraction] = useState('0.2'),
-    [speed, setSpeed] = useState('1'),
     [reducedMotion, setReducedMotion] = useState(false);
   useEffect(() => {
     const query = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -54,10 +52,10 @@ export function FederationSimulation() {
           }
           return v + 1;
         }),
-      1400 / Number(speed),
+      1400,
     );
     return () => clearInterval(t);
-  }, [playing, speed]);
+  }, [playing]);
   const positions = Array.from({ length: 10 }, (_, i) => [
     i < 5 ? 115 : 665,
     50 + (i % 5) * 90,
@@ -275,16 +273,6 @@ export function FederationSimulation() {
         >
           <ChevronRight size={16} />
         </button>
-        <Pick
-          label="Playback speed"
-          value={speed}
-          items={[
-            ['0.5', '0.5×'],
-            ['1', '1×'],
-            ['2', '2×'],
-          ]}
-          onChange={setSpeed}
-        />
         <strong>Illustrative round {round} / 30</strong>
         <span>
           Step {stage + 1} / {stages.length}
@@ -332,37 +320,7 @@ export function Architecture() {
         title="Two complementary views of the same image"
         kicker="IMPLEMENTED HYBRID ARCHITECTURE"
       >
-        <div className="architecture-flow">
-          <div className="architecture-input">
-            <Activity />
-            <strong>224 × 224 RGB</strong>
-            <span>Dermoscopic image</span>
-          </div>
-          <ArrowRight />
-          <div className="architecture-branches">
-            <div>
-              <strong>ResNet-50</strong>
-              <span>2,048-dimensional pooled features</span>
-              <small>Fine-tune layers 3–4 · Frozen BatchNorm</small>
-            </div>
-            <div>
-              <strong>ViT-Small / patch16</strong>
-              <span>384-dimensional representation</span>
-              <small>Fine-tune last 4 blocks + final norm</small>
-            </div>
-          </div>
-          <ArrowRight />
-          <div className="architecture-input">
-            <strong>Feature fusion</strong>
-            <span>2,432 → 768 → 7 logits</span>
-            <small>ReLU · Dropout 0.20 · Softmax at evaluation</small>
-          </div>
-        </div>
-        <Note>
-          Both branches process the same image independently. Their feature
-          vectors are concatenated before classification. This is not an
-          attention-map explanation.
-        </Note>
+        <HybridSimulation />
       </Panel>
       <div className="metric-grid">
         <div className="metric">

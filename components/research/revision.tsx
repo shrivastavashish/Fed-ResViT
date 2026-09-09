@@ -14,6 +14,7 @@ import { Slider } from '@/components/ui/slider';
 import { Panel, Badge, Note, Pick, TabBar } from './common';
 import { Architecture, FederationSimulation } from './simulation';
 import { RoundMethodology } from './round-methodology';
+import { DemoResults } from './demo-results';
 import { StudyCoverage, EvidenceAtlas } from './scientific-atlas';
 import {
   protocol,
@@ -598,8 +599,41 @@ export function RevisionObservatory({
   const [partition, setPartition] = useState('dirichlet');
   const [fraction, setFraction] = useState('0.2');
   const [seed, setSeed] = useState('paired');
+  const [demo, setDemo] = useState(true);
+  if (demo)
+    return (
+      <>
+        <div className="demo-mode-banner">
+          <Badge state="DEMONSTRATION" />
+          <p>Dummy data preview · synthetic examples, never model results</p>
+          <button className="secondary-btn" onClick={() => setDemo(false)}>
+            View actual evidence status
+          </button>
+        </div>
+        <TabBar
+          value={tab}
+          items={[
+            'Performance',
+            'Robustness',
+            'Confusion & classes',
+            'Statistics',
+            'Definitions & limitations',
+          ]}
+          onChange={setTab}
+        />
+        {tab === 'Definitions & limitations' ? (
+          <MetricGuide />
+        ) : (
+          <DemoResults tab={tab} />
+        )}
+      </>
+    );
   return (
     <>
+      <button className="secondary-btn" onClick={() => setDemo(true)}>
+        Explore synthetic data preview
+      </button>
+
       <TabBar
         value={tab}
         items={[

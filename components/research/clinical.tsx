@@ -138,13 +138,24 @@ export default function Clinical({
         <Panel
           title="HAM10000 research samples"
           kicker="SEVEN DATASET CLASSES"
-          action={<Badge state="AWAITING ARTIFACTS" />}
+          action={<Badge state="REFERENCE IMAGES" />}
         >
           <p>
-            A verified sample gallery will be available with the experiment
-            artifacts. Use Lesion analysis to view your own dermoscopic image.
-            No sample predictions have been imported.
+            HAM10000 examples recovered from the source notebook’s dataset
+            gallery. The image labels describe dataset classes, not predictions
+            from the currently training model.
           </p>
+          <img
+            src="/images/ham10000-gallery.png"
+            alt="HAM10000 source notebook gallery with labeled examples of NV, MEL, BKL, BCC, AKIEC, VASC and DF"
+            className="sample-gallery"
+            loading="lazy"
+          />
+          <Note>
+            Reference images only. Per-image IDs and patient metadata are not
+            available in this exported gallery. Upload an image in Lesion
+            analysis to use the interactive viewer.
+          </Note>
         </Panel>
       ) : tab === 'Explainable AI' ? (
         <>
