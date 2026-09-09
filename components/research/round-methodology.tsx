@@ -1,35 +1,352 @@
 'use client';
-import {useEffect,useState} from 'react';
-import {Play,Pause,RotateCcw,ChevronLeft,ChevronRight,ArrowRight,ShieldCheck,Database,Save} from 'lucide-react';
-import {Panel,Badge,Note,Pick} from './common';
-import {Slider} from '@/components/ui/slider';
-const phases=[['Broadcast','Clients receive the same global model.'],['Prepare local labels','On designated clients, MEL / BCC / AKIEC labels are flipped to NV before local training.'],['Local training','Ten clients train sequentially, each for two local epochs.'],['Collect updates','Local floating-state differences become client updates. An adaptive attack can blend poisoned deltas at this point.'],['Evaluate trust','Compare RMS distances to the geometric-median reference, apply thresholds, then update reputation.'],['Aggregate','Normalize reputation × trust to combine client updates into the next global model.'],['Validate','Evaluate the validation set and retain the best eligible accuracy checkpoint.'],['Save & continue','Save checksummed recovery state and continue at the next round.']];
-export function RoundMethodology(){
- const [step,setStep]=useState(0),[play,setPlay]=useState(false),[speed,setSpeed]=useState('1'),[client,setClient]=useState(8),[distance,setDistance]=useState(.075);
- const [motion,setMotion]=useState(false);
- useEffect(()=>{const m=matchMedia('(prefers-reduced-motion: reduce)');const update=()=>setMotion(!m.matches);update();m.addEventListener('change',update);return()=>m.removeEventListener('change',update)},[]);
- useEffect(()=>{if(!play)return;const t=setInterval(()=>setStep(s=>{if(s===7){setPlay(false);return s}return s+1}),2600/Number(speed));return()=>clearInterval(t)},[play,speed]);
- const distances=[.018,.025,.029,.021,.034,.027,.041,.036,distance,.087];
- const low=.03,high=.08,prior=.85;
- const phi=distances.map(d=>Math.max(0,Math.min(1,(high-d)/(high-low))));
- const reputation=phi.map(v=>.85*prior+.15*v),effective=phi.map((v,i)=>v*reputation[i]),sum=effective.reduce((a,b)=>a+b,0),weights=effective.map(v=>v/sum);
- return <>
- <Panel title="What happens in a federated round?" action={<Badge state="DEMONSTRATION"/>}>
- <p>Follow one Trust-aggregation round through eight visual stages. The ten clients, two local epochs and recovery workflow follow the notebook; the chart numbers below are an editable teaching example.</p>
- <div className="round-visual-controls"><button className="secondary-btn" aria-label="Reset round walkthrough" onClick={()=>{setStep(0);setPlay(false)}}><RotateCcw size={16}/></button><button className="primary-btn" onClick={()=>{if(step===7)setStep(0);setPlay(!play)}}>{play?<Pause size={16}/>:<Play size={16}/>} {play?'Pause':'Play'} walkthrough</button><button className="secondary-btn" disabled={step===0} aria-label="Previous round stage" onClick={()=>{setPlay(false);setStep(s=>s-1)}}><ChevronLeft size={16}/></button><button className="secondary-btn" disabled={step===7} aria-label="Next round stage" onClick={()=>{setPlay(false);setStep(s=>s+1)}}><ChevronRight size={16}/></button><Pick label="Stage speed" value={speed} items={ [['0.5','0.5×'],['1','1×'],['2','2×']] } onChange={setSpeed}/><strong>Stage {step+1} / 8</strong></div>
- <div className="round-stage-nav">{phases.map(([name],i)=><button key={name} aria-current={step===i?'step':undefined} onClick={()=>{setStep(i);setPlay(false)}}><span>{i+1}</span>{name}</button>)}</div>
- <div className="round-stage-scene">
- <div className="round-scene-heading"><span>{String(step+1).padStart(2,'0')}</span><div><h3>{phases[step][0]}</h3><p>{phases[step][1]}</p></div></div>
- <div className="round-process"><div className={step===0||step===5?'active':''}><ShieldCheck/><strong>Global model</strong><small>{step>=5?'Next-round state':'Shared starting state'}</small></div><ArrowRight/><div className={step>=1&&step<=3?'active':''}><Database/><strong>10 local clients</strong><small>{step===1?'Label preparation':step===2?'2 epochs per client':'Private partitions'}</small></div><ArrowRight/><div className={step===4?'active':''}><ShieldCheck/><strong>Trust evaluation</strong><small>Distance → trust → weight</small></div><ArrowRight/><div className={step>=6?'active':''}><Save/><strong>Validation & recovery</strong><small>Best + resumable state</small></div></div>
- {step===1?<div className="round-label-flow">{['MEL','BCC','AKIEC'].map(c=><div key={c}><strong>{c}</strong><ArrowRight className={play&&motion?'round-moving':''}/><strong>NV</strong><span>On designated clients only</span></div>)}</div>:step>=6?<div className="round-checkpoint-flow"><div><strong>Validation set</strong><span>Accuracy · Macro-F1 · malignant recall</span><small>Measured values await artifacts</small></div><ArrowRight/><div><strong>{step===6?'Best eligible model':'Recovery generation'}</strong><span>{step===6?'Compare validation accuracy from round 5':'Model · round · RNG · Trust history'}</span><small>{step===6?'Keep current best unless improved':'Alternate recovery-0.pt / recovery-1.pt'}</small></div></div>:<div className="round-client-flow">{Array.from({length:10},(_,i)=><button className={client===i?'selected':''} key={i} onClick={()=>setClient(i)} aria-pressed={client===i}><strong>Client {i+1}</strong><span>{step===0?'↓ Global model':step===2?'Epoch 1 → Epoch 2':step===3?'Δ local update':step===4?`φ = ${phi[i].toFixed(2)}`:`${(weights[i]*100).toFixed(1)}% weight`}</span><div className="round-client-track"><i className={play&&motion?'round-moving':''} style={{width:step>=4?`${(step===4?phi[i]:weights[i])*100}%`:'100%'}}/></div><small>{i>=8?'Designated attacker · example':'Honest client · example'}</small></button>)}</div>}
- </div>
- </Panel>
- <Panel title="How distance changes a client’s contribution" action={<Badge state="DEMONSTRATION"/>}>
- <p>These synthetic distances demonstrate the Trust equations, not attack effectiveness. Select a client in either graph to inspect the same contribution in both. Client 7 is an honest outlier in this example.</p>
- <div className="round-graph-grid"><div><h3>RMS distance to reference</h3><p className="round-chart-caption">Example thresholds: lower 0.030 · upper 0.080</p><div className="round-bar-chart">{distances.map((d,i)=><button key={i} aria-label={`Inspect client ${i+1} distance ${d.toFixed(3)}`} onClick={()=>setClient(i)} className={client===i?'selected':''}><span>C{i+1}</span><div><i style={{width:`${d*1000}%`,background:i>=8?'#df6949':'#6b5cf6'}}/><b style={{left:'30%'}}/><b style={{left:'80%'}}/></div><output>{d.toFixed(3)}</output></button>)}</div><small>Axis: 0.000 to 0.100 RMS distance · dashed lines = thresholds</small></div>
- <div><h3>Normalized aggregation weight</h3><p className="round-chart-caption">Reputation × trust, divided by total effective weight</p><div className="round-bar-chart">{weights.map((w,i)=><button key={i} aria-label={`Inspect client ${i+1} weight ${(w*100).toFixed(1)} percent`} onClick={()=>setClient(i)} className={client===i?'selected':''}><span>C{i+1}</span><div><i style={{width:`${w/0.2*100}%`,background:'#19b8c7'}}/></div><output>{(w*100).toFixed(1)}%</output></button>)}</div><small>Axis: 0% to 20% contribution · all weights sum to 100%</small></div></div>
- <div className="revision-range"><div><label htmlFor="example-distance">Adjust client 9’s example RMS distance</label><output>{distance.toFixed(3)}</output></div><Slider id="example-distance" aria-label="Client 9 example RMS distance" min={.01} max={.1} step={.001} value={[distance]} onValueChange={v=>{setDistance(Array.isArray(v)?v[0]:v);setClient(8)}}/></div>
- <div className="round-equation-readout"><h3>Client {client+1}</h3><div><span>Distance</span><strong>{distances[client].toFixed(3)}</strong></div><div><span>Soft trust φ</span><strong>{phi[client].toFixed(3)}</strong></div><div><span>Reputation</span><strong>{reputation[client].toFixed(3)}</strong></div><div><span>Contribution</span><strong>{(weights[client]*100).toFixed(2)}%</strong></div></div>
- <Note>Teaching inputs: prior reputation = 0.85 for every client; fixed example thresholds = 0.030 / 0.080. The notebook derives thresholds from median and robust spread. Reputation updates as 0.85r + 0.15φ. This one-step example does not reproduce the rolling detector or claim to detect an attacker. No convergence, validation score or trained model update is fabricated.</Note>
- </Panel></>
+import { useEffect, useState } from 'react';
+import {
+  Play,
+  Pause,
+  RotateCcw,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
+import { Panel, Badge, Note, Pick } from './common';
+import { ConnectedRound } from './connected-round';
+import { Slider } from '@/components/ui/slider';
+const phases = [
+  ['Broadcast', 'Clients receive the same global model.'],
+  [
+    'Prepare local labels',
+    'On designated clients, MEL / BCC / AKIEC labels are flipped to NV before local training.',
+  ],
+  [
+    'Local training',
+    'Ten clients train sequentially, each for two local epochs.',
+  ],
+  [
+    'Collect updates',
+    'Local floating-state differences become client updates. An adaptive attack can blend poisoned deltas at this point.',
+  ],
+  [
+    'Evaluate trust',
+    'Compare RMS distances to the geometric-median reference, apply thresholds, then update reputation.',
+  ],
+  [
+    'Aggregate',
+    'Normalize reputation × trust to combine client updates into the next global model.',
+  ],
+  [
+    'Validate',
+    'Evaluate the validation set and retain the best eligible accuracy checkpoint.',
+  ],
+  [
+    'Save & continue',
+    'Save checksummed recovery state and continue at the next round.',
+  ],
+];
+export function RoundMethodology() {
+  const [step, setStep] = useState(0),
+    [play, setPlay] = useState(false),
+    [speed, setSpeed] = useState('1'),
+    [client, setClient] = useState(8),
+    [distance, setDistance] = useState(0.075);
+  const [motion, setMotion] = useState(false);
+  const [round, setRound] = useState(1),
+    [progress, setProgress] = useState(0);
+  useEffect(() => {
+    const m = matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => setMotion(!m.matches);
+    update();
+    m.addEventListener('change', update);
+    return () => m.removeEventListener('change', update);
+  }, []);
+  useEffect(() => {
+    if (!play) return;
+    const timer = setTimeout(() => {
+      if (progress + 1 < (step === 2 ? 20 : 10)) { setProgress(progress + 1); return; }
+      setProgress(0);
+      if (step < 7) setStep(step + 1);
+      else if (round < 30) { setRound(round + 1); setStep(0); }
+      else setPlay(false);
+    }, 300 / Number(speed));
+    return () => clearTimeout(timer);
+  }, [play, speed, progress, step, round]);
+
+
+  const distances = [
+    0.018,
+    0.025,
+    0.029,
+    0.021,
+    0.034,
+    0.027,
+    0.041,
+    0.036,
+    distance,
+    0.087,
+  ];
+  const low = 0.03,
+    high = 0.08,
+    prior = 0.85;
+  const phi = distances.map((d) =>
+    Math.max(0, Math.min(1, (high - d) / (high - low))),
+  );
+  const reputation = phi.map((v) => 0.85 * prior + 0.15 * v),
+    effective = phi.map((v, i) => v * reputation[i]),
+    sum = effective.reduce((a, b) => a + b, 0),
+    weights = effective.map((v) => v / sum);
+  return (
+    <>
+      <Panel
+        title="What happens in a federated round?"
+        action={<Badge state="DEMONSTRATION" />}
+      >
+        <p>
+          One connected simulation follows the model through all eight stages
+          and automatically continues into the next illustrative round. Watch
+          the highlighted route and moving updates; click any client to inspect
+          its example contribution.
+        </p>
+        <div className="round-visual-controls">
+          <button
+            className="secondary-btn"
+            aria-label="Reset round walkthrough"
+            onClick={() => {
+              setStep(0);
+              setProgress(0);
+              setRound(1);
+              setPlay(false);
+            }}
+          >
+            <RotateCcw size={16} />
+          </button>
+          <button
+            className="primary-btn"
+            onClick={() => {
+              if (step === 7 && round === 30) {
+                setStep(0);
+                setRound(1);
+                setProgress(0);
+              }
+              setPlay(!play);
+            }}
+          >
+            {play ? <Pause size={16} /> : <Play size={16} />}{' '}
+            {play ? 'Pause' : 'Play'} full simulation
+          </button>
+          <button
+            className="secondary-btn"
+            disabled={step === 0}
+            aria-label="Previous round stage"
+            onClick={() => {
+              setPlay(false);
+              setProgress(0);
+              setStep((s) => s - 1);
+            }}
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <button
+            className="secondary-btn"
+            disabled={step === 7}
+            aria-label="Next round stage"
+            onClick={() => {
+              setPlay(false);
+              setProgress(0);
+              setStep((s) => s + 1);
+            }}
+          >
+            <ChevronRight size={16} />
+          </button>
+          <Pick
+            label="Stage speed"
+            value={speed}
+            items={[
+              ['0.5', '0.5×'],
+              ['1', '1×'],
+              ['2', '2×'],
+            ]}
+            onChange={setSpeed}
+          />
+          <strong>
+            Illustrative round {round} / 30 · stage {step + 1} / 8
+          </strong>
+        </div>
+        <div className="round-stage-nav">
+          {phases.map(([name], i) => (
+            <button
+              key={name}
+              aria-current={step === i ? 'step' : undefined}
+              onClick={() => {
+                setStep(i);
+                setProgress(0);
+                setPlay(false);
+              }}
+            >
+              <span>{i + 1}</span>
+              {name}
+            </button>
+          ))}
+        </div>
+        <div className="round-stage-scene">
+          <div className="round-scene-heading">
+            <span>{String(step + 1).padStart(2, '0')}</span>
+            <div>
+              <h3>{phases[step][0]}</h3>
+              <p>{phases[step][1]}</p>
+            </div>
+          </div>
+          <ConnectedRound
+            step={step}
+            progress={progress}
+            playing={play}
+            motion={motion}
+            client={client}
+            onClient={setClient}
+            distances={distances}
+            phi={phi}
+            weights={weights}
+            round={round}
+          />
+          <div className="connected-stage-progress">
+            <span
+              style={{
+                width: `${Math.min(100, (progress / (step === 2 ? 20 : 10)) * 100)}%`,
+              }}
+            />
+          </div>
+          <p className="connected-scene-note">
+            Paths highlight the current operation. Clients 9 and 10 are
+            designated attackers in this example; designation is not detection.
+            Each illustrative round reuses the same teaching values, rather than
+            simulating learning or accumulating measured reputation.
+          </p>
+        </div>
+      </Panel>
+      <details className="connected-inspector">
+        <summary>
+          Inspect the example distances, trust equations and contribution graphs
+        </summary>
+        <Panel
+          title="How distance changes a client’s contribution"
+          action={<Badge state="DEMONSTRATION" />}
+        >
+          <p>
+            These synthetic distances demonstrate the Trust equations, not
+            attack effectiveness. Select a client in either graph to inspect the
+            same contribution in both. Client 7 is an honest outlier in this
+            example.
+          </p>
+          <div className="round-graph-grid">
+            <div>
+              <h3>RMS distance to reference</h3>
+              <p className="round-chart-caption">
+                Example thresholds: lower 0.030 · upper 0.080
+              </p>
+              <div className="round-bar-chart">
+                {distances.map((d, i) => (
+                  <button
+                    key={i}
+                    aria-label={`Inspect client ${i + 1} distance ${d.toFixed(3)}`}
+                    onClick={() => setClient(i)}
+                    className={client === i ? 'selected' : ''}
+                  >
+                    <span>C{i + 1}</span>
+                    <div>
+                      <i
+                        style={{
+                          width: `${d * 1000}%`,
+                          background: i >= 8 ? '#df6949' : '#6b5cf6',
+                        }}
+                      />
+                      <b style={{ left: '30%' }} />
+                      <b style={{ left: '80%' }} />
+                    </div>
+                    <output>{d.toFixed(3)}</output>
+                  </button>
+                ))}
+              </div>
+              <small>
+                Axis: 0.000 to 0.100 RMS distance · dashed lines = thresholds
+              </small>
+            </div>
+            <div>
+              <h3>Normalized aggregation weight</h3>
+              <p className="round-chart-caption">
+                Reputation × trust, divided by total effective weight
+              </p>
+              <div className="round-bar-chart">
+                {weights.map((w, i) => (
+                  <button
+                    key={i}
+                    aria-label={`Inspect client ${i + 1} weight ${(w * 100).toFixed(1)} percent`}
+                    onClick={() => setClient(i)}
+                    className={client === i ? 'selected' : ''}
+                  >
+                    <span>C{i + 1}</span>
+                    <div>
+                      <i
+                        style={{
+                          width: `${(w / 0.2) * 100}%`,
+                          background: '#19b8c7',
+                        }}
+                      />
+                    </div>
+                    <output>{(w * 100).toFixed(1)}%</output>
+                  </button>
+                ))}
+              </div>
+              <small>
+                Axis: 0% to 20% contribution · all weights sum to 100%
+              </small>
+            </div>
+          </div>
+          <div className="revision-range">
+            <div>
+              <label htmlFor="example-distance">
+                Adjust client 9’s example RMS distance
+              </label>
+              <output>{distance.toFixed(3)}</output>
+            </div>
+            <Slider
+              id="example-distance"
+              aria-label="Client 9 example RMS distance"
+              min={0.01}
+              max={0.1}
+              step={0.001}
+              value={[distance]}
+              onValueChange={(v) => {
+                setDistance(Array.isArray(v) ? v[0] : v);
+                setClient(8);
+              }}
+            />
+          </div>
+          <div className="round-equation-readout">
+            <h3>Client {client + 1}</h3>
+            <div>
+              <span>Distance</span>
+              <strong>{distances[client].toFixed(3)}</strong>
+            </div>
+            <div>
+              <span>Soft trust φ</span>
+              <strong>{phi[client].toFixed(3)}</strong>
+            </div>
+            <div>
+              <span>Reputation</span>
+              <strong>{reputation[client].toFixed(3)}</strong>
+            </div>
+            <div>
+              <span>Contribution</span>
+              <strong>{(weights[client] * 100).toFixed(2)}%</strong>
+            </div>
+          </div>
+          <Note>
+            Teaching inputs: prior reputation = 0.85 for every client; fixed
+            example thresholds = 0.030 / 0.080. The notebook derives thresholds
+            from median and robust spread. Reputation updates as 0.85r + 0.15φ.
+            This one-step example does not reproduce the rolling detector or
+            claim to detect an attacker. No convergence, validation score or
+            trained model update is fabricated.
+          </Note>
+        </Panel>
+      </details>
+    </>
+  );
 }
