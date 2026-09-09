@@ -14,6 +14,7 @@ import { Slider } from '@/components/ui/slider';
 import { Panel, Badge, Note, Pick, TabBar } from './common';
 import { Architecture, FederationSimulation } from './simulation';
 import { RoundMethodology } from './round-methodology';
+import { StudyCoverage, EvidenceAtlas } from './scientific-atlas';
 import {
   protocol,
   methods,
@@ -170,43 +171,8 @@ export function RevisionOverview({ navigate }: Props) {
           </p>
         </Panel>
       </div>
-      <Panel title="Research questions to resolve">
-        <div className="revision-questions">
-          {[
-            [
-              '01',
-              'Clinical performance',
-              'Does the model recognize malignant and minority classes, beyond majority-class accuracy?',
-              'research',
-            ],
-            [
-              '02',
-              'Robust baselines',
-              'Does Trust improve security relative to Krum, Median and Trimmed Mean?',
-              'security',
-            ],
-            [
-              '03',
-              'Honest heterogeneity',
-              'Are non-IID honest updates incorrectly flagged as malicious?',
-              'federation',
-            ],
-            [
-              '04',
-              'Adaptive resistance',
-              'Can a concealed poisoned update retain attack impact while passing Trust?',
-              'security',
-            ],
-          ].map(([n, t, d, route]) => (
-            <button key={n} onClick={() => navigate(route)}>
-              <span>{n}</span>
-              <h3>{t}</h3>
-              <p>{d}</p>
-              <ArrowUpRight size={16} />
-            </button>
-          ))}
-        </div>
-      </Panel>
+      <EvidenceAtlas navigate={navigate} />
+
       <Note>
         Research use only. Overall accuracy, binary malignant recall and the
         derived 1−ASR value answer different questions. None establishes
@@ -677,7 +643,7 @@ export function RevisionObservatory({
       {tab === 'Performance' && (
         <Panel
           title="Classification and security, side by side"
-          kicker="REVISED STUDY · RESULTS NOT INGESTED"
+          kicker="STUDY RESULTS · AWAITING ARTIFACTS"
         >
           <p>
             Selection: {partition} · {Number(fraction) * 100}% malicious ·{' '}
@@ -883,10 +849,16 @@ export function RevisionStudio({
     <>
       <TabBar
         value={tab}
-        items={['Experiment builder', 'Study plan', 'Run registry']}
+        items={[
+          'Experiment builder',
+          'Coverage map',
+          'Study plan',
+          'Run registry',
+        ]}
         onChange={setTab}
       />
       {tab === 'Experiment builder' && <ExperimentBuilder />}
+      {tab === 'Coverage map' && <StudyCoverage />}
       {tab === 'Study plan' && (
         <>
           <Panel

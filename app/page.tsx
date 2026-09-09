@@ -109,6 +109,9 @@ function Platform() {
     return () => window.removeEventListener('hashchange', sync);
   }, []);
   const active = nav.find((n) => n[0] === page) ?? nav[1];
+  useEffect(() => {
+    document.title = `${active[1]} | Fed-ResViT`;
+  }, [active]);
   function tourStep(n: number) {
     setTour(n);
     navigate('overview');

@@ -1,3 +1,7 @@
+import {
+  StudyCoverage,
+  EvidenceAtlas,
+} from '../components/research/scientific-atlas';
 import { renderToString } from 'react-dom/server';
 import Home from '../app/page';
 import { About } from '../components/research/about';
@@ -12,6 +16,8 @@ import { FederationSimulation } from '../components/research/simulation';
 import { studyPlan, uniqueStudyCount } from '../lib/protocol';
 const noop = () => {};
 const views = [
+  <StudyCoverage />,
+  <EvidenceAtlas navigate={noop} />,
   <Home />,
   <About navigate={noop} />,
   <Clinical inspect={noop} />,
@@ -45,7 +51,12 @@ for (const view of views) {
       html,
     )
   )
-    throw Error('Obsolete or invalid content: '+html.match(/Original study|Revised protocol|36\.96%|23\.93%|\bNaN\b|\[object Object\]/i)?.[0]);
+    throw Error(
+      'Obsolete or invalid content: ' +
+        html.match(
+          /Original study|Revised protocol|36\.96%|23\.93%|\bNaN\b|\[object Object\]/i,
+        )?.[0],
+    );
 }
 const simulation = renderToString(<FederationSimulation />);
 if (
