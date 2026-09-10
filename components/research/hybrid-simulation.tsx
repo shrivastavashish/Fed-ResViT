@@ -46,14 +46,14 @@ export function HybridSimulation() {
           role="img"
           aria-label={`Hybrid CNN and Vision Transformer connected feature flow: ${steps[stage]}`}
         >
-          <path
-            d="M 175 170 C 220 170 220 90 270 90 M 175 170 C 220 170 220 250 270 250 M 500 90 C 560 90 550 170 605 170 M 500 250 C 560 250 550 170 605 170 M 815 170 L 865 170"
-            fill="none"
-            stroke="#19b8c7"
-            strokeWidth="3"
-            strokeDasharray={playing ? '10 8' : undefined}
-            className={playing ? 'hybrid-packets' : ''}
-          />
+          {[
+            { d: 'M 175 170 C 220 170 220 90 270 90 M 175 170 C 220 170 220 250 270 250', active: stage === 1 },
+            { d: 'M 500 90 C 560 90 550 170 605 170 M 500 250 C 560 250 550 170 605 170', active: stage === 2 || stage === 3 },
+            { d: 'M 815 170 L 865 170', active: stage === 4 },
+          ].map((edge) => <path key={edge.d} d={edge.d} fill="none"
+            stroke={edge.active ? '#2fc2cf' : '#53618b'} strokeWidth={edge.active ? 3 : 1.5}
+            strokeDasharray={edge.active && playing ? '10 8' : undefined}
+            className={edge.active && playing ? 'hybrid-packets' : ''} />)}
           {[
             {
               x: 15,

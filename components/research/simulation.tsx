@@ -278,6 +278,8 @@ export function FederationSimulation() {
           Step {stage + 1} / {stages.length}
         </span>
       </div>
+      <div className="simulation-round-slider">
+      <div className="slider-caption"><span>Illustrative round</span><output>{round} / 30</output></div>
       <Slider
         aria-label="Illustrative round"
         min={1}
@@ -289,6 +291,8 @@ export function FederationSimulation() {
           setTick(((Array.isArray(v) ? v[0] : v) - 1) * stages.length);
         }}
       />
+      <div className="slider-endpoints"><span>1 · Start</span><span>30 · End</span></div>
+      </div>
       <div className="simulation-readout">
         <div>
           <small>CURRENT METHODOLOGY STEP</small>

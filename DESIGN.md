@@ -17,3 +17,6 @@ Protocol-derived counts are configured jobs, not measured performance or complet
 
 ## Interaction
 Charts that encode configured study coverage are selectable and lead to matching jobs. Selected controls use white on deep violet with visible cyan keyboard focus. Tables and diagrams scroll inside their own bounds at narrow widths. No automatic motion; playback is controllable and respects reduced-motion preferences. Never require hover for essential information.
+
+## Control and simulation refinement
+Shared tabs keep a 44px minimum target and reveal the selected tab inside horizontally scrolling lists. Sliders keep aligned value captions, 44px interaction tracks, and visible keyboard focus. Gloss is a restrained surface highlight; labels on dark controls remain light with high contrast. Simulations remain fixed at 1×, with pause/reset and stage-specific flow emphasis; illustrative values never become measured evidence.

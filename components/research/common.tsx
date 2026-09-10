@@ -1,5 +1,5 @@
 'use client';
-import type { ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import {
   Select,
   SelectTrigger,
@@ -67,9 +67,26 @@ export function TabBar({
   items: string[];
   onChange: (v: string) => void;
 }) {
+  const list = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const container = list.current;
+    if (!container) return;
+    const reveal = () => {
+      const active = container.querySelector<HTMLElement>('[aria-selected="true"]');
+      if (!active) return;
+      const bounds = container.getBoundingClientRect();
+      const tab = active.getBoundingClientRect();
+      if (tab.right > bounds.right - 6) container.scrollLeft += tab.right - bounds.right + 6;
+      else if (tab.left < bounds.left + 6) container.scrollLeft -= bounds.left - tab.left + 6;
+    };
+    reveal();
+    const observer = new ResizeObserver(reveal);
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [value]);
   return (
     <Tabs value={value} onValueChange={(v) => onChange(String(v))}>
-      <TabsList variant="default" className="workspace-tabs">
+      <TabsList ref={list} variant="default" className="workspace-tabs">
         {items.map((i) => (
           <TabsTrigger key={i} value={i}>
             {i}
@@ -97,27 +114,7 @@ export function Panel({
   return (
     <section
       className={'panel ' + (dark ? 'dark-panel ' : '') + className}
-      onPointerMove={(event) => {
-        if (
-          event.pointerType !== 'mouse' ||
-          window.matchMedia('(prefers-reduced-motion: reduce)').matches
-        )
-          return;
-        const el = event.currentTarget;
-        const box = el.getBoundingClientRect();
-        el.style.setProperty(
-          '--surface-x',
-          `${((event.clientY - box.top) / box.height - 0.5) * -1.4}deg`,
-        );
-        el.style.setProperty(
-          '--surface-y',
-          `${((event.clientX - box.left) / box.width - 0.5) * 1.4}deg`,
-        );
-      }}
-      onPointerLeave={(event) => {
-        event.currentTarget.style.setProperty('--surface-x', '0deg');
-        event.currentTarget.style.setProperty('--surface-y', '0deg');
-      }}
+
     >
       <div className="section-heading">
         <div>

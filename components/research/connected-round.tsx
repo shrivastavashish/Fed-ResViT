@@ -41,7 +41,7 @@ export function ConnectedRound({
       w: 180,
       title: 'Client updates Δ',
       detail: 'Local state − global state',
-      active: step === 3,
+      active: step === 3 || step === 5,
     },
     {
       x: 710,
@@ -157,6 +157,7 @@ export function ConnectedRound({
         {edge('M 555 260 C 610 260 580 180 620 180', step === 4, 'reference')}
         {edge('M 800 180 L 850 180', step === 4, 'distance')}
         {edge('M 940 213 L 940 327', step === 4, 'trust')}
+        {edge('M 465 293 C 465 430 545 460 620 490', step === 5, 'weighted-updates')}
         {edge('M 940 393 C 940 490 850 490 800 490', step === 5, 'weight')}
         {edge('M 620 490 C 580 490 570 100 480 88', step === 5, 'global')}
         {edge('M 480 88 C 580 110 585 535 465 557', step === 6, 'validation')}
