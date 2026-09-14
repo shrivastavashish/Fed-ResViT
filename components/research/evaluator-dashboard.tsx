@@ -1,5 +1,6 @@
 /* oxlint-disable jsx-a11y/prefer-tag-over-role -- SVG research nodes support keyboard activation. */
 'use client';
+import { useState } from 'react';
 import {
   Activity,
   ArrowRight,
@@ -190,36 +191,48 @@ export function EvaluatorDashboard({ navigate }: { navigate: Navigate }) {
 
 function ResearchOrbit({ navigate }: { navigate: Navigate }) {
   const nodes = [
-    { x: 245, y: 52, label: 'CLINICAL', page: 'clinical', value: '7 classes' },
-    { x: 405, y: 128, label: 'FEDERATION', page: 'federation', value: '10 clients' },
-    { x: 405, y: 300, label: 'SECURITY', page: 'security', value: '2 attacks' },
-    { x: 245, y: 378, label: 'EVIDENCE', page: 'reproducibility', value: 'traceable' },
-    { x: 85, y: 300, label: 'RESULTS', page: 'results', value: '5 methods' },
-    { x: 85, y: 128, label: 'EXPERIMENTS', page: 'studio', value: '265 runs' },
+    { x: 245, y: 52, label: 'CLINICAL', page: 'clinical', value: '7 classes', detail: 'Inspect dermoscopic inputs, preprocessing and seven-class model probabilities.' },
+    { x: 405, y: 128, label: 'FEDERATION', page: 'federation', value: '10 clients', detail: 'Follow local training, model updates and thirty global communication rounds.' },
+    { x: 405, y: 300, label: 'SECURITY', page: 'security', value: '2 attacks', detail: 'Challenge the system with targeted label flipping and adaptive update blending.' },
+    { x: 245, y: 378, label: 'EVIDENCE', page: 'reproducibility', value: 'traceable', detail: 'Trace every result to its configuration, seed, round history and saved artifact.' },
+    { x: 85, y: 300, label: 'RESULTS', page: 'results', value: '5 methods', detail: 'Compare convergence, robustness, class behavior and paired-seed statistics.' },
+    { x: 85, y: 128, label: 'EXPERIMENTS', page: 'studio', value: '265 runs', detail: 'Explore the main, adaptive-attack and Trust-sensitivity experiment matrices.' },
   ];
+  const [selected, setSelected] = useState(1);
+  const focus = nodes[selected];
   return (
     <div className="research-orbit">
       <svg viewBox="0 0 490 430" role="group" aria-label="Interactive 360-degree Fed-ResViT research map">
+        <defs>
+          <linearGradient id="orbitSweep" x1="0" x2="1"><stop stopColor="#8F80FF"/><stop offset="1" stopColor="#2FC2CF"/></linearGradient>
+          <filter id="orbitGlow"><feGaussianBlur stdDeviation="5" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
         <circle cx="245" cy="215" r="153" className="orbit-ring" />
         <circle cx="245" cy="215" r="102" className="orbit-ring inner" />
-        {nodes.map((node) => (
-          <g key={node.label} role="button" tabIndex={0} aria-label={`Open ${node.label.toLowerCase()} workspace`} onClick={() => navigate(node.page)} onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(node.page); }
-          }} className="orbit-node">
+        <circle cx="245" cy="215" r="128" className="orbit-energy" pathLength="100" />
+        {nodes.map((node, index) => (
+          <g key={node.label} role="button" tabIndex={0} aria-label={`Inspect ${node.label.toLowerCase()} research lens`} aria-pressed={selected === index} onClick={() => setSelected(index)} onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelected(index); }
+          }} className={`orbit-node ${selected === index ? 'selected' : ''}`}>
             <line x1="245" y1="215" x2={node.x} y2={node.y} />
             <circle cx={node.x} cy={node.y} r="41" />
             <text x={node.x} y={node.y - 3} textAnchor="middle">{node.label}</text>
             <text x={node.x} y={node.y + 14} textAnchor="middle" className="orbit-value">{node.value}</text>
+            {selected === index && <circle cx={node.x} cy={node.y} r="49" className="orbit-selection" filter="url(#orbitGlow)" />}
           </g>
         ))}
         <g className="orbit-core">
           <circle cx="245" cy="215" r="73" />
-          <text x="245" y="202" textAnchor="middle">Fed-ResViT</text>
-          <text x="245" y="224" textAnchor="middle" className="orbit-core-sub">CNN + ViT</text>
-          <text x="245" y="242" textAnchor="middle" className="orbit-core-meta">TRUST-AWARE FL</text>
+          <circle cx="245" cy="215" r="62" className="orbit-core-ring" />
+          <text x="245" y="197" textAnchor="middle">Fed-ResViT</text>
+          <text x="245" y="220" textAnchor="middle" className="orbit-core-sub">{focus.label}</text>
+          <text x="245" y="240" textAnchor="middle" className="orbit-core-meta">{focus.value.toUpperCase()}</text>
         </g>
       </svg>
-      <small>Select a research lens to inspect its evidence.</small>
+      <div className="orbit-inspector">
+        <div><span>ACTIVE RESEARCH LENS</span><strong>{focus.label}</strong><p>{focus.detail}</p></div>
+        <button onClick={() => navigate(focus.page)}>Open workspace <ArrowRight size={14}/></button>
+      </div>
     </div>
   );
 }

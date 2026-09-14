@@ -1,8 +1,5 @@
 'use client';
-import {
-  WorkspaceSearch,
-  GuidedWalkthrough,
-} from '@/components/research/navigation-tools';
+import { GuidedWalkthrough } from '@/components/research/navigation-tools';
 import { useState, useEffect, lazy, Suspense } from 'react';
 import {
   Activity,
@@ -188,7 +185,6 @@ function Platform() {
         <SidebarFooter>
           <div className="side-study">
             <span className="live-dot" /> Fed-ResViT research
-            <small>HAM10000 · 10 clients · 265 experiments</small>
           </div>
         </SidebarFooter>
       </Sidebar>
@@ -202,7 +198,6 @@ function Platform() {
             </span>
           </div>
           <div>
-            <WorkspaceSearch navigate={navigate} />
             <span className="status-chip">
               <span className="live-dot" />
               FED-RESVIT RESEARCH
