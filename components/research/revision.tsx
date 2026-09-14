@@ -132,8 +132,8 @@ function RevisionFederation() {
           <Architecture />
           <Note>
             The hybrid model uses partial backbone fine-tuning, fusion dimension
-            768, dropout 0.2, AdamW and backbone LR multiplier 0.08. A new
-            the seven-class classifier follows the same ImageNet-normalized
+            768, dropout 0.2, AdamW and backbone LR multiplier 0.08. The
+            seven-class classifier follows the same ImageNet-normalized
             224 × 224 input pipeline shown in Clinical AI.
           </Note>
         </>

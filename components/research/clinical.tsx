@@ -142,8 +142,8 @@ export default function Clinical({
         >
           <p>
             HAM10000 examples recovered from the source notebook’s dataset
-            gallery. The image labels describe dataset classes, not predictions
-            from the currently training model.
+            gallery. The image labels describe dataset classes rather than
+            predictions from the Fed-ResViT classifier.
           </p>
           <img
             src="/images/ham10000-gallery.png"

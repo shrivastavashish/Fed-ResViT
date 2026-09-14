@@ -309,10 +309,10 @@ export function FederationSimulation() {
         </div>
       </div>
       <Note>
-        Animation explains the protocol, not training progress. Client sample
-        counts, distances, trust, reputation and detection outcomes await
-        imported artifacts. Malicious labels are MEL / BCC / AKIEC → NV; an
-        assigned attacker is not automatically a detected client.
+        This animation explains the notebook methodology. Client sample counts,
+        distances, trust, reputation and detection outcomes use illustrative
+        presentation values. Malicious labels are MEL / BCC / AKIEC → NV; an
+        assigned attacker is distinct from a client flagged by the Trust model.
       </Note>
     </Panel>
   );
