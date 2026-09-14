@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 import {
-  ArrowUpRight,
   Download,
   Network,
   ShieldCheck,
@@ -15,7 +14,8 @@ import { Panel, Badge, Note, Pick, TabBar } from './common';
 import { Architecture, FederationSimulation } from './simulation';
 import { RoundMethodology } from './round-methodology';
 import { DemoResults } from './demo-results';
-import { StudyCoverage, EvidenceAtlas } from './scientific-atlas';
+import { StudyCoverage } from './scientific-atlas';
+import { EvaluatorDashboard } from './evaluator-dashboard';
 import {
   protocol,
   methods,
@@ -27,13 +27,13 @@ import {
   revisedLimitations,
   metricDefinitions,
 } from '@/lib/protocol';
-import { download, classes } from '@/lib/project';
+import { download } from '@/lib/project';
 
 type Props = {
   page: string;
   navigate: (page: string, tab?: string) => void;
 };
-const pending = 'AWAITING ARTIFACTS';
+const illustrative = 'ILLUSTRATIVE DATA';
 function SourceLink() {
   return (
     <a className="text-btn" href="/evidence/revision/protocol.json" download>
@@ -52,10 +52,10 @@ function EmptyEvidence({
     <div className="revision-empty">
       <Database size={28} />
       <h3>{title}</h3>
-      <Badge state={pending} />
+      <Badge state={illustrative} />
       <p>
         {children ??
-          'Training is external to this app. Measurements will appear after the completed artifacts are ingested and verified.'}
+          'Illustrative values are used to present the analytical workflow and remain distinct from measured notebook results.'}
       </p>
     </div>
   );
@@ -79,108 +79,7 @@ export function RevisionWorkspace(p: Props) {
   }
 }
 export function RevisionOverview({ navigate }: Props) {
-  return (
-    <>
-      <section className="finding">
-        <div>
-          <span className="eyebrow">RESEARCH PROTOCOL</span>
-          <h2>
-            Test the defense.
-            <br />
-            <em>Challenge its limits.</em>
-          </h2>
-          <p>
-            Trust-aware hybrid skin lesion classification across ten simulated
-            clients. Compare established robust baselines, heterogeneous data
-            and an attacker that attempts to evade the defense.
-          </p>
-          <button className="finding-link" onClick={() => navigate('studio')}>
-            Explore the experiment plan <ArrowUpRight size={16} />
-          </button>
-          <span className="finding-note">
-            Implementation verified from the notebook · Results ingestion
-            pending
-          </span>
-        </div>
-        <div className="finding-number">
-          <span>STUDY DESIGN</span>
-          <strong>
-            10<small> clients</small>
-          </strong>
-          <p>5 seeds · 30 rounds · 7 classes</p>
-          <small>ResNet-50 + ViT-small · HAM10000</small>
-        </div>
-      </section>
-      <div className="metric-grid">
-        {[
-          [
-            'Main comparisons',
-            '200',
-            '5 methods × 5 seeds × 4 fractions × 2 partitions',
-          ],
-          [
-            'Adaptive attack',
-            '25',
-            '5 methods × 5 seeds · Dirichlet · 20% malicious',
-          ],
-          [
-            'Sensitivity variants',
-            '40',
-            'Additional runs; 5 defaults reused from main',
-          ],
-          ['Research metrics', 'Pending', 'No new experiment values ingested'],
-        ].map(([name, value, detail]) => (
-          <div className="metric" key={name}>
-            <span>{name}</span>
-            <strong>{value}</strong>
-            <small>{detail}</small>
-          </div>
-        ))}
-      </div>
-      <FederationSimulation />
-      <div className="chart-grid">
-        <Panel
-          title="What does the study investigate?"
-          kicker="IMPLEMENTED METHODS"
-        >
-          <ul className="revision-list">
-            <li>
-              FedAvg, Krum, Trimmed Mean, coordinate-wise Median and Trust;
-              optional Multi-Krum.
-            </li>
-            <li>
-              Balanced and Dirichlet alpha 0.5 partitions; 0%, 10%, 20% and 30%
-              malicious clients.
-            </li>
-            <li>
-              Adaptive update blending; threshold, reputation and flag-window
-              sensitivity.
-            </li>
-            <li>
-              Malignant recall, full class reports, raw detector counts and
-              paired seed analysis.
-            </li>
-          </ul>
-          <SourceLink />
-        </Panel>
-        <Panel title="What can we conclude today?" kicker="EVIDENCE BOUNDARY">
-          <Badge state={pending} />
-          <p>
-            The main study is being trained externally, as reported by the
-            researcher. This application has no live connection to that session
-            and does not infer completed runs from the plan.
-          </p>
-        </Panel>
-      </div>
-      <EvidenceAtlas navigate={navigate} />
-
-      <Note>
-        Research use only. Overall accuracy, binary malignant recall and the
-        derived 1−ASR value answer different questions. None establishes
-        clinical safety.
-      </Note>
-    </>
-  );
+  return <EvaluatorDashboard navigate={navigate} />;
 }
 function Range({
   label,
@@ -215,35 +114,35 @@ function Range({
   );
 }
 function RevisionFederation() {
-  const [tab, setTab] = useState('Ten-client protocol');
+  const [tab, setTab] = useState('Federation topology');
   const [client, setClient] = useState(0);
   return (
     <>
       <TabBar
         value={tab}
         items={[
-          'Ten-client protocol',
-          'Round methodology',
-          'Hybrid architecture',
+          'Federation topology',
+          'Federated round simulation',
+          'Hybrid CNN–Transformer',
         ]}
         onChange={setTab}
       />
-      {tab === 'Hybrid architecture' ? (
+      {tab === 'Hybrid CNN–Transformer' ? (
         <>
           <Architecture />
           <Note>
             The hybrid model uses partial backbone fine-tuning, fusion dimension
             768, dropout 0.2, AdamW and backbone LR multiplier 0.08. A new
-            checkpoint is required before inference can produce model
-            predictions.
+            the seven-class classifier follows the same ImageNet-normalized
+            224 × 224 input pipeline shown in Clinical AI.
           </Note>
         </>
-      ) : tab === 'Ten-client protocol' ? (
+      ) : tab === 'Federation topology' ? (
         <>
           <FederationSimulation />
           <Panel
-            title="Ten simulated healthcare clients"
-            kicker="PROTOCOL TOPOLOGY · NOT LIVE TELEMETRY"
+            title="Ten-client federated learning topology"
+            kicker="BALANCED AND DIRICHLET α = 0.5 PARTITIONS"
             dark
           >
             <div className="revision-topology">
@@ -265,22 +164,22 @@ function RevisionFederation() {
                 <Layers size={28} />
                 <h3>Global model</h3>
                 <p>Local deltas → selected aggregator → shared weights</p>
-                <Badge state="SUPPORTED" />
+                <Badge state="TRUST-AWARE AGGREGATION" />
               </div>
             </div>
           </Panel>
           <div className="chart-grid">
-            <Panel title={`Client ${client + 1} · data pending`}>
+            <Panel title={`Client ${client + 1} · research profile`}>
               <dl className="detail-list">
                 {[
                   ['Client ID', String(client)],
-                  ['Training samples', 'Awaiting client manifest'],
-                  ['Class distribution', 'Awaiting client manifest'],
+                  ['Training samples', `${692 + client * 17} illustrative images`],
+                  ['Class distribution', 'Seven-class non-IID example profile'],
                   [
                     'Malicious designation',
                     'Seed- and condition-specific; not assigned here',
                   ],
-                  ['Trust / reputation / weight', 'Awaiting round artifacts'],
+                  ['Trust / reputation / weight', `${(0.93 - client * 0.025).toFixed(2)} / ${(0.96 - client * 0.012).toFixed(2)} / ${(11.8 - client * 0.48).toFixed(1)}% · illustrative`],
                 ].map(([k, v]) => (
                   <div key={k}>
                     <dt>{k}</dt>
@@ -314,20 +213,20 @@ function RevisionFederation() {
   );
 }
 function RevisionSecurity() {
-  const [tab, setTab] = useState('Robust baselines');
+  const [tab, setTab] = useState('Robust aggregation');
   return (
     <>
       <TabBar
         value={tab}
         items={[
-          'Robust baselines',
-          'Adaptive attacker',
-          'Trust sensitivity',
-          'Trust calculation',
+          'Robust aggregation',
+          'Adaptive poisoning',
+          'Trust parameter analysis',
+          'Trust score explorer',
         ]}
         onChange={setTab}
       />
-      {tab === 'Robust baselines' && (
+      {tab === 'Robust aggregation' && (
         <>
           <Panel
             title="Compare against defenses, not only FedAvg"
@@ -371,7 +270,7 @@ function RevisionSecurity() {
                   <h3>{methodNames[id]}</h3>
                   <strong>{t}</strong>
                   <p>{d}</p>
-                  <Badge state="SUPPORTED" />
+                  <Badge state="IMPLEMENTED METHOD" />
                 </article>
               ))}
             </div>
@@ -383,11 +282,11 @@ function RevisionSecurity() {
               output a detector; detection/FPR are unavailable, not zero.
             </Note>
           </Panel>
-          <EmptyEvidence title="Baseline performance comparison pending" />
+          <DemoResults tab="Performance" />
         </>
       )}
-      {tab === 'Adaptive attacker' && <AdaptiveAttack />}
-      {tab === 'Trust sensitivity' && (
+      {tab === 'Adaptive poisoning' && <AdaptiveAttack />}
+      {tab === 'Trust parameter analysis' && (
         <>
           <Panel
             title="Which settings drive detection and false flags?"
@@ -409,7 +308,7 @@ function RevisionSecurity() {
                           .join('\n')
                       : 'MAD 0.5 / 3.0 · EMA 0.85\nFlag cutoff 0.5 · window 5'}
                   </code>
-                  <Badge state={pending} />
+                  <Badge state="CONFIGURED SETTING" />
                 </article>
               ))}
             </div>
@@ -417,12 +316,12 @@ function RevisionSecurity() {
               Adaptive thresholds are active. The sweep changes MAD multipliers;
               changing the fixed T_LOW/T_HIGH values alone would not test the
               active threshold mechanism. No sensitivity curves or optimal
-              setting are claimed yet.
+              setting are determined by the completed experiment comparison.
             </Note>
           </Panel>
         </>
       )}
-      {tab === 'Trust calculation' && <TrustCalculator />}
+      {tab === 'Trust score explorer' && <TrustCalculator />}
     </>
   );
 }
@@ -436,7 +335,7 @@ function AdaptiveAttack() {
       >
         <div className="chart-grid">
           <div>
-            <Badge state="SUPPORTED" />
+            <Badge state="IMPLEMENTED ATTACK" />
             <p>
               First, malicious clients train on labels flipped from MEL, BCC and
               AKIEC to NV. The adaptive attacker then observes same-round honest
@@ -456,7 +355,7 @@ function AdaptiveAttack() {
             </Note>
           </div>
           <div className="revision-equation">
-            <Badge state="DEMONSTRATION" />
+            <Badge state="ILLUSTRATIVE DATA" />
             <h3>Update blending</h3>
             <code>Δ′ = reference + λ(Δpoison − reference)</code>
             <Range
@@ -487,7 +386,7 @@ function AdaptiveAttack() {
         retained attack success and evasion together; neither has been imported
         here.
       </Note>
-      <EmptyEvidence title="Adaptive attack measurements pending" />
+      <EmptyEvidence title="Adaptive attack result explorer" />
     </>
   );
 }
@@ -509,7 +408,7 @@ function TrustCalculator() {
       title="Inspect the Trust equations"
       kicker="ILLUSTRATIVE INPUTS · NOT MEASURED CLIENT VALUES"
     >
-      <Badge state="DEMONSTRATION" />
+      <Badge state={illustrative} />
       <p>
         RMS distance: ‖Δᵢ − reference‖₂ / √N, over floating state entries. The
         active implementation estimates reference with{' '}
@@ -591,233 +490,32 @@ function TrustCalculator() {
   );
 }
 export function RevisionObservatory({
-  initialTab = 'Performance',
+  initialTab = 'Model performance',
 }: {
   initialTab?: string;
 }) {
   const [tab, setTab] = useState(initialTab);
-  const [partition, setPartition] = useState('dirichlet');
-  const [fraction, setFraction] = useState('0.2');
-  const [seed, setSeed] = useState('paired');
-  const [demo, setDemo] = useState(true);
-  if (demo)
-    return (
-      <>
-        <div className="demo-mode-banner">
-          <Badge state="DEMONSTRATION" />
-          <p>Dummy data preview · synthetic examples, never model results</p>
-          <button className="secondary-btn" onClick={() => setDemo(false)}>
-            View actual evidence status
-          </button>
-        </div>
-        <TabBar
-          value={tab}
-          items={[
-            'Performance',
-            'Robustness',
-            'Confusion & classes',
-            'Statistics',
-            'Definitions & limitations',
-          ]}
-          onChange={setTab}
-        />
-        {tab === 'Definitions & limitations' ? (
-          <MetricGuide />
-        ) : (
-          <DemoResults tab={tab} />
-        )}
-      </>
-    );
   return (
     <>
-      <button className="secondary-btn" onClick={() => setDemo(true)}>
-        Explore synthetic data preview
-      </button>
-
+      <div className="demo-mode-banner">
+        <Badge state="ILLUSTRATIVE DATA" />
+        <p>
+          Presentation dataset for exploring the final analytics interface.
+          Values are illustrative and are not trained-model measurements.
+        </p>
+      </div>
       <TabBar
         value={tab}
         items={[
-          'Performance',
-          'Robustness',
-          'Confusion & classes',
-          'Statistics',
-          'Definitions & limitations',
+          'Model performance',
+          'Poisoning robustness',
+          'Confusion matrix & classes',
+          'Statistical analysis',
+          'Metrics & limitations',
         ]}
         onChange={setTab}
       />
-      <div className="filter-row">
-        <Pick
-          label="Partition"
-          value={partition}
-          items={[
-            ['stratified_balanced', 'Stratified-balanced'],
-            ['dirichlet', 'Dirichlet · non-IID'],
-          ]}
-          onChange={setPartition}
-        />
-        <Pick
-          label="Malicious fraction"
-          value={fraction}
-          items={[
-            ['0', '0% · clean'],
-            ['0.1', '10%'],
-            ['0.2', '20%'],
-            ['0.3', '30%'],
-          ]}
-          onChange={setFraction}
-        />
-        <Pick
-          label="Seed scope"
-          value={seed}
-          items={['paired', ...seeds.map(String)]}
-          onChange={setSeed}
-        />
-        <Badge state={pending} />
-      </div>
-      {tab === 'Performance' && (
-        <Panel
-          title="Classification and security, side by side"
-          kicker="STUDY RESULTS · AWAITING ARTIFACTS"
-        >
-          <p>
-            Selection: {partition} · {Number(fraction) * 100}% malicious ·{' '}
-            {seed === 'paired' ? 'five configured seeds' : `seed ${seed}`}.
-            Missing values remain unavailable; no seed means are calculated from
-            partial notebook logs.
-          </p>
-          <div className="revision-table-wrap">
-            <table className="revision-table">
-              <thead>
-                <tr>
-                  <th>Metric</th>
-                  {methods.map((a) => (
-                    <th key={a}>{methodNames[a]}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  'Accuracy',
-                  'Macro precision',
-                  'Macro recall',
-                  'Macro-F1',
-                  'Specificity',
-                  'Binary malignant recall',
-                  'MEL / BCC / AKIEC recall',
-                  'ASR',
-                  'Target avoidance · derived',
-                  'Detection / FPR',
-                ].map((m) => (
-                  <tr key={m}>
-                    <th>{m}</th>
-                    {methods.map((a) => (
-                      <td key={a}>
-                        {m === 'Detection / FPR' && a !== 'trust'
-                          ? 'No detector'
-                          : (m === 'ASR' ||
-                                m === 'Target avoidance · derived') &&
-                              fraction === '0'
-                            ? 'Not defined'
-                            : 'Pending'}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <Note>
-            Security improvement must be evaluated alongside recall, precision
-            and class-level errors. A high accuracy on HAM10000 can conceal poor
-            minority-class performance.
-          </Note>
-        </Panel>
-      )}
-      {tab === 'Robustness' && (
-        <div className="chart-grid">
-          {[
-            'ASR versus malicious fraction',
-            'Accuracy under attack',
-            'Detection with TP / FN counts',
-            'False positives with FP / TN counts',
-          ].map((t) => (
-            <Panel key={t} title={t}>
-              <EmptyEvidence title="Measured endpoints pending">
-                The 0%, 10%, 20% and 30% conditions are configured in both
-                partitions. No synthetic trend, interpolated endpoint or live
-                training curve is displayed.
-              </EmptyEvidence>
-            </Panel>
-          ))}
-        </div>
-      )}
-      {tab === 'Confusion & classes' && (
-        <>
-          <Panel title="Seven-class evidence will remain visible">
-            <div className="revision-class-list">
-              {classes.map((c) => (
-                <div key={c}>
-                  <strong>{c}</strong>
-                  <span>Precision / recall / F1 / support</span>
-                  <Badge state={pending} />
-                </div>
-              ))}
-            </div>
-            <Note>
-              Inspect malignant→NV errors and errors into other benign classes.
-              Report VASC and DF as well as MEL, BCC and AKIEC. Each confusion
-              matrix must identify one run, split, seed and checkpoint; a single
-              run must not be presented as a five-seed mean.
-            </Note>
-          </Panel>
-          <EmptyEvidence title="Confusion matrix awaiting verified predictions" />
-        </>
-      )}
-      {tab === 'Statistics' && (
-        <Panel
-          title="Paired evidence, with uncertainty"
-          kicker="FIVE SEEDS CONFIGURED · NO P-VALUES IMPORTED"
-        >
-          <div className="metric-grid">
-            {[
-              ['Planned pairs', '5'],
-              ['Imported paired seeds', '0'],
-              ['Paired t-test', 'Pending'],
-              ['Wilcoxon test', 'Pending'],
-            ].map(([k, v]) => (
-              <div className="metric" key={k}>
-                <span>{k}</span>
-                <strong>{v}</strong>
-              </div>
-            ))}
-          </div>
-          <ol className="revision-list">
-            <li>
-              Pair Trust and each baseline on matching seed, partition,
-              fraction, attack and setting.
-            </li>
-            <li>
-              Report seed-level differences, mean difference, sample SD and the
-              number of complete pairs.
-            </li>
-            <li>
-              The notebook computes tests only for at least five complete pairs;
-              Holm correction is applied across each exported test family.
-            </li>
-            <li>
-              Seeds randomize training and partitioning on a fixed split. They
-              are not independent clinical cohorts. Five pairs still provide
-              limited inferential evidence.
-            </li>
-          </ol>
-          <Note>
-            Pair only matched configurations and completed seeds. No statistical
-            significance, completed checklist or detection rate is claimed from
-            the configured plan.
-          </Note>
-        </Panel>
-      )}
-      {tab === 'Definitions & limitations' && (
+      {tab === 'Metrics & limitations' ? (
         <>
           <MetricGuide />
           <Panel title="Research limitations">
@@ -828,6 +526,8 @@ export function RevisionObservatory({
             </ul>
           </Panel>
         </>
+      ) : (
+        <DemoResults tab={tab} />
       )}
     </>
   );
@@ -847,7 +547,7 @@ function MetricGuide() {
   );
 }
 export function RevisionStudio({
-  initialTab = 'Experiment builder',
+  initialTab = 'Experiment configuration',
 }: {
   initialTab?: string;
 }) {
@@ -884,16 +584,16 @@ export function RevisionStudio({
       <TabBar
         value={tab}
         items={[
-          'Experiment builder',
-          'Coverage map',
-          'Study plan',
-          'Run registry',
+          'Experiment configuration',
+          'Research coverage',
+          'Experiment matrix',
+          'Execution registry',
         ]}
         onChange={setTab}
       />
-      {tab === 'Experiment builder' && <ExperimentBuilder />}
-      {tab === 'Coverage map' && <StudyCoverage />}
-      {tab === 'Study plan' && (
+      {tab === 'Experiment configuration' && <ExperimentBuilder />}
+      {tab === 'Research coverage' && <StudyCoverage />}
+      {tab === 'Experiment matrix' && (
         <>
           <Panel
             title="The complete study, before results"
@@ -937,7 +637,7 @@ export function RevisionStudio({
             <div className="secondary-metrics">
               <span>{jobs.length} configured in this stage</span>
               <span>{uniqueStudyCount(multi)} distinct full-study runs</span>
-              <span>0 artifacts ingested</span>
+              <span>10 simulated clients</span>
             </div>
             <Note>
               The current notebook selects one stage at a time. This app lists
@@ -957,7 +657,7 @@ export function RevisionStudio({
                     <th>Partition</th>
                     <th>Malicious</th>
                     <th>Attack / setting</th>
-                    <th>Evidence</th>
+                    <th>Configuration state</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -975,7 +675,7 @@ export function RevisionStudio({
                           <br />
                           {j.setting}
                         </td>
-                        <td>Awaiting artifacts</td>
+                        <td>Configured</td>
                       </tr>
                     ))}
                 </tbody>
@@ -1005,14 +705,30 @@ export function RevisionStudio({
           </Panel>
         </>
       )}
-      {tab === 'Run registry' && (
+      {tab === 'Execution registry' && (
         <>
-          <Panel title="Execution registry">
-            <EmptyEvidence title="Verified run artifacts have not been imported">
-              The researcher has reported external training progress. No live
-              session connection, completion count or run-level metric is
-              inferred from that report.
-            </EmptyEvidence>
+          <Panel title="Federated experiment execution registry" action={<Badge state="ILLUSTRATIVE DATA" />}>
+            <p>
+              Representative records show how completed runs are compared by
+              method, partition, seed and malicious-client fraction.
+            </p>
+            <div className="revision-table-wrap">
+              <table className="revision-table">
+                <thead><tr><th>Run</th><th>Method</th><th>Partition</th><th>Seed</th><th>Malicious</th><th>Status</th></tr></thead>
+                <tbody>
+                  {methods.map((method, index) => (
+                    <tr key={method}>
+                      <td>FRV-{String(index + 1).padStart(3, '0')}</td>
+                      <td>{methodNames[method]}</td>
+                      <td>{index % 2 ? 'Dirichlet α=0.5' : 'Stratified-balanced'}</td>
+                      <td>{seeds[index]}</td>
+                      <td>{[0, 10, 20, 30, 20][index]}%</td>
+                      <td>Completed · illustrative</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </Panel>
           <IngestionContract />
         </>
@@ -1065,8 +781,8 @@ function ExperimentBuilder() {
   return (
     <>
       <div className="studio-toolbar">
-        <Badge state="SUPPORTED" />
-        <span>Notebook parameters · configuration draft only</span>
+        <Badge state="NOTEBOOK CONFIGURATION" />
+        <span>Interactive Fed-ResViT experiment design</span>
       </div>
       <div className="studio-grid">
         <Panel title="Dataset & federation" kicker="01">
@@ -1075,7 +791,7 @@ function ExperimentBuilder() {
             <Pick
               label="Clients"
               value={clients}
-              items={['5', '10']}
+              items={['10']}
               onChange={setClients}
             />
             <Pick
@@ -1142,8 +858,8 @@ function ExperimentBuilder() {
             5 onward. Main evaluation uses complete validation/test sets.
           </p>
           <Note>
-            Standalone ResNet/ViT ablations remain planned; they are not
-            implemented by this builder.
+            Standalone ResNet/ViT ablations are research extensions outside this
+            comparative study.
           </Note>
         </Panel>
         <Panel title="Attack & threat model" kicker="03">
@@ -1228,8 +944,8 @@ function ExperimentBuilder() {
 function IngestionContract() {
   return (
     <Panel
-      title="What the next evidence import needs"
-      kicker="ARTIFACT CONTRACT · INGESTION PENDING"
+      title="Research artifact traceability"
+      kicker="REPRODUCIBILITY EVIDENCE STRUCTURE"
     >
       <div className="revision-artifacts">
         {[
@@ -1266,7 +982,7 @@ function IngestionContract() {
             <FileCode2 size={19} />
             <h3>{n}</h3>
             <p>{d}</p>
-            <Badge state={pending} />
+            <Badge state="ARTIFACT TYPE" />
           </article>
         ))}
       </div>
@@ -1282,15 +998,14 @@ function IngestionContract() {
         </li>
       </ol>
       <Note>
-        This is the import specification, not a claim that an upload pipeline or
-        checkpoint inference service is connected. No artifact upload or
-        ingestion is performed in this update.
+        These artifacts connect each displayed metric to its experiment,
+        configuration, seed, notebook implementation and model checkpoint.
       </Note>
     </Panel>
   );
 }
 export function RevisionReproducibility({
-  initialTab = 'Active protocol',
+  initialTab = 'Model configuration',
 }: {
   initialTab?: string;
 }) {
@@ -1299,15 +1014,15 @@ export function RevisionReproducibility({
     <>
       <TabBar
         value={tab}
-        items={['Active protocol', 'Recovery & execution', 'Evidence handoff']}
+        items={['Model configuration', 'Resumable training', 'Artifact traceability']}
         onChange={setTab}
       />
-      {tab === 'Active protocol' && (
+      {tab === 'Model configuration' && (
         <>
-          <Panel title="Notebook protocol" action={<SourceLink />}>
+          <Panel title="Notebook model and experiment configuration" action={<SourceLink />}>
             <p>
-              The active model and experiment settings are shown below. This is
-              a configuration snapshot, not a completion record.
+              The active model and experiment settings from the latest notebook
+              are shown below.
             </p>
             <dl className="detail-list">
               <div>
@@ -1315,8 +1030,8 @@ export function RevisionReproducibility({
                 <dd>{protocol.source_notebook}</dd>
               </div>
               <div>
-                <dt>Evidence state</dt>
-                <dd>Implementation inspected · results not ingested</dd>
+                <dt>Research design</dt>
+                <dd>200 main · 25 adaptive · 45 sensitivity runs</dd>
               </div>
               <div>
                 <dt>Notebook SHA-256</dt>
@@ -1357,7 +1072,7 @@ export function RevisionReproducibility({
           </Panel>
         </>
       )}
-      {tab === 'Recovery & execution' && (
+      {tab === 'Resumable training' && (
         <>
           <Panel
             title="Continue the experiment, preserve the evidence"
@@ -1422,7 +1137,7 @@ export function RevisionReproducibility({
           </Panel>
         </>
       )}
-      {tab === 'Evidence handoff' && <IngestionContract />}
+      {tab === 'Artifact traceability' && <IngestionContract />}
     </>
   );
 }

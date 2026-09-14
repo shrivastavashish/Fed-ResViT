@@ -8,7 +8,6 @@ import {
   Maximize,
   RotateCcw,
   ScanLine,
-  LockKeyhole,
   Image as ImageIcon,
   Eye,
 } from 'lucide-react';
@@ -33,6 +32,7 @@ export default function Clinical({
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [explanation, setExplanation] = useState('CNN Grad-CAM');
+  const illustrativeProbabilities = [68.4, 11.7, 8.9, 4.8, 2.9, 1.8, 1.5];
   const file = useRef<HTMLInputElement>(null);
   const viewer = useRef<HTMLDivElement>(null);
   const drag = useRef<{ x: number; y: number } | null>(null);
@@ -161,7 +161,7 @@ export default function Clinical({
         <>
           <Panel
             title="Prediction, explanation and uncertainty are different"
-            action={<Badge state="PLANNED" />}
+            action={<Badge state="RESEARCH EXTENSION" />}
           >
             <p>
               The notebook implements classification probabilities. It does not
@@ -182,14 +182,15 @@ export default function Clinical({
                 >
                   <Eye size={22} />
                   <strong>{s}</strong>
-                  <Badge state="PLANNED" />
+                  <Badge state="NOT IN CURRENT MODEL" />
                 </button>
               ))}
             </div>
             <Note>
-              {explanation} is a planned extension. No synthetic heatmap or
-              confidence value is shown. A high softmax probability alone does
-              not establish calibrated certainty.
+              {explanation} is outside the current notebook implementation. The
+              interface does not present an attention map as model evidence. A
+              high softmax probability alone does not establish calibrated
+              certainty.
             </Note>
           </Panel>
           <EvidenceButton
@@ -375,20 +376,17 @@ export default function Clinical({
           <div>
             <Panel
               title="AI classification"
-              action={<Badge state="AWAITING ARTIFACT" />}
+              action={<Badge state="ILLUSTRATIVE DATA" />}
             >
               <div className="inference-state">
-                <LockKeyhole size={25} />
-                <h3>Checkpoint required</h3>
+                <ScanLine size={25} />
+                <h3>Model prediction · NV</h3>
                 <p>
-                  Connect a trained model to produce a seven-class prediction.
-                  The notebook includes aggregate test results, but no
-                  checkpoint or per-image probabilities was supplied.
+                  Illustrative confidence 68.4%. The seven-class distribution
+                  demonstrates the final clinical research workflow and is not
+                  a trained prediction for the displayed image.
                 </p>
               </div>
-              <button className="primary-btn wide" disabled>
-                Analyze image · unavailable
-              </button>
               <div className="probability-list">
                 {classes.map((c, i) => (
                   <div key={c}>
@@ -396,12 +394,15 @@ export default function Clinical({
                       <b>{c}</b>
                       {classNames[i]}
                     </span>
-                    <span title="No inference result">—</span>
+                    <span title="Illustrative presentation probability">
+                      {illustrativeProbabilities[i].toFixed(1)}%
+                    </span>
                   </div>
                 ))}
               </div>
               <p className="small-muted">
-                No prediction, probability or confidence has been generated.
+                Research / educational use. Classification probabilities do not
+                establish a diagnosis.
               </p>
             </Panel>
             <Panel title="Research context">

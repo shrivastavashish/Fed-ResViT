@@ -11,34 +11,42 @@ import { Panel, Badge, Note } from './common';
 import { ConnectedRound } from './connected-round';
 import { Slider } from '@/components/ui/slider';
 const phases = [
-  ['Broadcast', 'Clients receive the same global model.'],
+  ['Global model broadcast', 'All ten clients receive the same ResNet-50 + ViT-small global state.'],
   [
-    'Prepare local labels',
-    'On designated clients, MEL / BCC / AKIEC labels are flipped to NV before local training.',
+    'Poisoning configuration',
+    'Under attack conditions, designated clients flip MEL, BCC and AKIEC labels to NV with the configured probability.',
   ],
   [
-    'Local training',
-    'Ten clients train sequentially, each for two local epochs.',
+    'Local optimization',
+    'Each client trains the partially fine-tuned hybrid model for two local epochs with AdamW and mixed precision.',
   ],
   [
-    'Collect updates',
-    'Local floating-state differences become client updates. An adaptive attack can blend poisoned deltas at this point.',
+    'Client update extraction',
+    'The notebook converts each floating model state into a local delta relative to the broadcast global state.',
   ],
   [
-    'Evaluate trust',
-    'Compare RMS distances to the geometric-median reference, apply thresholds, then update reputation.',
+    'Adaptive update blending',
+    'For the adaptive attack, poisoned deltas are blended toward the honest-update geometric median using the largest admissible retention scale.',
   ],
   [
-    'Aggregate',
-    'Normalize reputation × trust to combine client updates into the next global model.',
+    'Robust reference',
+    'Trust computes a geometric-median reference from client updates; robust baselines evaluate the same update set.',
   ],
   [
-    'Validate',
-    'Evaluate the validation set and retain the best eligible accuracy checkpoint.',
+    'Trust and reputation',
+    'RMS-normalized distances, median/MAD thresholds and the reputation EMA produce each client’s effective Trust weight.',
   ],
   [
-    'Save & continue',
-    'Save checksummed recovery state and continue at the next round.',
+    'Global aggregation',
+    'FedAvg, Krum, Trimmed Mean, coordinate Median or Trust combines the client updates into the next global model.',
+  ],
+  [
+    'Validation and model selection',
+    'The validation set is evaluated and the best eligible accuracy checkpoint is retained from round five onward.',
+  ],
+  [
+    'Recovery and next round',
+    'Alternating checksummed recovery generations preserve model, optimizer-independent round state, RNG and Trust history.',
   ],
 ];
 export function RoundMethodology() {
@@ -64,7 +72,7 @@ export function RoundMethodology() {
         return;
       }
       setProgress(0);
-      if (step < 7) setStep(step + 1);
+      if (step < phases.length - 1) setStep(step + 1);
       else if (round < 30) {
         setRound(round + 1);
         setStep(0);
@@ -98,14 +106,14 @@ export function RoundMethodology() {
   return (
     <>
       <Panel
-        title="What happens in a federated round?"
-        action={<Badge state="DEMONSTRATION" />}
+        title="Fed-ResViT federated round simulation"
+        action={<Badge state="ILLUSTRATIVE DATA" />}
       >
         <p>
-          One connected simulation follows the model through all eight stages
-          and automatically continues into the next illustrative round. Watch
-          the highlighted route and moving updates; click any client to inspect
-          its example contribution.
+          Follow the latest notebook method as one connected ten-stage process,
+          from global-model broadcast and local hybrid training to adaptive
+          poisoning, Trust scoring, robust aggregation, validation and resumable
+          round-boundary recovery.
         </p>
         <div className="round-visual-controls">
           <button
@@ -123,7 +131,7 @@ export function RoundMethodology() {
           <button
             className="primary-btn"
             onClick={() => {
-              if (step === 7 && round === 30) {
+              if (step === phases.length - 1 && round === 30) {
                 setStep(0);
                 setRound(1);
                 setProgress(0);
@@ -148,7 +156,7 @@ export function RoundMethodology() {
           </button>
           <button
             className="secondary-btn"
-            disabled={step === 7}
+            disabled={step === phases.length - 1}
             aria-label="Next round stage"
             onClick={() => {
               setPlay(false);
@@ -159,7 +167,7 @@ export function RoundMethodology() {
             <ChevronRight size={16} />
           </button>
           <strong>
-            Illustrative round {round} / 30 · stage {step + 1} / 8
+            Round {round} / 30 · stage {step + 1} / {phases.length}
           </strong>
         </div>
         <div className="round-stage-nav">
@@ -206,10 +214,10 @@ export function RoundMethodology() {
             />
           </div>
           <p className="connected-scene-note">
-            Paths highlight the current operation. Clients 9 and 10 are
-            designated attackers in this example; designation is not detection.
-            Each illustrative round reuses the same teaching values, rather than
-            simulating learning or accumulating measured reputation.
+            The highlighted route shows the active operation. Clients 9 and 10
+            represent the 20% malicious-client condition. Numerical distances,
+            scores and weights are illustrative; the method sequence follows the
+            current notebook.
           </p>
         </div>
       </Panel>
@@ -219,13 +227,12 @@ export function RoundMethodology() {
         </summary>
         <Panel
           title="How distance changes a client’s contribution"
-          action={<Badge state="DEMONSTRATION" />}
+          action={<Badge state="ILLUSTRATIVE DATA" />}
         >
           <p>
-            These synthetic distances demonstrate the Trust equations, not
-            attack effectiveness. Select a client in either graph to inspect the
-            same contribution in both. Client 7 is an honest outlier in this
-            example.
+            These illustrative distances make the active Trust equations
+            explorable. Select a client in either graph to inspect the same
+            contribution in both. Client 7 represents an honest non-IID outlier.
           </p>
           <div className="round-graph-grid">
             <div>
@@ -331,12 +338,11 @@ export function RoundMethodology() {
             </div>
           </div>
           <Note>
-            Teaching inputs: prior reputation = 0.85 for every client; fixed
-            example thresholds = 0.030 / 0.080. The notebook derives thresholds
+            Illustrative inputs: prior reputation = 0.85 for every client; fixed
+            display thresholds = 0.030 / 0.080. The notebook derives thresholds
             from median and robust spread. Reputation updates as 0.85r + 0.15φ.
-            This one-step example does not reproduce the rolling detector or
-            claim to detect an attacker. No convergence, validation score or
-            trained model update is fabricated.
+            The values explain the calculation and remain separate from trained
+            model measurements.
           </Note>
         </Panel>
       </details>

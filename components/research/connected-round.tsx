@@ -32,8 +32,8 @@ export function ConnectedRound({
       y: 55,
       w: 210,
       title: 'Global hybrid model',
-      detail: `Illustrative round ${round} · shared weights`,
-      active: step === 0 || step === 5,
+      detail: `Round ${round} · shared ResNet-50 + ViT-small state`,
+      active: step === 0 || step === 7,
     },
     {
       x: 465,
@@ -41,7 +41,7 @@ export function ConnectedRound({
       w: 180,
       title: 'Client updates Δ',
       detail: 'Local state − global state',
-      active: step === 3 || step === 5,
+      active: step === 3 || step === 4 || step === 5 || step === 7,
     },
     {
       x: 710,
@@ -49,7 +49,7 @@ export function ConnectedRound({
       w: 180,
       title: 'Geometric median',
       detail: 'Robust reference update',
-      active: step === 4,
+      active: step === 5,
     },
     {
       x: 940,
@@ -57,7 +57,7 @@ export function ConnectedRound({
       w: 180,
       title: 'RMS distances',
       detail: 'Reference → adaptive thresholds',
-      active: step === 4,
+      active: step === 6,
     },
     {
       x: 940,
@@ -65,7 +65,7 @@ export function ConnectedRound({
       w: 180,
       title: 'Trust & reputation',
       detail: 'φ → 0.85r + 0.15φ',
-      active: step === 4,
+      active: step === 6,
     },
     {
       x: 710,
@@ -73,7 +73,7 @@ export function ConnectedRound({
       w: 180,
       title: 'Weighted aggregation',
       detail: 'Normalize r × φ contributions',
-      active: step === 5,
+      active: step === 7,
     },
     {
       x: 465,
@@ -81,7 +81,7 @@ export function ConnectedRound({
       w: 180,
       title: 'Validation',
       detail: 'Accuracy · F1 · malignant recall',
-      active: step === 6,
+      active: step === 8,
     },
     {
       x: 710,
@@ -89,7 +89,7 @@ export function ConnectedRound({
       w: 210,
       title: 'Recovery checkpoint',
       detail: 'Model · RNG · round · Trust state',
-      active: step === 7,
+      active: step === 9,
     },
   ];
   function edge(path: string, active: boolean, key: string, width = 1.5) {
@@ -147,22 +147,22 @@ export function ConnectedRound({
               )}
               {edge(
                 `M 265 ${y} C 320 ${y} 320 260 375 260`,
-                step === 3 || step === 5,
+                step === 3 || step === 4 || step === 5 || step === 7,
                 `update-${i}`,
-                step === 5 ? weights[i] * 25 : 2,
+                step === 7 ? weights[i] * 25 : 2,
               )}
             </g>
           );
         })}
-        {edge('M 555 260 C 610 260 580 180 620 180', step === 4, 'reference')}
-        {edge('M 800 180 L 850 180', step === 4, 'distance')}
-        {edge('M 940 213 L 940 327', step === 4, 'trust')}
-        {edge('M 465 293 C 465 430 545 460 620 490', step === 5, 'weighted-updates')}
-        {edge('M 940 393 C 940 490 850 490 800 490', step === 5, 'weight')}
-        {edge('M 620 490 C 580 490 570 100 480 88', step === 5, 'global')}
-        {edge('M 480 88 C 580 110 585 535 465 557', step === 6, 'validation')}
-        {edge('M 555 590 C 620 590 570 665 605 665', step === 7, 'save')}
-        {edge('M 815 665 C 1060 665 1060 55 585 55', step === 7, 'continue')}
+        {edge('M 555 260 C 610 260 580 180 620 180', step === 5, 'reference')}
+        {edge('M 800 180 L 850 180', step === 6, 'distance')}
+        {edge('M 940 213 L 940 327', step === 6, 'trust')}
+        {edge('M 465 293 C 465 430 545 460 620 490', step === 7, 'weighted-updates')}
+        {edge('M 940 393 C 940 490 850 490 800 490', step === 7, 'weight')}
+        {edge('M 620 490 C 580 490 570 100 480 88', step === 7, 'global')}
+        {edge('M 480 88 C 580 110 585 535 465 557', step === 8, 'validation')}
+        {edge('M 555 590 C 620 590 570 665 605 665', step === 9, 'save')}
+        {edge('M 815 665 C 1060 665 1060 55 585 55', step === 9, 'continue')}
         <text x="30" y="100" fill="#d4def5" fontSize="12">
           TEN SIMULATED CLIENTS
         </text>
@@ -183,12 +183,16 @@ export function ConnectedRound({
                     ? 'Local training complete'
                     : training
                       ? `Training · epoch ${(progress % 2) + 1} / 2`
-                      : 'Awaiting local training'
+                      : 'Queued for local training'
                   : step === 3
                     ? 'Sending local update Δ'
-                    : step === 4
+                    : step === 4 && attack
+                      ? 'Adaptive blend toward honest reference'
+                      : step === 5
+                        ? 'Included in robust reference set'
+                        : step === 6
                       ? `D ${distances[i].toFixed(3)} · φ ${phi[i].toFixed(2)}`
-                      : step >= 5
+                      : step >= 7
                         ? `Contribution ${(weights[i] * 100).toFixed(1)}%`
                         : 'Labels unchanged';
           return (
@@ -298,7 +302,7 @@ export function ConnectedRound({
             {(weights[client] * 100).toFixed(2)}% weight
           </text>
           <text x="42" y="694" fill="#a9bce0" fontSize="10">
-            Illustrative inputs, not measured client telemetry
+            Illustrative values · notebook-aligned calculation
           </text>
         </g>
       </svg>

@@ -16,6 +16,15 @@ export const methodNames: Record<string, string> = {
   trust: 'Trust-aware',
 };
 export const seeds = [42, 43, 44, 45, 46];
+const reportedExecution = snapshot.execution_snapshot;
+export const executionSnapshot = {
+  main: { ...reportedExecution.main, state: 'IN PROGRESS' },
+  adaptive: { ...reportedExecution.adaptive, state: 'SCHEDULED' },
+  sensitivity: { ...reportedExecution.sensitivity, state: 'SCHEDULED' },
+  verifiedArtifacts: reportedExecution.verified_artifacts,
+  basis: reportedExecution.basis,
+  updated: reportedExecution.updated,
+} as const;
 export const sensitivities = [
   { id: 'default', label: 'Default', values: {} },
   {
@@ -125,7 +134,7 @@ export function uniqueStudyCount(multi = false) {
   );
 }
 export const revisedLimitations = [
-  'Five paired seeds are configured, not five independent patient cohorts. Inferential results remain pending; a small p-value alone will not establish robust generalization.',
+  'Five paired seeds are configured, not five independent patient cohorts. Inferential results require cautious interpretation; a small p-value alone will not establish robust generalization.',
   'Ten simulated institutions; no real hospital deployment. One fixed lesion-disjoint dataset split; lesion ID is not a verified patient identifier.',
   'Balanced and Dirichlet alpha 0.5 partitions are separate conditions. A minimum of 16 samples per client conditions the Dirichlet allocation.',
   'Targeted label flipping and one omniscient adaptive update-blending strategy. No universal or worst-case poisoning-robustness claim.',

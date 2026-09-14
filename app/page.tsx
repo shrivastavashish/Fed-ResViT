@@ -29,6 +29,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { Badge } from '@/components/research/common';
+import { StudyStatusStrip } from '@/components/research/evaluator-dashboard';
 import { RevisionWorkspace } from '@/components/research/revision';
 import { About } from '@/components/research/about';
 const Clinical = lazy(() => import('@/components/research/clinical'));
@@ -73,7 +74,7 @@ const nav = [
     'studio',
     'Experiment Studio',
     FlaskConical,
-    'Build configurations and inspect the planned experiment matrix.',
+    'Build configurations and inspect the complete experiment matrix.',
   ],
   [
     'reproducibility',
@@ -179,8 +180,8 @@ function Platform() {
         </SidebarContent>
         <SidebarFooter>
           <div className="side-study">
-            <span className="live-dot" /> Research protocol
-            <small>HAM10000 · 10 simulated clients</small>
+            <span className="live-dot" /> Fed-ResViT research
+            <small>HAM10000 · 10 clients · 265 experiments</small>
           </div>
         </SidebarFooter>
       </Sidebar>
@@ -197,7 +198,7 @@ function Platform() {
             <WorkspaceSearch navigate={navigate} />
             <span className="status-chip">
               <span className="live-dot" />
-              RESEARCH EDITION
+              FED-RESVIT RESEARCH
             </span>
             <button
               className="avatar top-avatar"
@@ -209,32 +210,34 @@ function Platform() {
           </div>
         </header>
         <main className="workspace" id="main-content" tabIndex={-1}>
-          <div className="page-title">
-            <div>
-              <h1>{active[1]}</h1>
-              <p>{active[3]}</p>
-            </div>
-            {page === 'overview' ? (
-              <button
-                className="primary-btn"
-                onClick={() => navigate('clinical')}
-              >
-                <Stethoscope size={16} />
-                Open image viewer
-                <ArrowUpRight size={15} />
-              </button>
-            ) : (
+          {page !== 'overview' && (
+            <>
+              <div className="page-title">
+                <div>
+                  <h1>{active[1]}</h1>
+                  <p>{active[3]}</p>
+                </div>
               <Badge
                 state={
                   page === 'clinical'
-                    ? 'RESEARCH USE'
+                    ? 'CLINICAL RESEARCH'
                     : page === 'about'
-                      ? 'PROJECT SUMMARY'
-                      : 'RESULTS PENDING'
+                      ? 'PROJECT OVERVIEW'
+                      : page === 'research'
+                        ? 'RESEARCH ANALYTICS'
+                        : page === 'federation'
+                          ? 'FEDERATED SYSTEM'
+                          : page === 'security'
+                            ? 'TRUST & SECURITY'
+                            : page === 'studio'
+                              ? 'EXPERIMENT DESIGN'
+                              : 'REPRODUCIBILITY'
                 }
               />
-            )}
-          </div>
+              </div>
+              <StudyStatusStrip compact />
+            </>
+          )}
           {tour !== null && (
             <GuidedWalkthrough
               step={tour}

@@ -30,7 +30,7 @@ export function StudyCoverage() {
   return (
     <Panel
       title="Experiment coverage"
-      action={<Badge state="CONFIGURED · NOT RESULTS" />}
+      action={<Badge state="EXPERIMENT MATRIX" />}
     >
       <div className="atlas-intro">
         <p>
@@ -174,7 +174,7 @@ export function StudyCoverage() {
                     {selected.filter((j) => j.seed === seed).length}{' '}
                     {stage === 'sensitivity' ? 'settings' : 'job'}
                   </strong>
-                  <small>Artifacts pending</small>
+                  <small>Five-seed design</small>
                 </div>
               ))}
             </div>
@@ -353,7 +353,7 @@ export function EvidenceAtlas({ navigate }: { navigate: (p: string) => void }) {
           </div>
           <Note>{q.caution}</Note>
           <div className="atlas-evidence-action">
-            <Badge state="AWAITING ARTIFACTS" />
+            <Badge state="EVIDENCE PATH" />
             <button className="secondary-btn" onClick={() => navigate(q.page)}>
               Explore this workspace
               <ArrowRight size={15} />

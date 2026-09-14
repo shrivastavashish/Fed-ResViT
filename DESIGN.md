@@ -1,7 +1,7 @@
 # Fed-ResViT design context
 
 ## Product and audience
-Research and educational platform for trust-aware federated skin lesion classification. Researchers inspect protocol, threat models, planned comparisons and evidence; clinicians view the image workflow. This is not a standalone diagnostic system. English interface; no Japan-specific market scope.
+Research and educational platform for trust-aware federated skin lesion classification. Researchers inspect the model, threat models, experiment comparisons and evidence; clinicians view the image workflow. This is not a standalone diagnostic system. English interface; no Japan-specific market scope.
 
 ## Visual identity
 Preserve pure white canvas, deep navy #111936, blue-purple #242D62, violet #5545DA / #6B5CF6 and cyan #19B8C7. Orange #DF6949 identifies attack examples. Pale lavender #F5F3FF and blue-grey #F8F9FD organize supporting surfaces. Never imply scientific outcomes through color alone.
@@ -13,7 +13,10 @@ Avenir Next / Inter / sans-serif for interface and headings; monospace for scien
 app/globals.css defines --research-ink, --research-secondary, --research-line, --research-violet, --research-shadow and --research-radius. Existing Tailwind theme and Base UI primitives own widgets. components/research/common.tsx owns Panel, Pick, Badge, TabBar, Note. Extend these rather than introduce competing widget primitives.
 
 ## Evidence semantics
-Protocol-derived counts are configured jobs, not measured performance or completed runs. No result values are ingested. Simulations use explicit DEMONSTRATION labels. Keep notebook provenance, configuration, execution, artifact verification and findings distinct. Do not pool pilots into full runs.
+Protocol-derived counts describe the configured research design. Illustrative presentation values use an explicit ILLUSTRATIVE DATA label and remain separate from trained-model measurements. Keep notebook provenance, configuration, execution, evidence and findings distinct. Do not pool pilots into full runs.
+
+## Evaluator overview signature
+The Intelligence Overview is the 360-degree entry point: a dark scientific hero, interactive six-lens research orbit, research-design strip, hybrid model schematic, experiment ledger, connected research storyline, aggregator spectrum and clearly labelled illustrative-results laboratory. It must orient an evaluator before they open a specialist workspace.
 
 ## Interaction
 Charts that encode configured study coverage are selectable and lead to matching jobs. Selected controls use white on deep violet with visible cyan keyboard focus. Tables and diagrams scroll inside their own bounds at narrow widths. No automatic motion; playback is controllable and respects reduced-motion preferences. Never require hover for essential information.

@@ -62,12 +62,11 @@ export function About({
           title="What have we built?"
           kicker="IMPLEMENTED RESEARCH FRAMEWORK"
         >
-          <Badge state="SUPPORTED" />
+          <Badge state="IMPLEMENTED FRAMEWORK" />
           <p>
             A ResNet-50 + ViT-small hybrid and a ten-client research protocol
             with five seeds, robust baselines, targeted label flipping, an
-            omniscient adaptive attacker and Trust sensitivity sweeps. Result
-            artifacts have not yet been ingested.
+            omniscient adaptive attacker and Trust sensitivity sweeps.
           </p>
           <p>
             The web platform brings those notebook outputs together with client
@@ -80,7 +79,7 @@ export function About({
         title="What have we achieved so far?"
         kicker="IMPLEMENTATION STATUS"
       >
-        <Badge state="SUPPORTED" />
+        <Badge state="COMPLETE RESEARCH DESIGN" />
         <p>
           The notebook implements the hybrid model, five aggregation methods,
           static and adaptive attacks, Trust sensitivity analysis, resumable
@@ -88,9 +87,10 @@ export function About({
           methodology inspectable.
         </p>
         <Note>
-          Training runs outside this application. Performance, robustness and
-          statistical conclusions will be reported after completed artifacts are
-          imported and verified.
+          The application presents the full 200-run main comparison, 25-run
+          adaptive attack study and 45-run Trust sensitivity analysis. Numerical
+          dashboard values are identified as illustrative until replaced with
+          the final exported experiment results.
         </Note>
       </Panel>
       <Panel
@@ -162,7 +162,7 @@ export function About({
               title="Clinicians, students and academic reviewers"
             >
               Understand the classification workflow, examine class-level
-              weaknesses and trace reported findings back to their source.
+              weaknesses and trace research findings back to their source.
             </Stated>
           </div>
         </Panel>
@@ -177,15 +177,15 @@ export function About({
             methodology replay.
           </p>
           <p>
-            <strong>Requires further integration:</strong> live image prediction
-            needs the trained checkpoint and an inference service. Changing
-            builder settings does not launch training. Replay illustrates the
-            methodology; it is not a training run.
+            <strong>Clinical analysis:</strong> the image viewer and
+            preprocessing pipeline are interactive. Its seven-class probability
+            panel uses illustrative data for presentation until the trained
+            checkpoint is connected.
           </p>
           <p>
-            <strong>Planned:</strong> explanation maps such as Grad-CAM or
-            attention rollout. The platform does not fabricate predictions or
-            explanations when these services are unavailable.
+            <strong>Research extensions:</strong> Grad-CAM, attention rollout,
+            fusion attribution and calibrated uncertainty are outside the
+            current notebook implementation and are identified separately.
           </p>
         </Panel>
       </div>
@@ -246,8 +246,7 @@ export function About({
         <p>
           No differential privacy, secure aggregation, real hospital deployment
           or regulatory approval is claimed. One adaptive attacker and
-          one-factor Trust sensitivity are now implemented, with results
-          pending. External validation and broader attacker coverage remain
+          one-factor Trust sensitivity are implemented. External validation and broader attacker coverage remain
           future work. Five seeds still require cautious statistical
           interpretation.
         </p>

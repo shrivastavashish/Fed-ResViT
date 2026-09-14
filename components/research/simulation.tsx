@@ -65,7 +65,7 @@ export function FederationSimulation() {
       title="The federation, at a glance"
       kicker="LOCAL KNOWLEDGE. SHARED INTELLIGENCE."
       dark
-      action={<Badge state="DEMONSTRATION" />}
+      action={<Badge state="ILLUSTRATIVE DATA" />}
     >
       <p>
         Ten local learning environments. One shared ResNet-50 + ViT-small model.

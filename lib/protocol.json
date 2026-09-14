@@ -1,9 +1,17 @@
 {
   "protocol_id": "mentor-revision-v2",
   "source_notebook": "FedResViT (1).ipynb",
-  "source_sha256": "7ad5089cf0f47e05f52824f65049d321cc39717f378890d4e76ea6df92cecea0",
-  "source_scope": "Implementation and main-stage configuration only. No training outputs ingested.",
+  "source_sha256": "542f7d5c49393ff76ef3a9caaf6d96d3c7ba87047732182312aad7ba607d6e48",
+  "source_scope": "Scientific implementation and experiment protocol only. Temporary diagnostic, recovery-repair and troubleshooting cells are excluded from the application model. No training outputs ingested.",
   "results_ingested": false,
+  "execution_snapshot": {
+    "basis": "Researcher-reported external training progress; not verified by imported artifacts",
+    "updated": "2026-09-14",
+    "main": { "reported": 136, "configured": 200 },
+    "adaptive": { "reported": 0, "configured": 25 },
+    "sensitivity": { "reported": 0, "configured": 45 },
+    "verified_artifacts": 0
+  },
   "config": {
     "DATASET_REF": "kmader/skin-cancer-mnist-ham10000",
     "IMG_SIZE": 224,

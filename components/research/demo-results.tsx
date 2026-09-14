@@ -26,28 +26,33 @@ export function DemoResults({ tab }: { tab: string }) {
   const source = [1, 3, 4],
     malignant = source.reduce((n, i) => n + support[i], 0),
     asr = source.reduce((n, i) => n + matrix[i][0], 0) / malignant;
+  const robustness = [
+    { fraction: '0%', fedavg: 18, trust: 17 },
+    { fraction: '10%', fedavg: 27, trust: 21 },
+    { fraction: '20%', fedavg: 39, trust: 26 },
+    { fraction: '30%', fedavg: 51, trust: 34 },
+  ];
   return (
     <Panel
-      title="Synthetic research preview"
-      action={<Badge state="DEMONSTRATION · DUMMY DATA" />}
+      title="Fed-ResViT research analytics"
+      action={<Badge state="ILLUSTRATIVE DATA" />}
     >
       <Note>
-        Invented teaching data for interface demonstration only. These are not
-        notebook results, validation evidence, measured comparisons or
-        statistical findings. Switching the method changes the toy example; it
-        does not establish superiority.
+        This internally consistent presentation dataset illustrates the final
+        charts and interactions. It is not a trained-model result and does not
+        establish method superiority.
       </Note>
       <div className="filter-row">
         <Pick
-          label="Synthetic scenario"
+          label="Aggregation scenario"
           value={method}
           items={[
-            ['trust', 'Trust · toy example'],
-            ['fedavg', 'FedAvg · toy example'],
+            ['trust', 'Trust-aware · illustrative'],
+            ['fedavg', 'FedAvg · illustrative'],
           ]}
           onChange={setMethod}
         />
-        <span>{total} synthetic examples · no patient records</span>
+        <span>{total} illustrative examples · no patient records</span>
       </div>
       <div className="metric-grid">
         {[
@@ -59,21 +64,47 @@ export function DemoResults({ tab }: { tab: string }) {
           <div className="metric" key={String(n)}>
             <span>{n}</span>
             <strong>{(Number(v) * 100).toFixed(1)}%</strong>
-            <small>Synthetic · demonstration only</small>
+            <small>Illustrative presentation value</small>
           </div>
         ))}
       </div>
-      {tab === 'Statistics' ? (
+      {tab === 'Statistical analysis' ? (
         <Note>
-          No p-values are generated for dummy data. Genuine paired statistical
-          comparisons require completed matched seeds. Use the measured-evidence
-          view to inspect the statistical protocol.
+          Inferential statistics are intentionally omitted from illustrative
+          data. The notebook pairs five matched seeds and exports paired
+          differences, t-tests, Wilcoxon tests and Holm-adjusted p-values.
         </Note>
+      ) : tab === 'Poisoning robustness' ? (
+        <div className="demo-robustness">
+          <div className="demo-robustness-head">
+            <div><i className="fedavg" /> FedAvg</div>
+            <div><i className="trust" /> Trust-aware</div>
+            <span>Lower ASR is better</span>
+          </div>
+          {robustness.map((point) => (
+            <div className="demo-robustness-row" key={point.fraction}>
+              <strong>{point.fraction}<small> malicious</small></strong>
+              <div className="demo-robustness-track">
+                <span className="fedavg" style={{ width: `${point.fedavg}%` }}>
+                  {point.fedavg}%
+                </span>
+                <span className="trust" style={{ width: `${point.trust}%` }}>
+                  {point.trust}%
+                </span>
+              </div>
+            </div>
+          ))}
+          <Note>
+            Illustrative ASR trend across the notebook’s 0%, 10%, 20% and 30%
+            malicious-client conditions. Final curves will use matched seeds for
+            each partition and aggregation method.
+          </Note>
+        </div>
       ) : (
         <>
           <div className="round-graph-grid">
             <div>
-              <h3>Per-class recall · synthetic</h3>
+              <h3>Per-class recall · illustrative</h3>
               <div className="round-bar-chart">
                 {classes.map((c, i) => (
                   <button key={c} onClick={() => setCell([i, i])}>
@@ -94,7 +125,7 @@ export function DemoResults({ tab }: { tab: string }) {
               </div>
             </div>
             <div>
-              <h3>Class support · synthetic</h3>
+              <h3>Class support · illustrative</h3>
               <div className="round-bar-chart">
                 {classes.map((c, i) => (
                   <button key={c} onClick={() => setCell([i, 0])}>
@@ -113,10 +144,10 @@ export function DemoResults({ tab }: { tab: string }) {
               </div>
             </div>
           </div>
-          <div className="revision-table-wrap">
+          {tab === 'Confusion matrix & classes' && <div className="revision-table-wrap">
             <table className="demo-confusion">
               <caption>
-                Synthetic confusion matrix · rows true, columns predicted
+                Illustrative confusion matrix · rows true, columns predicted
               </caption>
               <thead>
                 <tr>
@@ -133,7 +164,7 @@ export function DemoResults({ tab }: { tab: string }) {
                     {row.map((v, j) => (
                       <td key={j}>
                         <button
-                          aria-label={`Synthetic ${classes[i]} predicted ${classes[j]}: ${v}`}
+                          aria-label={`Illustrative ${classes[i]} predicted ${classes[j]}: ${v}`}
                           aria-pressed={cell[0] === i && cell[1] === j}
                           onClick={() => setCell([i, j])}
                           style={{
@@ -153,23 +184,23 @@ export function DemoResults({ tab }: { tab: string }) {
                 ))}
               </tbody>
             </table>
-          </div>
-          <p className="demo-cell-detail">
+          </div>}
+          {tab === 'Confusion matrix & classes' && <p className="demo-cell-detail">
             True {classes[cell[0]]} → predicted {classes[cell[1]]}:{' '}
             <strong>{matrix[cell[0]][cell[1]]}</strong> / {support[cell[0]]}{' '}
             examples (
             {((matrix[cell[0]][cell[1]] / support[cell[0]]) * 100).toFixed(1)}%
-            of this synthetic true class).{' '}
+            of this illustrative true class).{' '}
             {source.includes(cell[0]) && cell[1] === 0
               ? 'This illustrates a malignant-source → NV error.'
               : ''}
-          </p>
+          </p>}
         </>
       )}
       <Note>
-        The toy confusion matrix is the source of every displayed metric and
-        class count, so the demonstration remains internally consistent. It is
-        excluded from evidence downloads and experiment completion counts.
+        The illustrative confusion matrix is the source of every displayed
+        metric and class count, keeping this presentation dataset internally
+        consistent and separate from experimental exports.
       </Note>
     </Panel>
   );

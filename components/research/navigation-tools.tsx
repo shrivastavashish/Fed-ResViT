@@ -143,7 +143,7 @@ const steps = [
   [
     'research',
     'Define the evidence',
-    'Review malignant recall, precision–recall trade-offs, security metrics and matched-seed statistics. Measurements await artifacts.',
+    'Review malignant recall, precision–recall trade-offs, security metrics and matched-seed statistics.',
   ],
   [
     'studio',
