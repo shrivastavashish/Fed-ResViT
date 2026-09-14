@@ -1,6 +1,6 @@
 /* oxlint-disable jsx-a11y/prefer-tag-over-role -- SVG research nodes support keyboard activation. */
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Activity,
   ArrowRight,
@@ -8,6 +8,8 @@ import {
   Database,
   FlaskConical,
   Network,
+  Pause,
+  Play,
   ScanSearch,
   ShieldCheck,
   Stethoscope,
@@ -191,17 +193,23 @@ export function EvaluatorDashboard({ navigate }: { navigate: Navigate }) {
 
 function ResearchOrbit({ navigate }: { navigate: Navigate }) {
   const nodes = [
-    { x: 245, y: 52, label: 'CLINICAL', page: 'clinical', value: '7 classes', detail: 'Inspect dermoscopic inputs, preprocessing and seven-class model probabilities.' },
-    { x: 405, y: 128, label: 'FEDERATION', page: 'federation', value: '10 clients', detail: 'Follow local training, model updates and thirty global communication rounds.' },
-    { x: 405, y: 300, label: 'SECURITY', page: 'security', value: '2 attacks', detail: 'Challenge the system with targeted label flipping and adaptive update blending.' },
-    { x: 245, y: 378, label: 'EVIDENCE', page: 'reproducibility', value: 'traceable', detail: 'Trace every result to its configuration, seed, round history and saved artifact.' },
-    { x: 85, y: 300, label: 'RESULTS', page: 'results', value: '5 methods', detail: 'Compare convergence, robustness, class behavior and paired-seed statistics.' },
-    { x: 85, y: 128, label: 'EXPERIMENTS', page: 'studio', value: '265 runs', detail: 'Explore the main, adaptive-attack and Trust-sensitivity experiment matrices.' },
+    { x: 245, y: 52, label: 'CLINICAL', page: 'clinical', value: '7 classes', detail: 'Inspect dermoscopic inputs, preprocessing and seven-class model probabilities.', facts: ['Image workflow','Class probabilities','Research disclaimer'] },
+    { x: 405, y: 128, label: 'FEDERATION', page: 'federation', value: '10 clients', detail: 'Follow local training, model updates and thirty global communication rounds.', facts: ['10 clients','30 rounds','2 partitions'] },
+    { x: 405, y: 300, label: 'SECURITY', page: 'security', value: '2 attacks', detail: 'Challenge the system with targeted label flipping and adaptive update blending.', facts: ['MEL/BCC/AKIEC → NV','Trust scores','Client flags'] },
+    { x: 245, y: 378, label: 'EVIDENCE', page: 'reproducibility', value: 'traceable', detail: 'Trace every result to its configuration, seed, round history and saved artifact.', facts: ['Manifests','Checkpoints','Prediction files'] },
+    { x: 85, y: 300, label: 'RESULTS', page: 'results', value: '5 methods', detail: 'Compare convergence, robustness, class behavior and paired-seed statistics.', facts: ['Convergence','Robustness','Statistics'] },
+    { x: 85, y: 128, label: 'EXPERIMENTS', page: 'studio', value: '265 runs', detail: 'Explore the main, adaptive-attack and Trust-sensitivity experiment matrices.', facts: ['200 main','25 adaptive','45 sensitivity'] },
   ];
   const [selected, setSelected] = useState(1);
+  const [running, setRunning] = useState(false);
+  useEffect(() => {
+    if (!running) return;
+    const timer = window.setInterval(() => setSelected((value) => (value + 1) % nodes.length), 2400);
+    return () => window.clearInterval(timer);
+  }, [running, nodes.length]);
   const focus = nodes[selected];
   return (
-    <div className="research-orbit">
+    <div className={`research-orbit ${running ? 'running' : ''}`}>
       <svg viewBox="0 0 490 430" role="group" aria-label="Interactive 360-degree Fed-ResViT research map">
         <defs>
           <linearGradient id="orbitSweep" x1="0" x2="1"><stop stopColor="#8F80FF"/><stop offset="1" stopColor="#2FC2CF"/></linearGradient>
@@ -230,8 +238,8 @@ function ResearchOrbit({ navigate }: { navigate: Navigate }) {
         </g>
       </svg>
       <div className="orbit-inspector">
-        <div><span>ACTIVE RESEARCH LENS</span><strong>{focus.label}</strong><p>{focus.detail}</p></div>
-        <button onClick={() => navigate(focus.page)}>Open workspace <ArrowRight size={14}/></button>
+        <div><span>ACTIVE RESEARCH LENS · {selected + 1} / 6</span><strong>{focus.label}</strong><p>{focus.detail}</p><div className="orbit-facts">{focus.facts.map((fact)=><i key={fact}>{fact}</i>)}</div></div>
+        <div className="orbit-actions"><button className="orbit-play" onClick={()=>setRunning((value)=>!value)}>{running?<Pause size={14}/>:<Play size={14}/>} {running?'Pause':'Auto explore'}</button><button onClick={() => navigate(focus.page)}>Open workspace <ArrowRight size={14}/></button></div>
       </div>
     </div>
   );
