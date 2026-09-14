@@ -14,6 +14,7 @@ import {
   Stethoscope,
   BookOpen,
   ChartNoAxesCombined,
+  ChartSpline,
 } from 'lucide-react';
 import {
   SidebarProvider,
@@ -69,6 +70,12 @@ const nav = [
     'Research Observatory',
     ChartNoAxesCombined,
     'Examine the measured results, including their uncertainty and limits.',
+  ],
+  [
+    'results',
+    'Results Explorer',
+    ChartSpline,
+    'Explore notebook-aligned plots, comparisons, class behavior and statistical evidence.',
   ],
   [
     'studio',
@@ -225,6 +232,8 @@ function Platform() {
                       ? 'PROJECT OVERVIEW'
                       : page === 'research'
                         ? 'RESEARCH ANALYTICS'
+                        : page === 'results'
+                          ? 'RESULTS EXPLORER'
                         : page === 'federation'
                           ? 'FEDERATED SYSTEM'
                           : page === 'security'

@@ -5,7 +5,6 @@ import {
   ArrowRight,
   BrainCircuit,
   Database,
-  FileCheck2,
   FlaskConical,
   Network,
   ScanSearch,
@@ -14,6 +13,7 @@ import {
   Target,
 } from 'lucide-react';
 import { Badge, Note, Panel } from './common';
+import { ProjectStorySimulation } from './project-story-simulation';
 import { methodNames, methods } from '@/lib/protocol';
 import { classes } from '@/lib/project';
 
@@ -53,26 +53,19 @@ export function StudyStatusStrip({ compact = false }: { compact?: boolean }) {
 export function EvaluatorDashboard({ navigate }: { navigate: Navigate }) {
   return (
     <div className="evaluator-dashboard">
+      <ProjectStorySimulation />
       <section className="evaluator-hero">
         <div className="evaluator-hero-copy">
           <div className="hero-state-row">
             <Badge state="TRUST-AWARE FEDERATED AI" />
             <span>HAM10000 · 10 simulated clients · 5 paired seeds</span>
           </div>
-          <h1>Trust-aware federated learning for robust skin lesion classification.</h1>
+          <h1>The complete Fed-ResViT research system, at a glance.</h1>
           <p>
             Fed-ResViT fuses ResNet-50 and ViT-small representations, coordinates
             learning across ten simulated institutions, and limits poisoned client
             influence through distance-based trust and reputation-aware aggregation.
           </p>
-          <div className="evaluator-actions">
-            <button className="primary-btn" onClick={() => navigate('federation')}>
-              Enter the federation <ArrowRight size={16} />
-            </button>
-            <button className="hero-secondary" onClick={() => navigate('reproducibility')}>
-              Inspect evidence trail <FileCheck2 size={16} />
-            </button>
-          </div>
           <div className="hero-evidence-boundary">
             <span>360°</span>
             <p><strong>One connected research view.</strong> Explore the clinical model, federated training, poisoning threat, Trust defense, comparative evaluation and reproducibility chain.</p>
@@ -89,7 +82,7 @@ export function EvaluatorDashboard({ navigate }: { navigate: Navigate }) {
           ['federation', Network, 'Federation lens', '10 clients · 30 rounds', 'Two local epochs per round across balanced and Dirichlet α=0.5 partitions.'],
           ['security', Target, 'Threat lens', 'MEL · BCC · AKIEC → NV', 'Static label flipping plus a defense-aware adaptive update blend.'],
           ['security', ShieldCheck, 'Defense lens', '5 comparison methods', 'FedAvg, Krum, Trimmed Mean, coordinate Median and Trust.'],
-          ['research', Activity, 'Evaluation lens', 'Clinical + security metrics', 'Accuracy, Macro-F1, malignant recall, ASR and detector counts.'],
+          ['results', Activity, 'Results lens', 'Notebook-aligned analytics', 'Convergence, robustness, class behavior, Trust dynamics and statistics.'],
           ['reproducibility', Database, 'Evidence lens', 'Reproducible experiment design', 'Configuration, manifests, round histories, predictions, reports and checkpoints.'],
         ].map(([page, Icon, label, value, detail]) => (
           <button key={label as string} onClick={() => navigate(page as string)}>
@@ -176,7 +169,7 @@ export function EvaluatorDashboard({ navigate }: { navigate: Navigate }) {
             ))}
           </div>
           <p>Illustrative values demonstrate the final analytical experience and are clearly separated from experimental measurements.</p>
-          <button className="text-btn" onClick={() => navigate('research')}>Explore the results workspace <ArrowRight size={15} /></button>
+          <button className="text-btn" onClick={() => navigate('results')}>Explore the results workspace <ArrowRight size={15} /></button>
         </Panel>
       </div>
 
@@ -201,7 +194,7 @@ function ResearchOrbit({ navigate }: { navigate: Navigate }) {
     { x: 405, y: 128, label: 'FEDERATION', page: 'federation', value: '10 clients' },
     { x: 405, y: 300, label: 'SECURITY', page: 'security', value: '2 attacks' },
     { x: 245, y: 378, label: 'EVIDENCE', page: 'reproducibility', value: 'traceable' },
-    { x: 85, y: 300, label: 'RESULTS', page: 'research', value: '5 methods' },
+    { x: 85, y: 300, label: 'RESULTS', page: 'results', value: '5 methods' },
     { x: 85, y: 128, label: 'EXPERIMENTS', page: 'studio', value: '265 runs' },
   ];
   return (

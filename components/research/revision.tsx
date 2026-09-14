@@ -16,6 +16,8 @@ import { RoundMethodology } from './round-methodology';
 import { DemoResults } from './demo-results';
 import { StudyCoverage } from './scientific-atlas';
 import { EvaluatorDashboard } from './evaluator-dashboard';
+import { SecuritySimulation } from './security-simulation';
+import { ResultsExplorer } from './results-explorer';
 import {
   protocol,
   methods,
@@ -70,6 +72,8 @@ export function RevisionWorkspace(p: Props) {
       return <RevisionSecurity />;
     case 'research':
       return <RevisionObservatory />;
+    case 'results':
+      return <ResultsExplorer />;
     case 'studio':
       return <RevisionStudio />;
     case 'reproducibility':
@@ -213,12 +217,13 @@ function RevisionFederation() {
   );
 }
 function RevisionSecurity() {
-  const [tab, setTab] = useState('Robust aggregation');
+  const [tab, setTab] = useState('Attack-to-defense simulation');
   return (
     <>
       <TabBar
         value={tab}
         items={[
+          'Attack-to-defense simulation',
           'Robust aggregation',
           'Adaptive poisoning',
           'Trust parameter analysis',
@@ -226,6 +231,7 @@ function RevisionSecurity() {
         ]}
         onChange={setTab}
       />
+      {tab === 'Attack-to-defense simulation' && <SecuritySimulation />}
       {tab === 'Robust aggregation' && (
         <>
           <Panel
