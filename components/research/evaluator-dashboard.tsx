@@ -4,21 +4,19 @@ import { useEffect, useState } from 'react';
 import {
   Activity,
   ArrowRight,
-  BrainCircuit,
   Database,
   FlaskConical,
   Network,
   Pause,
   Play,
-  ScanSearch,
   ShieldCheck,
   Stethoscope,
   Target,
 } from 'lucide-react';
-import { Badge, Note, Panel } from './common';
+import { Badge, Panel } from './common';
 import { ProjectStorySimulation } from './project-story-simulation';
+import { OverviewHybridSimulation } from './overview-hybrid-simulation';
 import { methodNames, methods } from '@/lib/protocol';
-import { classes } from '@/lib/project';
 
 type Navigate = (page: string, tab?: string) => void;
 
@@ -100,17 +98,7 @@ export function EvaluatorDashboard({ navigate }: { navigate: Navigate }) {
 
       <div className="evaluator-grid evaluator-grid-model">
         <Panel title="Hybrid intelligence, one dermoscopic image" className="evaluator-model-panel">
-          <div className="mini-architecture" aria-label="ResNet-50 and ViT-small hybrid architecture">
-            <div className="mini-input"><ScanSearch size={24} /><span>224 × 224 RGB</span></div>
-            <div className="mini-branch cnn"><strong>ResNet-50</strong><span>2,048 pooled features</span></div>
-            <div className="mini-branch vit"><strong>ViT-small / patch16</strong><span>384-dimensional representation</span></div>
-            <div className="mini-fusion"><BrainCircuit size={25} /><strong>2,432 → 768</strong><span>fusion + ReLU + dropout 0.20</span></div>
-            <div className="mini-output"><strong>7 logits</strong><span>softmax probabilities</span></div>
-          </div>
-          <div className="class-ribbon">
-            {classes.map((name) => <span key={name}>{name}</span>)}
-          </div>
-          <Note>The classification panel uses clearly marked illustrative probabilities. The architecture and preprocessing follow the latest notebook configuration.</Note>
+          <OverviewHybridSimulation />
         </Panel>
         <Panel title="The experiment, in one frame" className="evaluator-protocol-panel">
           <dl className="protocol-ledger">
