@@ -79,18 +79,17 @@ export function About({
         title="What have we achieved so far?"
         kicker="IMPLEMENTATION STATUS"
       >
-        <Badge state="COMPLETE RESEARCH DESIGN" />
+        <Badge state="MAIN STUDY COMPLETE · 200/200" />
         <p>
           The notebook implements the hybrid model, five aggregation methods,
           static and adaptive attacks, Trust sensitivity analysis, resumable
-          training and reproducible artifact export. The platform makes this
-          methodology inspectable.
+          training and reproducible artifact export. The 200 main-study runs
+          are complete across balanced and Dirichlet partitions.
         </p>
         <Note>
-          The application presents the full 200-run main comparison, 25-run
-          adaptive attack study and 45-run Trust sensitivity analysis. Numerical
-          dashboard values are identified as illustrative until replaced with
-          the final exported experiment results.
+          The application now presents measured main-study means and standard
+          deviations from the completed notebook. Adaptive-attack and Trust
+          sensitivity results will be added after those separate stages finish.
         </Note>
       </Panel>
       <Panel
@@ -121,7 +120,7 @@ export function About({
             ],
             [
               'Evaluate and inspect the evidence',
-              'Best validation checkpoints are evaluated with test-time augmentation. Binary malignant recall, subtype recalls, precision, F1, ASR and raw detector counts form the evaluation. Results will be linked to verified artifacts after ingestion.',
+              'Best validation checkpoints are evaluated with test-time augmentation. Binary malignant recall, subtype recalls, precision, F1, ASR and detector rates form the evaluation. The 200-run main-study aggregates are linked to notebook sections; raw checkpoints and predictions remain external.',
             ],
           ].map(([title, body], i) => (
             <li key={title}>

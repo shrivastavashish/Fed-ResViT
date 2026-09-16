@@ -1,15 +1,24 @@
 {
   "protocol_id": "mentor-revision-v2",
-  "source_notebook": "FedResViT (1).ipynb",
-  "source_sha256": "542f7d5c49393ff76ef3a9caaf6d96d3c7ba87047732182312aad7ba607d6e48",
-  "source_scope": "Scientific implementation and experiment protocol only. Temporary diagnostic, recovery-repair and troubleshooting cells are excluded from the application model. No training outputs ingested.",
-  "results_ingested": false,
+  "source_notebook": "FedResViT (2).ipynb",
+  "source_sha256": "bc13e12783206dd8bcaa6b168f67558be57e04dce479ae19310a0096883082ce",
+  "source_scope": "Scientific implementation and 200 completed main-study results; temporary diagnostic and recovery-repair cells are excluded from the application model. Adaptive and sensitivity results are not imported.",
+  "results_ingested": true,
   "execution_snapshot": {
-    "basis": "Researcher-reported external training progress; not verified by imported artifacts",
-    "updated": "2026-09-14",
-    "main": { "reported": 136, "configured": 200 },
-    "adaptive": { "reported": 0, "configured": 25 },
-    "sensitivity": { "reported": 0, "configured": 45 },
+    "basis": "Embedded completed notebook summary, final consolidated table and figures; raw run artifact directory is not attached",
+    "updated": "2026-09-16",
+    "main": {
+      "reported": 200,
+      "configured": 200
+    },
+    "adaptive": {
+      "reported": 0,
+      "configured": 25
+    },
+    "sensitivity": {
+      "reported": 0,
+      "configured": 45
+    },
     "verified_artifacts": 0
   },
   "config": {

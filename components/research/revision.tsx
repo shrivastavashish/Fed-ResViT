@@ -13,11 +13,11 @@ import { Slider } from '@/components/ui/slider';
 import { Panel, Badge, Note, Pick, TabBar } from './common';
 import { Architecture, FederationSimulation } from './simulation';
 import { RoundMethodology } from './round-methodology';
-import { DemoResults } from './demo-results';
 import { StudyCoverage } from './scientific-atlas';
 import { EvaluatorDashboard } from './evaluator-dashboard';
 import { SecuritySimulation } from './security-simulation';
 import { ResultsExplorer } from './results-explorer';
+import mainStudy from '@/lib/main-study-results.json';
 import {
   protocol,
   methods,
@@ -288,7 +288,15 @@ function RevisionSecurity() {
               output a detector; detection/FPR are unavailable, not zero.
             </Note>
           </Panel>
-          <DemoResults tab="Performance" />
+          <Panel title="Main-study attack results · Dirichlet, 20% malicious" action={<Badge state="EXECUTED · n=5" />}>
+            <div className="secondary-metrics">
+              <span>FedAvg ASR: 54.65%</span>
+              <span>Trust ASR: 27.14%</span>
+              <span>Trust detection: 70.00%</span>
+              <span>Trust false-positive rate: 7.50%</span>
+            </div>
+            <Note>Notebook §§21 and 34. These are five-seed means from the completed main study. At 30% malicious clients under Dirichlet partitioning, Trust detection falls to 6.67%; the defense is not uniformly robust.</Note>
+          </Panel>
         </>
       )}
       {tab === 'Adaptive poisoning' && <AdaptiveAttack />}
@@ -496,29 +504,16 @@ function TrustCalculator() {
   );
 }
 export function RevisionObservatory({
-  initialTab = 'Model performance',
+  initialTab = 'Main study results',
 }: {
   initialTab?: string;
 }) {
   const [tab, setTab] = useState(initialTab);
   return (
     <>
-      <div className="demo-mode-banner">
-        <Badge state="ILLUSTRATIVE DATA" />
-        <p>
-          Presentation dataset for exploring the final analytics interface.
-          Values are illustrative and are not trained-model measurements.
-        </p>
-      </div>
       <TabBar
         value={tab}
-        items={[
-          'Model performance',
-          'Poisoning robustness',
-          'Confusion matrix & classes',
-          'Statistical analysis',
-          'Metrics & limitations',
-        ]}
+        items={['Main study results', 'Metrics & limitations']}
         onChange={setTab}
       />
       {tab === 'Metrics & limitations' ? (
@@ -533,7 +528,7 @@ export function RevisionObservatory({
           </Panel>
         </>
       ) : (
-        <DemoResults tab={tab} />
+        <ResultsExplorer />
       )}
     </>
   );
@@ -713,23 +708,23 @@ export function RevisionStudio({
       )}
       {tab === 'Execution registry' && (
         <>
-          <Panel title="Federated experiment execution registry" action={<Badge state="ILLUSTRATIVE DATA" />}>
+          <Panel title="Federated experiment execution registry" action={<Badge state="MAIN · 200 COMPLETED" />}>
             <p>
-              Representative records show how completed runs are compared by
-              method, partition, seed and malicious-client fraction.
+              Forty completed main-study conditions, each with five seeds.
+              Adaptive and sensitivity stages are tracked separately.
             </p>
             <div className="revision-table-wrap">
               <table className="revision-table">
-                <thead><tr><th>Run</th><th>Method</th><th>Partition</th><th>Seed</th><th>Malicious</th><th>Status</th></tr></thead>
+                <thead><tr><th>Method</th><th>Partition</th><th>Malicious</th><th>Seeds</th><th>Macro-F1 · mean ± SD</th><th>Status</th></tr></thead>
                 <tbody>
-                  {methods.map((method, index) => (
-                    <tr key={method}>
-                      <td>FRV-{String(index + 1).padStart(3, '0')}</td>
-                      <td>{methodNames[method]}</td>
-                      <td>{index % 2 ? 'Dirichlet α=0.5' : 'Stratified-balanced'}</td>
-                      <td>{seeds[index]}</td>
-                      <td>{[0, 10, 20, 30, 20][index]}%</td>
-                      <td>Completed · illustrative</td>
+                  {mainStudy.records.map((record) => (
+                    <tr key={record.partition + record.fraction + record.method}>
+                      <td>{methodNames[record.method]}</td>
+                      <td>{record.partition === 'dirichlet' ? 'Dirichlet α=0.5' : 'Stratified-balanced'}</td>
+                      <td>{Math.round(record.fraction * 100)}%</td>
+                      <td>42–46 · n=5</td>
+                      <td>{((record.macro_f1[0] ?? 0) * 100).toFixed(2)}% ± {((record.macro_f1[1] ?? 0) * 100).toFixed(2)}%</td>
+                      <td>Completed · notebook §34</td>
                     </tr>
                   ))}
                 </tbody>
@@ -1037,13 +1032,18 @@ export function RevisionReproducibility({
               </div>
               <div>
                 <dt>Research design</dt>
-                <dd>200 main · 25 adaptive · 45 sensitivity runs</dd>
+                <dd>200 main completed · 25 adaptive planned · 45 sensitivity configurations</dd>
               </div>
               <div>
                 <dt>Notebook SHA-256</dt>
                 <dd className="hash">{protocol.source_sha256}</dd>
               </div>
             </dl>
+            <p>
+              The completed main-study aggregate is available as a
+              <a className="text-btn" href="/evidence/main-study/summary.json" download> downloadable 40-condition evidence table <Download size={15} /></a>.
+              Its notebook SHA-256 and source-cell references are included in the file.
+            </p>
             <details>
               <summary>Inspect complete main-stage configuration</summary>
               <pre className="revision-code">
@@ -1053,10 +1053,10 @@ export function RevisionReproducibility({
           </Panel>
           <Panel title="Source implementation">
             <p>
-              Read-only source extracts from the supplied notebook. Cell indices
-              are zero-based; execution outputs and runtime credentials are
-              excluded. Source changes produce new experiment identities in the
-              notebook.
+              Read-only implementation extracts were created from the earlier
+              notebook revision. The measured main-study values and notebook
+              fingerprint above come from FedResViT (2).ipynb. Cell indices are
+              zero-based; runtime credentials are excluded.
             </p>
             <div className="source-links">
               {Object.entries(protocol.sources).map(([name, s]) => (

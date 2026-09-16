@@ -1,39 +1,119 @@
-/* oxlint-disable jsx-a11y/prefer-tag-over-role -- plotted SVGs use descriptive image semantics. */
+/* oxlint-disable jsx-a11y/prefer-tag-over-role -- scientific SVG plots have descriptive image semantics. */
 'use client';
 
 import { useState } from 'react';
-import { BarChart3, FileBarChart, FileSpreadsheet, LineChart, ShieldCheck } from 'lucide-react';
+import Image from 'next/image';
 import { Badge, Note, Panel, Pick, TabBar } from './common';
+import { methodNames, methods } from '@/lib/protocol';
+import study from '@/lib/main-study-results.json';
 
-const methods = ['FedAvg','Krum','Trimmed Mean','Coordinate Median','Trust'];
-const colors = ['#DF6949','#8F80FF','#19B8C7','#148664','#5545DA'];
-const tabs = ['Method comparison','Round convergence','Robustness sweep','Confusion matrix','Class performance','Trust dynamics','Statistical analysis'];
-const classes = ['NV','MEL','BKL','BCC','AKIEC','VASC','DF'];
-const supports = [1004,146,135,75,48,19,21];
-const recalls = [89,61,70,68,48,74,62];
+type Measure = [number | null, number | null, number];
+type Row = (typeof study.records)[number];
+type Metric = 'accuracy' | 'macro_precision' | 'macro_recall' | 'macro_f1' | 'malignant_recall' | 'asr' | 'detection_rate' | 'false_positive_rate';
+const tabs = ['Method comparison', 'Robustness sweep', 'Round convergence', 'Detection', 'Confusion matrix', 'Class performance', 'Statistics & evidence'];
+const palette: Record<string,string> = { fedavg:'#DF6949', krum:'#8F80FF', trimmed_mean:'#19B8C7', coordinate_median:'#148664', trust:'#5545DA' };
+const classCodes = ['NV','MEL','BKL','BCC','AKIEC','VASC','DF'];
+const fractions = [0,0.1,0.2,0.3];
+const labels: Record<Metric,string> = {accuracy:'Accuracy',macro_precision:'Macro precision',macro_recall:'Macro recall',macro_f1:'Macro-F1',malignant_recall:'Malignant binary recall',asr:'Attack success rate',detection_rate:'Detection rate',false_positive_rate:'False-positive rate'};
+const pct = (v:number|null|undefined) => v == null ? '—' : `${(v*100).toFixed(2)}%`;
+const measure = (r:Row,m:Metric) => r[m] as Measure;
+const mean = (r:Row,m:Metric) => measure(r,m)[0];
+const fmt = (r:Row,m:Metric) => {const [v,sd,n]=measure(r,m);return v == null ? '—' : `${pct(v)} ± ${pct(sd)} · n=${n}`};
+const row = (p:string,f:number,m:string) => study.records.find(r=>r.partition===p&&r.fraction===f&&r.method===m)!;
 
-function LinePlot({ metric }: { metric: string }) {
-  const series = methods.map((name,i)=>({name,color:colors[i],points:Array.from({length:10},(_,j)=>({x:30+j*74,y:200-(42+i*4+j*(9-i*.35)+Math.sin(j+i)*5)}))}));
-  return <div className="result-chart-card"><div className="result-chart-head"><div><strong>{metric}</strong><span>Rounds 1–30 · illustrative paired trajectories</span></div><Badge state="ILLUSTRATIVE DATA"/></div><svg viewBox="0 0 760 250" role="img" aria-label={`Illustrative ${metric} convergence chart`}>
-    {[40,80,120,160,200].map(y=><line key={y} x1="30" x2="730" y1={y} y2={y} className="result-gridline"/>)}
-    {series.map(s=><g key={s.name}><polyline points={s.points.map(p=>`${p.x},${p.y}`).join(' ')} fill="none" stroke={s.color} strokeWidth={s.name==='Trust'?4:2}/>{s.points.map((p,j)=><g key={j}><circle cx={p.x} cy={p.y} r={s.name==='Trust'?4:3} fill={s.color}/>{j===9&&<text x={p.x-3} y={p.y-9} textAnchor="end" fill={s.color}>{(82+iSafe(series,s)*2.1).toFixed(1)}%</text>}</g>)}</g>)}
-    {[1,5,10,15,20,25,30].map((v,i)=><text key={v} x={30+i*(700/6)} y="239" textAnchor="middle">R{v}</text>)}
-  </svg><div className="result-legend">{series.map(s=><span key={s.name}><i style={{background:s.color}}/>{s.name}</span>)}</div></div>;
+function EvidenceNote({cells}: {cells:string}) {
+  return <div className="main-evidence-note"><Badge state="EXECUTED · MAIN STUDY"/><span>Source: FedResViT (2).ipynb · {cells} · 200 completed runs · fixed lesion-disjoint test split</span></div>;
 }
-function iSafe<T>(arr:T[],item:T){return arr.indexOf(item)}
-
-function MethodComparison(){const metrics=[['Accuracy',[79,80,81,80,83]],['Macro-F1',[61,63,65,64,69]],['Malignant recall',[54,57,59,58,66]],['ASR ↓',[42,36,32,34,24]]];return <div className="result-card-grid"><Panel title="Five methods under one matched protocol" action={<Badge state="ILLUSTRATIVE DATA"/>}><div className="comparison-chart">{metrics.map(([label,values])=><div className="comparison-group" key={label as string}><strong>{label as string}</strong><div>{(values as number[]).map((v,i)=><span key={methods[i]} title={`${methods[i]}: ${v}%`} style={{height:`${v}%`,background:colors[i]}}><b>{v}%</b><small>{methods[i].replace('Coordinate ','Coord. ')}</small></span>)}</div></div>)}</div></Panel><Panel title="Notebook comparison contract"><ul className="result-checklist"><li>Same partition, attack fraction and seed</li><li>Mean ± standard deviation across seeds 42–46</li><li>FedAvg, Krum, Trimmed Mean, coordinate Median and Trust</li><li>Accuracy, macro precision/recall/F1 and specificity</li><li>Malignant recall, ASR and detector counts</li></ul><Note>Final values must come from completed.json and summary.csv. The chart currently demonstrates layout only.</Note></Panel></div>}
-
-function Robustness(){const fractions=[0,10,20,30];return <div className="result-card-grid"><Panel title="Attack success rate vs malicious-client fraction" action={<Badge state="ILLUSTRATIVE DATA"/>}><div className="robust-lines"><svg viewBox="0 0 650 300" role="img" aria-label="Illustrative ASR robustness chart">{[40,90,140,190,240].map(y=><line key={y} x1="55" x2="620" y1={y} y2={y} className="result-gridline"/>)}{methods.map((method,i)=>{const pts=fractions.map((f,j)=>({x:70+j*180,y:245-(8+i*2+j*(15-i*1.7))}));return <g key={method}><polyline points={pts.map(p=>`${p.x},${p.y}`).join(' ')} fill="none" stroke={colors[i]} strokeWidth={i===4?4:2}/>{pts.map((p,j)=><g key={j}><circle cx={p.x} cy={p.y} r="4" fill={colors[i]}/><text x={p.x} y={p.y-10} textAnchor="middle" fill={colors[i]}>{[8+i*2,23+i,38-i,54-i*3][j]}%</text></g>)}</g>})}{fractions.map((f,i)=><text key={f} x={70+i*180} y="282" textAnchor="middle">{f}% malicious</text>)}</svg><div className="result-legend">{methods.map((m,i)=><span key={m}><i style={{background:colors[i]}}/>{m}</span>)}</div></div></Panel><Panel title="Four notebook robustness questions"><div className="result-question-grid">{[['ASR','Does poisoning reach NV?'],['Malignant recall','Are malignant lesions retained?'],['Detection rate','Are malicious clients identified?'],['False-positive rate','Are honest clients penalized?']].map(([a,b])=><article key={a}><ShieldCheck size={18}/><strong>{a}</strong><span>{b}</span></article>)}</div><Note>The notebook plots measured endpoints only and does not interpolate unexecuted configurations.</Note></Panel></div>}
-
-function Confusion(){const [selected,setSelected]=useState<[number,number]>([1,0]);return <Panel title="Seven-class error structure" action={<Badge state="ILLUSTRATIVE DATA"/>}><div className="revision-table-wrap"><table className="demo-confusion"><caption>Illustrative matrix · rows true, columns predicted</caption><thead><tr><th>True / predicted</th>{classes.map(c=><th key={c}>{c}</th>)}</tr></thead><tbody>{classes.map((c,i)=><tr key={c}><th>{c}</th>{classes.map((_,j)=>{const value=i===j?Math.round(supports[i]*recalls[i]/100):j===0?supports[i]-Math.round(supports[i]*recalls[i]/100):0;return <td key={j}><button aria-pressed={selected[0]===i&&selected[1]===j} onClick={()=>setSelected([i,j])} style={{background:i===j?'#e7faf2':([1,3,4].includes(i)&&j===0?'#fff4ec':'#f8f9fd')}}>{value}</button></td>})}</tr>)}</tbody></table></div><div className="demo-cell-detail">True <strong>{classes[selected[0]]}</strong> → predicted <strong>{classes[selected[1]]}</strong>. This selection represents {selected[1]===0&&[1,3,4].includes(selected[0])?'a security-relevant malignant-source to NV error':'one cell in the seven-class error profile'}.</div></Panel>}
-
-function ClassPerformance(){return <div className="result-card-grid"><Panel title="Class-wise precision, recall and F1" action={<Badge state="ILLUSTRATIVE DATA"/>}><div className="class-metric-chart">{classes.map((c,i)=><div key={c}><strong>{c}<small>n={supports[i]}</small></strong><span><i style={{width:`${Math.min(96,recalls[i]+5)}%`,background:'#8F80FF'}}/><b>Precision {Math.min(96,recalls[i]+5)}%</b></span><span><i style={{width:`${recalls[i]}%`,background:'#19B8C7'}}/><b>Recall {recalls[i]}%</b></span><span><i style={{width:`${recalls[i]+2}%`,background:'#5545DA'}}/><b>F1 {recalls[i]+2}%</b></span></div>)}</div></Panel><Panel title="Clinical interpretation"><p>Minority-class behavior remains visible for VASC, DF, AKIEC and BCC. The application keeps support beside each score so a visually strong percentage cannot hide a small denominator.</p><Note>Malignant binary recall summarizes MEL, BCC and AKIEC. It is distinct from subtype recall and from target avoidance (1 − ASR).</Note></Panel></div>}
-
-function TrustDynamics(){return <div className="result-card-grid"><Panel title="Client trust, reputation and contribution"><div className="trust-dynamics"><div className="trust-thresholds"><span>TRUSTED REGION</span><b>Lower threshold</b><b>Upper threshold</b><span>SUSPICIOUS REGION</span></div>{Array.from({length:10},(_,i)=>{const x=[18,24,29,34,38,42,68,36,82,31][i];return <div key={i} style={{left:`${x}%`,top:`${42+(i%3)*45}px`}} className={`trust-dot ${i===6||i===8?'risk':''}`}><span>C{i+1}</span><small>φ {i===6?'.31':i===8?'.12':'.96'}</small></div>})}</div></Panel><Panel title="Round-history evidence"><dl className="artifact-ledger">{[['Distance','RMS-normalized model delta'],['Trust φ','Soft score from adaptive thresholds'],['Reputation','0.85 historical + 0.15 current score'],['Effective weight','Reputation × Trust'],['Flag','Any φ < 0.5 in the last five rounds']].map(([a,b])=><div key={a}><dt>{a}</dt><dd>{b}</dd></div>)}</dl><Note>Final visualization will read per-client arrays from round_history.csv for the selected run and round.</Note></Panel></div>}
-
-function Statistics(){return <div className="result-card-grid"><Panel title="Paired-seed statistical analysis" action={<Badge state="ILLUSTRATIVE DATA"/>}><div className="stats-forest">{['Macro-F1','Accuracy','Malignant recall','ASR'].map((m,i)=><div key={m}><strong>{m}</strong><span><i style={{left:`${42+i*8}%`}}/><b style={{left:`${29+i*7}%`,width:'28%'}}/></span><output>{i===3?'−0.082':'+'+(.018+i*.006).toFixed(3)}</output></div>)}</div><small className="axis-caption">← favors comparator · paired mean difference · favors Trust →</small></Panel><Panel title="Notebook inferential outputs"><ul className="result-checklist"><li>Five matched seeds per comparison</li><li>Paired differences and mean difference</li><li>Paired t-test and Wilcoxon signed-rank test</li><li>Holm-adjusted p-values</li><li>Effect size and sample count</li></ul><Note>No p-values are generated from the illustrative dataset.</Note></Panel></div>}
-
-function ArtifactCoverage(){const rows=[['Summary tables','completed.json · summary.csv','Counts, mean and SD'],['Convergence','round_history.csv','Loss, LR, validation accuracy, macro-F1 and malignant recall'],['Confusion matrices','confusion_matrix.csv','Selected run and aggregated study matrix'],['Class performance','classification_report.csv / .json','Precision, recall, F1 and support'],['Prediction audit','predictions.npz','Labels, predictions and probabilities'],['Robustness','completed run metrics','ASR, malignant recall, detection and FPR'],['Trust dynamics','round_history.csv','Distance, φ, reputation, weight and flags'],['Statistics','statistical_summary.csv','Paired tests, adjusted p-values and effect sizes'],['Adaptive attack','adaptive search trace','Retention, evasion and attack effectiveness'],['Sensitivity','setting overrides + metrics','Threshold, EMA and flag-window response']];return <Panel title="Notebook result coverage"><p className="result-coverage-intro">Every result view maps to a file produced by the latest notebook. This registry defines the ingestion path for measured outputs.</p><div className="revision-table-wrap"><table className="revision-table"><thead><tr><th>Result family</th><th>Notebook artifact</th><th>Application view</th></tr></thead><tbody>{rows.map(r=><tr key={r[0]}>{r.map(v=><td key={v}>{v}</td>)}</tr>)}</tbody></table></div></Panel>}
-
-export function ResultsExplorer(){const [tab,setTab]=useState(tabs[0]);const [partition,setPartition]=useState('Dirichlet α = 0.5');const [fraction,setFraction]=useState('20%');const [seed,setSeed]=useState('Mean · seeds 42–46');return <div className="results-explorer"><div className="results-hero"><div><Badge state="NOTEBOOK-ALIGNED ANALYTICS"/><h2>Results Explorer</h2><p>Inspect model performance, poisoning robustness, class-level behavior, Trust dynamics and statistical evidence through the same result families generated by the notebook.</p></div><div className="results-hero-icons"><FileBarChart/><FileSpreadsheet/><LineChart/><BarChart3/></div></div><div className="demo-mode-banner"><Badge state="ILLUSTRATIVE DATA"/><p>The analytical structure follows the notebook. Displayed numerical values are presentation data until completed experiment artifacts are imported.</p></div><div className="results-filter"><Pick label="Partition" value={partition} items={['Dirichlet α = 0.5','Stratified-balanced']} onChange={setPartition}/><Pick label="Malicious clients" value={fraction} items={['0%','10%','20%','30%']} onChange={setFraction}/><Pick label="Seed view" value={seed} items={['Mean · seeds 42–46','Seed 42','Seed 43','Seed 44','Seed 45','Seed 46']} onChange={setSeed}/><span>{partition} · {fraction} · {seed}</span></div><TabBar value={tab} items={tabs} onChange={setTab}/>{tab==='Method comparison'&&<MethodComparison/>}{tab==='Round convergence'&&<LinePlot metric="Validation Macro-F1"/>}{tab==='Robustness sweep'&&<Robustness/>}{tab==='Confusion matrix'&&<Confusion/>}{tab==='Class performance'&&<ClassPerformance/>}{tab==='Trust dynamics'&&<TrustDynamics/>}{tab==='Statistical analysis'&&<Statistics/>}<ArtifactCoverage/></div>}
+function Bars({partition,fraction,metric}:{partition:string;fraction:number;metric:Metric}) {
+  const data=methods.map(m=>({method:m,value:mean(row(partition,fraction,m),metric)}));
+  return <div className="main-bar-list">{data.map(({method,value})=><div key={method} className="main-bar-row"><strong>{methodNames[method]}</strong><div className="main-bar-track"><i style={{width:`${Math.max(0,(value??0)*100)}%`,background:palette[method]}}/></div><output>{pct(value)}</output></div>)}</div>;
+}
+function Comparison({partition,fraction}:{partition:string;fraction:number}) {
+  const base=row(partition,fraction,'fedavg'),trust=row(partition,fraction,'trust');
+  const asrDifference=fraction ? ((mean(base,'asr')??0)-(mean(trust,'asr')??0))*100 : null;
+  return <div className="main-results-stack">
+    <div className="main-feature-grid">
+      <Panel title="Measured comparison · Trust vs FedAvg" action={<Badge state="5 PAIRED SEEDS"/>}>
+        <div className="main-key-figures">
+          <div><span>Trust Macro-F1</span><strong>{pct(mean(trust,'macro_f1'))}</strong><small>FedAvg {pct(mean(base,'macro_f1'))}</small></div>
+          <div><span>Trust malignant recall</span><strong>{pct(mean(trust,'malignant_recall'))}</strong><small>FedAvg {pct(mean(base,'malignant_recall'))}</small></div>
+          <div><span>{fraction ? 'ASR reduction vs FedAvg' : 'Clean accuracy · Trust'}</span><strong>{asrDifference==null?pct(mean(trust,'accuracy')):`${asrDifference.toFixed(2)} pp`}</strong><small>{fraction ? `${pct(mean(base,'asr'))} → ${pct(mean(trust,'asr'))}` : `FedAvg ${pct(mean(base,'accuracy'))}`}</small></div>
+        </div>
+        <Note>These are test-set means across five seeds. The two partitions are separate conditions; the same fixed test split is reused. Malignant recall is a classification measure. Target avoidance is 1 − ASR and is not clinical safety.</Note>
+      </Panel>
+      <Panel title="Read the trade-off">
+        <div className="main-interpretation"><strong>{partition==='dirichlet'&&fraction===0.3?'Trust weakens at the highest non-IID attack level.':'The defense must beat robust baselines, not only FedAvg.'}</strong>
+          <p>{partition==='dirichlet'&&fraction===0.3?'With 30% malicious clients, Trust ASR is 53.68% and detection is 6.67%. Coordinate-wise Median and Trimmed Mean have lower ASR in this condition.':'Compare all five methods below. Lower ASR can come with changes in accuracy, F1, malignant recall and false-positive flags.'}</p>
+        </div>
+        <Bars partition={partition} fraction={fraction} metric={fraction?'asr':'macro_f1'}/>
+      </Panel>
+    </div>
+    <Panel title="Five-method endpoint results" action={<Badge state="MEAN ± SD · n=5"/>}>
+      <div className="revision-table-wrap"><table className="revision-table main-results-table"><caption>{partition==='dirichlet'?'Dirichlet α=0.5':'Stratified-balanced'} · {Math.round(fraction*100)}% malicious clients · test evaluation</caption><thead><tr><th>Method</th>{(['accuracy','macro_precision','macro_recall','macro_f1','malignant_recall','asr','detection_rate','false_positive_rate'] as Metric[]).map(m=><th key={m}>{labels[m]}</th>)}</tr></thead><tbody>{methods.map(m=>{const r=row(partition,fraction,m);return <tr key={m}><th><span className="main-method-dot" style={{background:palette[m]}}/>{methodNames[m]}</th>{(['accuracy','macro_precision','macro_recall','macro_f1','malignant_recall','asr','detection_rate','false_positive_rate'] as Metric[]).map(k=><td key={k}>{fmt(r,k)}</td>)}</tr>})}</tbody></table></div>
+      <p className="main-table-caption">Detection and false-positive rates are recorded for Trust only. ASR is undefined in the clean condition. “—” means the notebook did not report that measure for this method and condition.</p>
+      <EvidenceNote cells="§21 summary and §34 consolidated results"/>
+    </Panel>
+  </div>;
+}
+function Robustness({partition}:{partition:string}) {
+  const [metric,setMetric]=useState<Metric>('asr');
+  const [focus,setFocus]=useState<string>('trust');
+  const available:Metric[]=['asr','accuracy','macro_f1','malignant_recall'];
+  const W=760,H=290,left=54,right=38,top=28,bottom=54;
+  const x=(i:number)=>left+i*(W-left-right)/3,y=(v:number)=>top+(1-v)*(H-top-bottom);
+  return <Panel title="Robustness across the completed malicious-client sweep" action={<Badge state="MEASURED ENDPOINTS"/>}>
+    <div className="main-metric-switch" role="tablist" aria-label="Robustness metric">{available.map(m=><button key={m} role="tab" aria-selected={metric===m} onClick={()=>setMetric(m)}>{labels[m]}</button>)}</div>
+    <div className="main-plot-scroll"><svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`${labels[metric]} for five methods across completed malicious-client conditions`}>
+      {[0,.25,.5,.75,1].map(v=><g key={v}><line x1={left} x2={W-right} y1={y(v)} y2={y(v)} stroke="#e4e8f1"/><text x={left-9} y={y(v)+4} textAnchor="end" fill="#66718d" fontSize="10">{Math.round(v*100)}%</text></g>)}
+      {fractions.map((f,i)=><text key={f} x={x(i)} y={H-18} textAnchor="middle" fill="#465477" fontSize="11">{Math.round(f*100)}% malicious</text>)}
+      {methods.map(m=>{const vals=fractions.map(f=>mean(row(partition,f,m),metric));const points=vals.flatMap((v,i)=>v==null?[]:[`${x(i)},${y(v)}`]);return <g key={m} opacity={m===focus?1:.34}>{points.length>1&&<polyline points={points.join(' ')} fill="none" stroke={palette[m]} strokeWidth={m===focus?4:2}/>} {vals.map((v,i)=>v==null?null:<g key={i}><circle cx={x(i)} cy={y(v)} r={m===focus?6:4} fill={palette[m]}/><title>{methodNames[m]} · {Math.round(fractions[i]*100)}% · {pct(v)}</title>{m===focus&&<text x={x(i)} y={y(v)-15} textAnchor="middle" fill={palette[m]} fontSize="11" fontWeight="750">{pct(v)}</text>}</g>)}</g>})}
+    </svg></div>
+    <div className="main-method-selector" aria-label="Highlight aggregation method">{methods.map(m=><button key={m} aria-pressed={focus===m} onClick={()=>setFocus(m)}><i style={{background:palette[m]}}/>{methodNames[m]}</button>)}</div>
+    <div className="revision-table-wrap"><table className="revision-table main-sweep-table"><caption>Exact plotted endpoints · mean ± SD across five seeds</caption><thead><tr><th>Method</th>{fractions.map(f=><th key={f}>{Math.round(f*100)}% malicious</th>)}</tr></thead><tbody>{methods.map(m=><tr key={m}><th>{methodNames[m]}</th>{fractions.map(f=><td key={f}>{fmt(row(partition,f,m),metric)}</td>)}</tr>)}</tbody></table></div>
+    <Note>Each plotted endpoint is the mean of five completed runs. No point is interpolated. Clean ASR is undefined because there is no attack. The Dirichlet and balanced conditions must be interpreted separately.</Note>
+    <EvidenceNote cells="§24 robustness and §34 consolidated results"/>
+  </Panel>;
+}
+function Convergence({fraction}:{fraction:number}) {
+  const [metric,setMetric]=useState<'macro-f1'|'malignant-recall'>('macro-f1');
+  return <Panel title="Round-by-round validation trajectory" action={<Badge state="NOTEBOOK FIGURE"/>}>
+    <div className="main-metric-switch" role="tablist" aria-label="Convergence metric"><button role="tab" aria-selected={metric==='macro-f1'} onClick={()=>setMetric('macro-f1')}>Validation Macro-F1</button><button role="tab" aria-selected={metric==='malignant-recall'} onClick={()=>setMetric('malignant-recall')}>Validation malignant recall</button></div>
+    <Image className="main-notebook-figure" src={`/evidence/main-study/${metric}-${Math.round(fraction*100)}.png`} width={1200} height={600} alt={`Executed main-study ${metric} trajectory over 30 rounds at ${Math.round(fraction*100)}% malicious clients`}/>
+    <Note>This is the notebook’s aggregate convergence figure for the selected malicious fraction. It combines the two partition conditions in each method trajectory, so use the partition-specific endpoint tables for partition comparisons. The underlying per-round CSV has not been imported into this site.</Note>
+    <EvidenceNote cells="§22 aggregate convergence"/>
+  </Panel>;
+}
+function Detection({partition}:{partition:string}) {
+  return <div className="main-feature-grid"><Panel title="Trust detector response" action={<Badge state="EXECUTED · TRUST ONLY"/>}>
+    <div className="main-detection-grid">{fractions.map(f=>{const r=row(partition,f,'trust');return <div key={f}><strong>{Math.round(f*100)}%</strong><span>malicious clients</span><dl><dt>Detection</dt><dd>{pct(mean(r,'detection_rate'))}</dd><dt>False-positive rate</dt><dd>{pct(mean(r,'false_positive_rate'))}</dd></dl></div>})}</div>
+    <EvidenceNote cells="§21 summary"/>
+  </Panel><Panel title="Detector interpretation"><p>Detection counts malicious clients flagged by the final round’s rolling Trust window. False-positive rate counts honest clients flagged by that same rule. These rates are averaged across five seeds; they are not per-image diagnostic sensitivity and specificity.</p><Note>At 0% malicious clients, detection is undefined. Trust can still falsely flag honest updates, especially under heterogeneous client data. At Dirichlet 30%, the mean detection rate falls sharply.</Note></Panel></div>;
+}
+function Confusion() {
+  const [cell,setCell]=useState<[number,number]>([1,0]);const matrix=study.aggregate_confusion;const total=matrix.flat().reduce((a,b)=>a+b,0);const [i,j]=cell;const support=matrix[i].reduce((a,b)=>a+b,0);
+  return <Panel title="Aggregate seven-class confusion across the main study" action={<Badge state="200 EVALUATIONS"/>}><div className="revision-table-wrap"><table className="demo-confusion"><caption>All 200 model evaluations pooled · rows true, columns predicted · {total.toLocaleString()} prediction events</caption><thead><tr><th>True / predicted</th>{classCodes.map(c=><th key={c}>{c}</th>)}</tr></thead><tbody>{matrix.map((r,k)=><tr key={k}><th>{classCodes[k]}</th>{r.map((v,l)=><td key={l}><button aria-pressed={i===k&&j===l} aria-label={`True ${classCodes[k]}, predicted ${classCodes[l]}: ${v.toLocaleString()} pooled predictions`} onClick={()=>setCell([k,l])} style={{background:k===l?'#e7faf2':([1,3,4].includes(k)&&l===0?'#fff4ec':'#f8f9fd')}}>{v.toLocaleString()}</button></td>)}</tr>)}</tbody></table></div><div className="demo-cell-detail">True <strong>{classCodes[i]}</strong> → predicted <strong>{classCodes[j]}</strong>: <strong>{matrix[i][j].toLocaleString()}</strong> / {support.toLocaleString()} pooled true-class predictions ({(matrix[i][j]/support*100).toFixed(2)}%). {j===0&&[1,3,4].includes(i)?'This is a malignant-source → NV error.':''}</div><Note>The same fixed 1,448-image test split is evaluated by 200 trained models. These are 289,600 repeated prediction events, not independent patients or a single model’s matrix. Use method-specific metrics above to judge an aggregator.</Note><EvidenceNote cells="§23 aggregate confusion matrix"/></Panel>;
+}
+function ClassPerformance() {
+  const matrix=study.aggregate_confusion;const metrics=matrix.map((r,i)=>{const tp=r[i],support=r.reduce((a,b)=>a+b,0),pred=matrix.reduce((a,b)=>a+b[i],0);const precision=pred?tp/pred:0,recall=support?tp/support:0;return {name:classCodes[i],support,precision,recall,f1:precision+recall?2*precision*recall/(precision+recall):0}});
+  return <div className="main-feature-grid"><Panel title="Per-class behavior across all 200 evaluations" action={<Badge state="POOLED PREDICTIONS"/>}><div className="class-metric-chart">{metrics.map(c=><div key={c.name}><strong>{c.name}<small>n={c.support.toLocaleString()}</small></strong>{(['precision','recall','f1'] as const).map((m,k)=><span key={m}><i style={{width:`${c[m]*100}%`,background:['#8F80FF','#19B8C7','#5545DA'][k]}}/><b>{m.toUpperCase()} {pct(c[m])}</b></span>)}</div>)}</div><EvidenceNote cells="§23 aggregate confusion matrix; derived class metrics"/></Panel><Panel title="Interpret class imbalance"><p>The displayed support is repeated across trained models. The original test split contains 1,004 NV images, but only 48 AKIEC, 19 VASC and 21 DF images. Pooling makes a visual summary; it does not create more independent cases.</p><Note>For clinical interpretation, prioritize malignant binary recall and the individual MEL, BCC and AKIEC recalls. These pooled class rates combine different methods and attack levels and do not describe one deployed classifier.</Note></Panel></div>;
+}
+function Statistics() {
+  const dir=row('dirichlet',.2,'trust'),balanced=row('stratified_balanced',.2,'trust');
+  return <div className="main-feature-grid"><Panel title="What the five-seed evidence supports" action={<Badge state="DESCRIPTIVE · n=5"/>}><dl className="main-stats-ledger"><div><dt>Dirichlet · 20% attack</dt><dd>Trust Macro-F1 {fmt(dir,'macro_f1')}<br/>Trust ASR {fmt(dir,'asr')}</dd></div><div><dt>Balanced · 20% attack</dt><dd>Trust Macro-F1 {fmt(balanced,'macro_f1')}<br/>Trust ASR {fmt(balanced,'asr')}</dd></div><div><dt>Pairing</dt><dd>Seeds 42–46 compare methods on the same fixed lesion-disjoint split.</dd></div></dl></Panel><Panel title="Inference boundary"><p>The notebook computes paired tests with Holm correction, but its displayed statistical output is truncated. The complete paired-test export and seed-level records are not embedded in the supplied notebook. This site therefore reports measured mean ± SD and does not invent p-values or confidence intervals.</p><Note>Five seeds improve the comparison over the earlier two-seed pilot, but they are training and partition randomizations, not five independent patient cohorts. Adaptive-attack and sensitivity-stage results remain outside this completed main-study dataset.</Note></Panel><Panel title="Evidence registry"><dl className="artifact-ledger">{[['Main summary','Notebook §21 · summary.csv'],['Convergence','Notebook §22 · round_history.csv'],['Confusion and class behavior','Notebook §23 · aggregate 200-run matrix'],['ASR and malignant recall','Notebook §§26–27'],['Consolidated results','Notebook §34 · final_consolidated_results.csv'],['Source integrity',`SHA-256 ${study.sha256.slice(0,20)}…`]].map(([a,b])=><div key={a}><dt>{a}</dt><dd>{b}</dd></div>)}</dl></Panel></div>;
+}
+export function ResultsExplorer(){
+  const [tab,setTab]=useState(tabs[0]),[partition,setPartition]=useState('dirichlet'),[fraction,setFraction]=useState(.2);
+  return <div className="results-explorer">
+    <div className="results-hero"><div><Badge state="EXECUTED · MAIN STUDY"/><h2>Main study results</h2><p>Two partition conditions, five aggregation methods, four attack fractions and five matched seeds: 200 completed federated experiments.</p></div><div className="main-study-seal"><strong>200/200</strong><span>main runs complete</span></div></div>
+    <div className="main-stage-strip"><div className="active"><strong>Main study</strong><span>200 completed · measured results</span></div><div><strong>Adaptive attack</strong><span>Separate study · no results imported</span></div><div><strong>Trust sensitivity</strong><span>Separate study · no sweep results imported</span></div></div>
+    <div className="results-filter"><Pick label="Client partition" value={partition} items={[["dirichlet","Dirichlet α=0.5"],["stratified_balanced","Stratified-balanced"]]} onChange={setPartition}/><Pick label="Malicious clients" value={String(fraction)} items={fractions.map(f=>[String(f),`${Math.round(f*100)}%`])} onChange={v=>setFraction(Number(v))}/><span>Test metrics · mean ± sample SD · five seeds (42–46)</span></div>
+    <TabBar value={tab} items={tabs} onChange={setTab}/>
+    {tab===tabs[0]&&<Comparison partition={partition} fraction={fraction}/>}
+    {tab===tabs[1]&&<Robustness partition={partition}/>}
+    {tab===tabs[2]&&<Convergence fraction={fraction}/>}
+    {tab===tabs[3]&&<Detection partition={partition}/>}
+    {tab===tabs[4]&&<Confusion/>}
+    {tab===tabs[5]&&<ClassPerformance/>}
+    {tab===tabs[6]&&<Statistics/>}
+  </div>;
+}

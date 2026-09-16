@@ -18,7 +18,7 @@ export const methodNames: Record<string, string> = {
 export const seeds = [42, 43, 44, 45, 46];
 const reportedExecution = snapshot.execution_snapshot;
 export const executionSnapshot = {
-  main: { ...reportedExecution.main, state: 'IN PROGRESS' },
+  main: { ...reportedExecution.main, state: 'COMPLETE' },
   adaptive: { ...reportedExecution.adaptive, state: 'SCHEDULED' },
   sensitivity: { ...reportedExecution.sensitivity, state: 'SCHEDULED' },
   verifiedArtifacts: reportedExecution.verified_artifacts,
@@ -143,7 +143,7 @@ export const revisedLimitations = [
   'Binary malignant recall, subtype recall and malignant-to-NV errors must be reported alongside accuracy. The derived 1−ASR value is not clinical safety.',
   'No differential privacy, cryptographic secure aggregation, external clinical validation, regulatory approval or standalone diagnosis.',
   'Classification uses the best validation checkpoint. Trust detection uses the final training round’s rolling flag window; these may refer to different rounds.',
-  'Training takes place outside this application. Checkpoints, prediction files and verified results have not been ingested. No live progress or new measurements are implied.',
+  'Training takes place outside this application. The 200-run main-study summary and notebook figures are ingested; raw checkpoints, prediction files and full seed-level exports are not. No live progress is implied.',
 ];
 export const metricDefinitions = [
   ['Accuracy', 'Correct seven-class predictions / all evaluated images.'],

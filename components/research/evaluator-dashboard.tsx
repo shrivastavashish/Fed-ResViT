@@ -22,9 +22,9 @@ type Navigate = (page: string, tab?: string) => void;
 
 export function StudyStatusStrip({ compact = false }: { compact?: boolean }) {
   const stages = [
-    ['Main comparison', 200, 'Five methods · five seeds · two partitions'],
-    ['Adaptive attack', 25, 'Five methods · five seeds · Dirichlet'],
-    ['Trust sensitivity', 45, 'Nine settings · five paired seeds'],
+    ['Main comparison', 200, 'Completed · five methods · five seeds · two partitions'],
+    ['Adaptive attack', 25, 'Separate stage · results not imported'],
+    ['Trust sensitivity', 45, 'Separate stage · sweep results not imported'],
   ] as const;
   return (
     <section className={'study-status-strip ' + (compact ? 'compact' : '')} aria-label="Fed-ResViT experiment design">
@@ -32,14 +32,14 @@ export function StudyStatusStrip({ compact = false }: { compact?: boolean }) {
         <span className="status-beacon" />
         <div>
           <strong>Research design</strong>
-          <small>Complete notebook experiment matrix</small>
+          <small>200 main-study runs completed</small>
         </div>
       </div>
       <div className="study-status-stages">
         {stages.map(([label, count, note]) => (
           <div key={label} className="study-stage-meter">
             <div><span>{label}</span><strong>{count} runs</strong></div>
-            <div className="study-stage-track" aria-label={`${label}: ${count} configured runs`}>
+            <div className="study-stage-track" aria-label={`${label}: ${count} ${label === 'Main comparison' ? 'completed' : 'configured'} runs`}>
               <span style={{ width: `${Math.max(14, (count / 200) * 100)}%` }} />
             </div>
             {!compact && <small>{note}</small>}
@@ -106,7 +106,7 @@ export function EvaluatorDashboard({ navigate }: { navigate: Navigate }) {
               ['Dataset', 'HAM10000'], ['Split', 'Lesion-disjoint ≈ 70:15:15'],
               ['Seeds', '42 · 43 · 44 · 45 · 46'], ['Rounds', '30 × 2 local epochs'],
               ['Fractions', '0% · 10% · 20% · 30%'], ['Batch', '16 · TTA enabled'],
-              ['Main', '200 configured'], ['Full design', '265 distinct runs'],
+              ['Main', '200 completed'], ['Full design', '265 distinct runs'],
             ].map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}
           </dl>
           <button className="text-btn" onClick={() => navigate('studio')}>Open experiment matrix <ArrowRight size={15} /></button>
@@ -147,19 +147,19 @@ export function EvaluatorDashboard({ navigate }: { navigate: Navigate }) {
             ))}
           </div>
         </Panel>
-        <Panel title="Research results explorer" className="demo-lab-panel">
-          <div className="demo-lab-heading"><Badge state="ILLUSTRATIVE DATA" /><span>Presentation dataset</span></div>
+        <Panel title="Main-study results · Dirichlet, 20% malicious" className="demo-lab-panel">
+          <div className="demo-lab-heading"><Badge state="EXECUTED · n=5" /><span>Mean test metrics across seeds 42–46</span></div>
           <div className="demo-bars">
             {[
-              ['Accuracy', 84, '#5545DA'], ['Macro-F1', 69, '#19B8C7'],
-              ['Malignant recall', 61, '#148664'], ['ASR', 28, '#DF6949'],
+              ['Accuracy', 81.42, '#5545DA'], ['Macro-F1', 64.12, '#19B8C7'],
+              ['Malignant recall', 55.24, '#148664'], ['ASR', 27.14, '#DF6949'],
             ].map(([label, value, color]) => (
               <div key={label as string}>
                 <span>{label as string}</span><div><i style={{ width: `${value}%`, background: color as string }} /></div><strong>{value}%</strong>
               </div>
             ))}
           </div>
-          <p>Illustrative values demonstrate the final analytical experience and are clearly separated from experimental measurements.</p>
+          <p>Trust-aware aggregation under Dirichlet α=0.5 at 20% malicious clients. Notebook §34, five completed seeds. The adaptive and sensitivity studies remain separate.</p>
           <button className="text-btn" onClick={() => navigate('results')}>Explore the results workspace <ArrowRight size={15} /></button>
         </Panel>
       </div>
