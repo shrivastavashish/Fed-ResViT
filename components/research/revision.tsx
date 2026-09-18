@@ -158,13 +158,13 @@ function RevisionFederation() {
               <dl className="detail-list">
                 {[
                   ['Client ID', String(client)],
-                  ['Training samples', `${692 + client * 17} illustrative images`],
-                  ['Class distribution', 'Seven-class non-IID example profile'],
+                  ['Training samples', 'Varies by partition and seed; client-level counts are not in the web export'],
+                  ['Class distribution', 'Stratified-balanced or Dirichlet α=0.5, depending on the selected run'],
                   [
                     'Malicious designation',
                     'Seed- and condition-specific; not assigned here',
                   ],
-                  ['Trust / reputation / weight', `${(0.93 - client * 0.025).toFixed(2)} / ${(0.96 - client * 0.012).toFixed(2)} / ${(11.8 - client * 0.48).toFixed(1)}% · illustrative`],
+                  ['Trust / reputation / weight', 'Round-specific values are not in the web export; inspect the explanatory Trust simulation'],
                 ].map(([k, v]) => (
                   <div key={k}>
                     <dt>{k}</dt>

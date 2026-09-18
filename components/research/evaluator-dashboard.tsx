@@ -70,8 +70,8 @@ export function EvaluatorDashboard({ navigate }: { navigate: Navigate }) {
           <h1>The complete Fed-ResViT research system, at a glance.</h1>
           <p>
             Fed-ResViT fuses ResNet-50 and ViT-small representations, coordinates
-            learning across ten simulated institutions, and limits poisoned client
-            influence through distance-based trust and reputation-aware aggregation.
+            learning across ten simulated institutions, and tests whether distance-based
+            trust and reputation-aware aggregation can limit poisoned client influence.
           </p>
           <div className="hero-evidence-boundary">
             <span>360°</span>
