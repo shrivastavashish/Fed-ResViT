@@ -1,17 +1,26 @@
 # Fed-ResViT — Research & Clinical Intelligence Platform
 
-An evidence-grounded research application built from the executed `FedResViT_HAM10000_Fixed_v2_(1).ipynb` notebook. No GPU or retraining is required to explore the stored evidence.
+An evidence-grounded web application for the final Fed-ResViT study on HAM10000. It explains hybrid ResNet-50/ViT-small lesion classification, ten-client federated learning, poisoning attacks, robust aggregation, Trust scoring, and the measured outcomes.
 
-## Scope
+## Completed experiment
 
-- An About page and seven connected research workspaces with a guided academic demonstration.
-- Eight executed runs: 5 clients × 30 rounds, 2 local epochs, seeds 42/43, FedAvg/Trust, 0%/20% malicious clients.
-- 240 recovered round records; 120 trust snapshots; interactive client inspection and explanatory replay.
-- Actual summary comparisons, original embedded image gallery, a verified transcription of the saved Trust/20%/seed43 confusion matrix and per-class report.
-- Image upload stays in the browser: zoom, pan, fullscreen and preprocessing preview. **Inference is unavailable until a checkpoint/service is connected.** No probabilities or attention maps are fabricated.
-- Experiment settings export as drafts. **Training is not connected.** No new results are generated.
+The final executed notebook is `notebooks/FedResViT_Final_265_Runs.ipynb`. It contains 265 **distinct** completed 30-round experiments across five seeds:
 
-## Run the web application
+- **Main:** 200 runs: balanced and Dirichlet α=0.5 partitions × 0/10/20/30% malicious clients × FedAvg, Krum, Trimmed Mean, coordinate-wise Median and Trust × five seeds.
+- **Adaptive:** 25 runs: the five methods under a defense-aware omniscient update-blending attack at Dirichlet 20%.
+- **Trust sensitivity:** 40 new runs: eight one-factor Trust variants × five seeds at Dirichlet 20%. The five default references reuse completed main-study Trust runs, so they are not counted twice.
+
+All runs reuse one fixed lesion-disjoint HAM10000 test split. The site presents stage-separated means, standard deviations where the notebook displays them, robustness curves, adaptive and sensitivity comparisons, ROC/PR, confusion and per-class analyses, and paired main-study Macro-F1 tests. It does not treat repeated predictions across models as independent patients.
+
+The notebook repeats some results in later reports. In particular, its §34 consolidated table groups by partition/fraction/aggregator but omits attack and Trust setting, thereby mixing stages at Dirichlet 20%. The application takes its condition inventory from the stage-specific §21 completed-run summary, uses the dedicated adaptive and sensitivity sections for their unique metrics, and does not display the mixed aggregate as a main-study result. Download the [stage-separated evidence JSON](public/evidence/final-study/summary.json) or regenerate it with:
+
+```sh
+python scripts/extract_final_study_results.py notebooks/FedResViT_Final_265_Runs.ipynb
+```
+
+The extraction script reads saved notebook outputs; it does not execute training. Notebook source SHA-256 and source-cell indices are stored with the exported evidence.
+
+## Run the application
 
 Node 22.13+ is required.
 
@@ -20,55 +29,16 @@ npm ci
 npm run dev
 ```
 
-The app uses React, TypeScript, Tailwind, shadcn/Base UI and the Sites Vinext runtime (Next.js App Router conventions). Research charts are lightweight interactive SVGs. Evidence is embedded for deterministic, low-latency browsing. Clinical and Observatory modules load lazily.
+The deployed web app is a research and educational demonstration. Image upload supports viewing and preprocessing; real lesion inference requires a trained checkpoint and an inference service, which were not supplied. Illustrative probabilities and simulation signals are labelled separately from measured results. There is no clinical deployment, treatment advice, regulatory approval, differential privacy, secure aggregation, or implemented explanation map.
 
-## Optional local evidence API
-
-```sh
-python -m venv .venv
-. .venv/bin/activate
-pip install -r backend/requirements.txt
-uvicorn backend.app:app --port 8000
-```
-
-The FastAPI companion initializes SQLite from the same evidence snapshot. It exposes experiments, rounds, artifact availability and a WebSocket stream of recorded rounds. It is separate from the hosted Sites runtime; the web explorer does not depend on it. API docs: `/docs`. No patient data is stored. The Prediction table remains empty because predictions were not supplied.
-
-- `GET /api/health`: explicit inference/training availability.
-- `GET /api/experiments`, `GET /api/experiments/{run_id}/rounds`.
-- `GET /api/artifacts`: distinguishes original listed-only artifacts from available recovered files.
-- `WS /ws/replay/{run_id}`: measured records, explicitly identified as replay.
-- `POST /api/predict` returns 503, and `POST /api/experiments` returns 501; neither simulates successful execution.
-
-## Local Docker demonstration
-
-```sh
-docker compose up --build
-```
-
-Web: `http://localhost:3000`; optional API: `http://localhost:8000`. Bindings are local only. The Docker configuration is provided for local use; see VALIDATION.md for what was actually verified.
-
-## Evidence provenance
-
-`public/evidence/research.json` contains source SHA-256, configuration, data availability, summaries and round records. `scripts/extract_notebook.py /path/to/notebook.ipynb` rebuilds it from notebook outputs. Original source cells are downloadable under `public/evidence/cell-N.py`. The extraction script does not execute notebook cells.
-
-Round metrics retain printed precision. Effective weights/contributions are derived from rounded logged φ and reputation and labeled approximate. Most individual seed-level test F1 values were truncated in the saved dataframe; they remain null instead of being inferred from summary statistics. The available per-class report and matrix belong only to Trust / 20% / seed 43. Original `.pt` and `.npz` files are listed, not included.
-
-The matrix was transcribed from the embedded figure and checked against all row totals, precision, recall, F1, accuracy and ASR. Its provenance is recorded in the JSON. The notebook function name `patient_level_split` groups by lesion ID; the interface correctly calls the split lesion-disjoint.
-
-## Scientific interpretation
-
-Current partitions are stratified-balanced / near-IID, not strong non-IID. Detection/FPR are final-round five-round-window client statistics, whereas classification uses selected best-validation checkpoints. “Malignant safety” means 1 − ASR, not clinical safety. Statistics use only two paired seeds. Review the in-app Limitations tab.
+Training runs in the notebook outside the website. The site does not launch Colab jobs or stream live training. Original checkpoints, per-run predictions, and full round-history files are referenced by the notebook but are not embedded in the web repository. The optional local FastAPI companion remains tied to the earlier evidence snapshot and is not the source of the final-study pages.
 
 ## Validation
 
 ```sh
+npm run lint
 npx tsc --noEmit
-python -m unittest discover -s tests -p '*test.py'
 npm run build
 ```
 
-Do not present configuration changes, replay animation or browser normalization previews as new experimental measurements. No differential privacy, cryptographic secure aggregation, live hospital deployment, calibrated uncertainty or implemented XAI is claimed.
-
-## Original research notebook
-
-The complete executed training and evaluation notebook is included in `notebooks/FedResViT_HAM10000_Fixed_v2.ipynb`. Its saved outputs are preserved. Running it requires its dataset and ML environment; the web application can explore the recovered evidence without retraining. Model checkpoints and original prediction archives were not supplied and are not included.
+The earlier eight-run notebook and its historical evidence files are retained in the repository for provenance. Current application findings use the final 265-run study.

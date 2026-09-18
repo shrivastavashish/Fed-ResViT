@@ -79,17 +79,17 @@ export function About({
         title="What have we achieved so far?"
         kicker="IMPLEMENTATION STATUS"
       >
-        <Badge state="MAIN STUDY COMPLETE · 200/200" />
+        <Badge state="ALL THREE STAGES COMPLETE · 265 RUNS" />
         <p>
           The notebook implements the hybrid model, five aggregation methods,
           static and adaptive attacks, Trust sensitivity analysis, resumable
-          training and reproducible artifact export. The 200 main-study runs
-          are complete across balanced and Dirichlet partitions.
+          training and reproducible artifact export. The 200 main, 25 adaptive
+          and 40 sensitivity-variant runs are complete.
         </p>
         <Note>
-          The application now presents measured main-study means and standard
-          deviations from the completed notebook. Adaptive-attack and Trust
-          sensitivity results will be added after those separate stages finish.
+          The application presents stage-separated measured results. Five
+          default sensitivity references reuse the main-study Trust runs and
+          are not counted again among the 265 distinct experiments.
         </Note>
       </Panel>
       <Panel
@@ -112,7 +112,7 @@ export function About({
             ],
             [
               'Introduce the controlled attack',
-              'Clean, 10%, 20% and 30% malicious-client conditions are configured. The adaptive extension blends poisoned updates toward an honest-update reference to attempt Trust evasion.',
+              'Clean, 10%, 20% and 30% malicious-client conditions were executed in the main study. The separate adaptive extension blends poisoned updates toward an honest-update reference to attempt Trust evasion.',
             ],
             [
               'Evaluate trust and aggregate',
@@ -120,7 +120,7 @@ export function About({
             ],
             [
               'Evaluate and inspect the evidence',
-              'Best validation checkpoints are evaluated with test-time augmentation. Binary malignant recall, subtype recalls, precision, F1, ASR and detector rates form the evaluation. The 200-run main-study aggregates are linked to notebook sections; raw checkpoints and predictions remain external.',
+              'Best validation checkpoints are evaluated with test-time augmentation. Binary malignant recall, subtype recalls, precision, F1, ASR and detector rates form the evaluation. All 265 completed runs are represented in stage-separated aggregates linked to notebook sections; raw checkpoints and predictions remain external.',
             ],
           ].map(([title, body], i) => (
             <li key={title}>
@@ -153,8 +153,8 @@ export function About({
               icon={<ShieldCheck size={20} />}
               title="Security researchers"
             >
-              Compare poisoning impact, client trust, detection and false
-              positives once completed evidence is imported.
+              Compare measured poisoning impact, client trust, detection and
+              false positives across all three completed stages.
             </Stated>
             <Stated
               icon={<BookOpen size={20} />}

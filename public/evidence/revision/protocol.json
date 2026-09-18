@@ -1,23 +1,24 @@
 {
-  "protocol_id": "mentor-revision-v2",
-  "source_notebook": "FedResViT (2).ipynb",
-  "source_sha256": "bc13e12783206dd8bcaa6b168f67558be57e04dce479ae19310a0096883082ce",
-  "source_scope": "Scientific implementation and 200 completed main-study results; temporary diagnostic and recovery-repair cells are excluded from the application model. Adaptive and sensitivity results are not imported.",
+  "protocol_id": "fed-resvit-final-265",
+  "source_notebook": "FedResViT (4).ipynb",
+  "source_sha256": "539b96569c3291f1472334d97b8c624aaf7f6414908239b620561f52c61ff4a4",
+  "source_scope": "Final executed implementation and stage-separated results: 200 main, 25 adaptive, 40 sensitivity variants. Five default sensitivity reference runs reuse main-study Trust results. Duplicate stage-agnostic reports are not used for comparisons.",
   "results_ingested": true,
   "execution_snapshot": {
-    "basis": "Embedded completed notebook summary, final consolidated table and figures; raw run artifact directory is not attached",
-    "updated": "2026-09-16",
+    "basis": "Embedded \u00a721 completed-run summary and stage-specific figures/tables; raw run artifact directory is not attached",
+    "updated": "2026-09-18",
     "main": {
       "reported": 200,
       "configured": 200
     },
     "adaptive": {
-      "reported": 0,
+      "reported": 25,
       "configured": 25
     },
     "sensitivity": {
-      "reported": 0,
-      "configured": 45
+      "reported": 40,
+      "configured": 45,
+      "reused_main": 5
     },
     "verified_artifacts": 0
   },

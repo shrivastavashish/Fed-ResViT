@@ -5,7 +5,6 @@ import {
   Network,
   ShieldCheck,
   FileCode2,
-  Database,
   Layers,
 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
@@ -17,7 +16,7 @@ import { StudyCoverage } from './scientific-atlas';
 import { EvaluatorDashboard } from './evaluator-dashboard';
 import { SecuritySimulation } from './security-simulation';
 import { ResultsExplorer } from './results-explorer';
-import mainStudy from '@/lib/main-study-results.json';
+import finalStudy from '@/lib/final-study-results.json';
 import {
   protocol,
   methods,
@@ -41,25 +40,6 @@ function SourceLink() {
     <a className="text-btn" href="/evidence/revision/protocol.json" download>
       Notebook protocol & provenance <FileCode2 size={15} />
     </a>
-  );
-}
-function EmptyEvidence({
-  title,
-  children,
-}: {
-  title: string;
-  children?: React.ReactNode;
-}) {
-  return (
-    <div className="revision-empty">
-      <Database size={28} />
-      <h3>{title}</h3>
-      <Badge state={illustrative} />
-      <p>
-        {children ??
-          'Illustrative values are used to present the analytical workflow and remain distinct from measured notebook results.'}
-      </p>
-    </div>
   );
 }
 export function RevisionWorkspace(p: Props) {
@@ -295,7 +275,7 @@ function RevisionSecurity() {
               <span>Trust detection: 70.00%</span>
               <span>Trust false-positive rate: 7.50%</span>
             </div>
-            <Note>Notebook §§21 and 34. These are five-seed means from the completed main study. At 30% malicious clients under Dirichlet partitioning, Trust detection falls to 6.67%; the defense is not uniformly robust.</Note>
+            <Note>Notebook §21, main-stage filter. These are five-seed means. At 30% malicious clients under Dirichlet partitioning, Trust detection falls to 6.67%; the defense is not uniformly robust.</Note>
           </Panel>
         </>
       )}
@@ -322,16 +302,21 @@ function RevisionSecurity() {
                           .join('\n')
                       : 'MAD 0.5 / 3.0 · EMA 0.85\nFlag cutoff 0.5 · window 5'}
                   </code>
-                  <Badge state="CONFIGURED SETTING" />
+                  <Badge state={s.id === 'default' ? 'COMPLETED · REUSED MAIN' : 'COMPLETED · n=5'} />
                 </article>
               ))}
             </div>
             <Note>
-              Adaptive thresholds are active. The sweep changes MAD multipliers;
-              changing the fixed T_LOW/T_HIGH values alone would not test the
-              active threshold mechanism. No sensitivity curves or optimal
-              setting are determined by the completed experiment comparison.
+              Adaptive thresholds are active. The eight variants were executed
+              with five seeds each. The five default references reuse the
+              main-study Trust runs. Inspect the measured sensitivity table and
+              curves in Results; no universally optimal setting is established.
             </Note>
+            <div className="secondary-metrics">
+              <span>Narrow MAD ASR: 23.35%</span>
+              <span>Wide MAD ASR: 32.12%</span>
+              <span>Default main-study ASR: 27.14%</span>
+            </div>
           </Panel>
         </>
       )}
@@ -397,10 +382,19 @@ function AdaptiveAttack() {
       <Note>
         Passing a current soft-score threshold does not clear earlier flags from
         the history window. At λ=0, attack influence can disappear. Report
-        retained attack success and evasion together; neither has been imported
-        here.
+        retained attack success and evasion together. The measured adaptive
+        outcomes are shown below.
       </Note>
-      <EmptyEvidence title="Adaptive attack result explorer" />
+      <Panel title="Adaptive-attack outcome · Dirichlet, 20%" action={<Badge state="EXECUTED · n=5" />}>
+        <div className="secondary-metrics">
+          <span>Trust ASR: 31.52%</span>
+          <span>Trust Macro-F1: 63.29%</span>
+          <span>Trust detection: 0.00%</span>
+          <span>Coordinate Median ASR: 31.67%</span>
+          <span>FedAvg ASR: 51.30%</span>
+        </div>
+        <Note>These figures come from the separate 25-run adaptive stage. Trust and coordinate-wise Median have similar ASR here. The final-window Trust detector flagged none of the malicious clients across the five Trust runs, illustrating this attack’s evasion effect.</Note>
+      </Panel>
     </>
   );
 }
@@ -504,7 +498,7 @@ function TrustCalculator() {
   );
 }
 export function RevisionObservatory({
-  initialTab = 'Main study results',
+  initialTab = 'Study results',
 }: {
   initialTab?: string;
 }) {
@@ -513,7 +507,7 @@ export function RevisionObservatory({
     <>
       <TabBar
         value={tab}
-        items={['Main study results', 'Metrics & limitations']}
+        items={['Study results', 'Metrics & limitations']}
         onChange={setTab}
       />
       {tab === 'Metrics & limitations' ? (
@@ -597,7 +591,7 @@ export function RevisionStudio({
       {tab === 'Experiment matrix' && (
         <>
           <Panel
-            title="The complete study, before results"
+            title="Completed experimental design"
             kicker="CONFIGURATION INVENTORY"
           >
             <div className="filter-row">
@@ -708,23 +702,25 @@ export function RevisionStudio({
       )}
       {tab === 'Execution registry' && (
         <>
-          <Panel title="Federated experiment execution registry" action={<Badge state="MAIN · 200 COMPLETED" />}>
+          <Panel title="Federated experiment execution registry" action={<Badge state="265 DISTINCT RUNS COMPLETE" />}>
             <p>
-              Forty completed main-study conditions, each with five seeds.
-              Adaptive and sensitivity stages are tracked separately.
+              Fifty-three stage-specific condition groups, each with five completed
+              seeds: 40 main, five adaptive and eight sensitivity variants.
+              Default sensitivity references reuse main-stage Trust results.
             </p>
             <div className="revision-table-wrap">
               <table className="revision-table">
-                <thead><tr><th>Method</th><th>Partition</th><th>Malicious</th><th>Seeds</th><th>Macro-F1 · mean ± SD</th><th>Status</th></tr></thead>
+                <thead><tr><th>Stage</th><th>Method / setting</th><th>Partition</th><th>Malicious</th><th>Seeds</th><th>Macro-F1 · mean ± SD</th><th>Status</th></tr></thead>
                 <tbody>
-                  {mainStudy.records.map((record) => (
-                    <tr key={record.partition + record.fraction + record.method}>
-                      <td>{methodNames[record.method]}</td>
+                  {finalStudy.records.map((record) => (
+                    <tr key={record.stage + record.partition + record.fraction + record.method + record.setting}>
+                      <td>{record.stage}</td>
+                      <td>{methodNames[record.method]}{record.setting !== 'default' ? ` · ${record.setting.replaceAll('_', ' ')}` : ''}</td>
                       <td>{record.partition === 'dirichlet' ? 'Dirichlet α=0.5' : 'Stratified-balanced'}</td>
                       <td>{Math.round(record.fraction * 100)}%</td>
                       <td>42–46 · n=5</td>
-                      <td>{((record.macro_f1[0] ?? 0) * 100).toFixed(2)}% ± {((record.macro_f1[1] ?? 0) * 100).toFixed(2)}%</td>
-                      <td>Completed · notebook §34</td>
+                      <td>{((record.macro_f1[0] ?? 0) * 100).toFixed(2)}%{record.macro_f1[1] == null ? '' : ` ± ${(record.macro_f1[1] * 100).toFixed(2)}%`}</td>
+                      <td>Completed · notebook §21</td>
                     </tr>
                   ))}
                 </tbody>
@@ -999,8 +995,9 @@ function IngestionContract() {
         </li>
       </ol>
       <Note>
-        These artifacts connect each displayed metric to its experiment,
-        configuration, seed, notebook implementation and model checkpoint.
+        The embedded summary traces each displayed mean to a stage, condition
+        and notebook output. Raw per-seed artifacts and model checkpoints
+        remain in the external training store and are not downloadable here.
       </Note>
     </Panel>
   );
@@ -1032,7 +1029,7 @@ export function RevisionReproducibility({
               </div>
               <div>
                 <dt>Research design</dt>
-                <dd>200 main completed · 25 adaptive planned · 45 sensitivity configurations</dd>
+                <dd>200 main + 25 adaptive + 40 sensitivity variants = 265 distinct completed runs; five default references reused</dd>
               </div>
               <div>
                 <dt>Notebook SHA-256</dt>
@@ -1040,9 +1037,12 @@ export function RevisionReproducibility({
               </div>
             </dl>
             <p>
-              The completed main-study aggregate is available as a
-              <a className="text-btn" href="/evidence/main-study/summary.json" download> downloadable 40-condition evidence table <Download size={15} /></a>.
+              The complete stage-separated aggregate is available as a
+              <a className="text-btn" href="/evidence/final-study/summary.json" download> downloadable 53-condition evidence table <Download size={15} /></a>.
               Its notebook SHA-256 and source-cell references are included in the file.
+            </p>
+            <p>
+              The <a className="text-btn" href="https://github.com/shrivastavashish/Fed-ResViT/blob/main/notebooks/FedResViT_Final_265_Runs.ipynb" target="_blank" rel="noreferrer">complete executed notebook</a> preserves the reported figures and stage-specific outputs.
             </p>
             <details>
               <summary>Inspect complete main-stage configuration</summary>
@@ -1053,9 +1053,9 @@ export function RevisionReproducibility({
           </Panel>
           <Panel title="Source implementation">
             <p>
-              Read-only implementation extracts were created from the earlier
-              notebook revision. The measured main-study values and notebook
-              fingerprint above come from FedResViT (2).ipynb. Cell indices are
+              Read-only implementation extracts were created from an earlier
+              notebook revision. The stage-separated measurements and notebook
+              fingerprint above come from FedResViT (4).ipynb. Cell indices are
               zero-based; runtime credentials are excluded.
             </p>
             <div className="source-links">

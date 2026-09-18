@@ -19,8 +19,8 @@ export const seeds = [42, 43, 44, 45, 46];
 const reportedExecution = snapshot.execution_snapshot;
 export const executionSnapshot = {
   main: { ...reportedExecution.main, state: 'COMPLETE' },
-  adaptive: { ...reportedExecution.adaptive, state: 'SCHEDULED' },
-  sensitivity: { ...reportedExecution.sensitivity, state: 'SCHEDULED' },
+  adaptive: { ...reportedExecution.adaptive, state: 'COMPLETE' },
+  sensitivity: { ...reportedExecution.sensitivity, state: 'COMPLETE' },
   verifiedArtifacts: reportedExecution.verified_artifacts,
   basis: reportedExecution.basis,
   updated: reportedExecution.updated,
@@ -134,7 +134,7 @@ export function uniqueStudyCount(multi = false) {
   );
 }
 export const revisedLimitations = [
-  'Five paired seeds are configured, not five independent patient cohorts. Inferential results require cautious interpretation; a small p-value alone will not establish robust generalization.',
+  'Five paired seeds were executed per condition, not five independent patient cohorts. Inferential results require cautious interpretation; a small p-value alone will not establish robust generalization.',
   'Ten simulated institutions; no real hospital deployment. One fixed lesion-disjoint dataset split; lesion ID is not a verified patient identifier.',
   'Balanced and Dirichlet alpha 0.5 partitions are separate conditions. A minimum of 16 samples per client conditions the Dirichlet allocation.',
   'Targeted label flipping and one omniscient adaptive update-blending strategy. No universal or worst-case poisoning-robustness claim.',
@@ -143,7 +143,7 @@ export const revisedLimitations = [
   'Binary malignant recall, subtype recall and malignant-to-NV errors must be reported alongside accuracy. The derived 1−ASR value is not clinical safety.',
   'No differential privacy, cryptographic secure aggregation, external clinical validation, regulatory approval or standalone diagnosis.',
   'Classification uses the best validation checkpoint. Trust detection uses the final training round’s rolling flag window; these may refer to different rounds.',
-  'Training takes place outside this application. The 200-run main-study summary and notebook figures are ingested; raw checkpoints, prediction files and full seed-level exports are not. No live progress is implied.',
+  'Training takes place outside this application. Stage-separated summaries for all 265 distinct runs and selected notebook figures are ingested; raw checkpoints, prediction files and full seed-level exports are not. No live progress is implied.',
 ];
 export const metricDefinitions = [
   ['Accuracy', 'Correct seven-class predictions / all evaluated images.'],

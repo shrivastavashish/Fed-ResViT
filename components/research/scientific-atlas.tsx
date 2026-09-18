@@ -35,8 +35,8 @@ export function StudyCoverage() {
       <div className="atlas-intro">
         <p>
           Inspect the aggregation methods and attack fractions in the notebook.
-          Main-study cells contain five completed runs; adaptive and sensitivity
-          cells show their configured plans.
+          Every populated condition has five completed seed runs. Sensitivity
+          includes one default setting reused from the main-study Trust runs.
         </p>
         <div className="atlas-count">
           <strong>{jobs.length}</strong>
@@ -65,13 +65,13 @@ export function StudyCoverage() {
         />
         <span className="atlas-legend">
           <i />
-          {stage === 'main' ? 'Completed' : 'Configured'} <span>— Outside stage plan</span>
+          Completed <span>— Outside stage plan</span>
         </span>
       </div>
       <div className="atlas-matrix-scroll">
         <table className="atlas-matrix">
           <caption>
-            {stage === 'main' ? 'Completed runs' : 'Configured jobs'} by method and malicious-client fraction
+            Completed runs by method and malicious-client fraction
           </caption>
           <thead>
             <tr>
@@ -98,14 +98,14 @@ export function StudyCoverage() {
                       {count ? (
                         <button
                           aria-pressed={selection === key}
-                          aria-label={`Inspect ${methodNames[method]}, ${f * 100}% malicious, ${count} ${stage === 'main' ? 'completed runs' : 'configured jobs'}`}
+                          aria-label={`Inspect ${methodNames[method]}, ${f * 100}% malicious, ${count} study-plan jobs`}
                           onClick={() => {
                             setSelection(key);
                             setNotice('');
                           }}
                         >
                           <strong>{count}</strong>
-                          <span>{stage === 'main' ? 'completed' : 'configured'}</span>
+                          <span>{stage === 'sensitivity' ? 'complete · default reused' : 'completed'}</span>
                           {selection === key && <Check size={14} />}
                         </button>
                       ) : (
@@ -139,7 +139,7 @@ export function StudyCoverage() {
           <h3>
             {chosen
               ? `${methodNames[chosen.aggregation]} · ${chosen.malicious_fraction * 100}% malicious`
-              : 'Select a configured cell'}
+              : 'Select a completed cell'}
           </h3>
           {chosen && (
             <button
@@ -207,10 +207,10 @@ export function StudyCoverage() {
         )}
       </section>
       <Note>
-        Main: 200 completed runs. Adaptive: 25 jobs. Sensitivity: 45 jobs, including five
-        matching defaults reusable from main. The default study therefore has
-        265 distinct runs; optional Multi-Krum is available in Study plan. This
-        map shows the five default methods.
+        Main: 200 completed runs. Adaptive: 25 completed runs. Sensitivity:
+        40 completed variants plus five matching defaults reused from main.
+        This yields 265 distinct runs. Optional Multi-Krum is supported but
+        outside the completed study.
       </Note>
     </Panel>
   );

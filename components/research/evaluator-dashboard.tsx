@@ -23,8 +23,8 @@ type Navigate = (page: string, tab?: string) => void;
 export function StudyStatusStrip({ compact = false }: { compact?: boolean }) {
   const stages = [
     ['Main comparison', 200, 'Completed · five methods · five seeds · two partitions'],
-    ['Adaptive attack', 25, 'Separate stage · results not imported'],
-    ['Trust sensitivity', 45, 'Separate stage · sweep results not imported'],
+    ['Adaptive attack', 25, 'Completed · defense-aware update blending'],
+    ['Trust sensitivity', 40, 'Completed · eight variants · default reused from main'],
   ] as const;
   return (
     <section className={'study-status-strip ' + (compact ? 'compact' : '')} aria-label="Fed-ResViT experiment design">
@@ -32,14 +32,14 @@ export function StudyStatusStrip({ compact = false }: { compact?: boolean }) {
         <span className="status-beacon" />
         <div>
           <strong>Research design</strong>
-          <small>200 main-study runs completed</small>
+          <small>265 distinct runs completed across three stages</small>
         </div>
       </div>
       <div className="study-status-stages">
         {stages.map(([label, count, note]) => (
           <div key={label} className="study-stage-meter">
             <div><span>{label}</span><strong>{count} runs</strong></div>
-            <div className="study-stage-track" aria-label={`${label}: ${count} ${label === 'Main comparison' ? 'completed' : 'configured'} runs`}>
+            <div className="study-stage-track" aria-label={`${label}: ${count} completed runs`}>
               <span style={{ width: `${Math.max(14, (count / 200) * 100)}%` }} />
             </div>
             {!compact && <small>{note}</small>}
@@ -106,7 +106,7 @@ export function EvaluatorDashboard({ navigate }: { navigate: Navigate }) {
               ['Dataset', 'HAM10000'], ['Split', 'Lesion-disjoint ≈ 70:15:15'],
               ['Seeds', '42 · 43 · 44 · 45 · 46'], ['Rounds', '30 × 2 local epochs'],
               ['Fractions', '0% · 10% · 20% · 30%'], ['Batch', '16 · TTA enabled'],
-              ['Main', '200 completed'], ['Full design', '265 distinct runs'],
+              ['Main', '200 completed'], ['Adaptive', '25 completed'], ['Sensitivity', '40 completed'],
             ].map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}
           </dl>
           <button className="text-btn" onClick={() => navigate('studio')}>Open experiment matrix <ArrowRight size={15} /></button>
@@ -159,7 +159,8 @@ export function EvaluatorDashboard({ navigate }: { navigate: Navigate }) {
               </div>
             ))}
           </div>
-          <p>Trust-aware aggregation under Dirichlet α=0.5 at 20% malicious clients. Notebook §34, five completed seeds. The adaptive and sensitivity studies remain separate.</p>
+          <p>Trust-aware aggregation under Dirichlet α=0.5 at 20% malicious clients. Main-study result, five completed seeds. The adaptive and sensitivity results are available as separate comparisons.</p>
+          <p>Under the adaptive attack, Trust ASR rises to 31.52% and its final-window malicious-client detection falls to 0%. Inspect that stage before judging robustness.</p>
           <button className="text-btn" onClick={() => navigate('results')}>Explore the results workspace <ArrowRight size={15} /></button>
         </Panel>
       </div>
@@ -186,7 +187,7 @@ function ResearchOrbit({ navigate }: { navigate: Navigate }) {
     { x: 405, y: 300, label: 'SECURITY', page: 'security', value: '2 attacks', detail: 'Challenge the system with targeted label flipping and adaptive update blending.', facts: ['MEL/BCC/AKIEC → NV','Trust scores','Client flags'] },
     { x: 245, y: 378, label: 'EVIDENCE', page: 'reproducibility', value: 'traceable', detail: 'Trace every result to its configuration, seed, round history and saved artifact.', facts: ['Manifests','Checkpoints','Prediction files'] },
     { x: 85, y: 300, label: 'RESULTS', page: 'results', value: '5 methods', detail: 'Compare convergence, robustness, class behavior and paired-seed statistics.', facts: ['Convergence','Robustness','Statistics'] },
-    { x: 85, y: 128, label: 'EXPERIMENTS', page: 'studio', value: '265 runs', detail: 'Explore the main, adaptive-attack and Trust-sensitivity experiment matrices.', facts: ['200 main','25 adaptive','45 sensitivity'] },
+    { x: 85, y: 128, label: 'EXPERIMENTS', page: 'studio', value: '265 runs', detail: 'Explore the completed main, adaptive-attack and Trust-sensitivity experiment matrices.', facts: ['200 main','25 adaptive','40 sensitivity'] },
   ];
   const [selected, setSelected] = useState(1);
   const [running, setRunning] = useState(false);
