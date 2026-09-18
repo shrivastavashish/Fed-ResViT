@@ -17,6 +17,7 @@ import { Badge, Panel } from './common';
 import { ProjectStorySimulation } from './project-story-simulation';
 import { OverviewHybridSimulation } from './overview-hybrid-simulation';
 import { methodNames, methods } from '@/lib/protocol';
+import finalStudy from '@/lib/final-study-results.json';
 
 type Navigate = (page: string, tab?: string) => void;
 
@@ -52,6 +53,11 @@ export function StudyStatusStrip({ compact = false }: { compact?: boolean }) {
 }
 
 export function EvaluatorDashboard({ navigate }: { navigate: Navigate }) {
+  const mainTrust = finalStudy.records.find(r => r.stage === 'main' && r.partition === 'dirichlet' && r.fraction === .2 && r.method === 'trust');
+  const adaptiveTrust = finalStudy.records.find(r => r.stage === 'adaptive' && r.method === 'trust');
+  if (!mainTrust || !adaptiveTrust) throw new Error('Final-study Trust evidence is missing');
+  const required = (value: number | null) => { if (value === null) throw new Error('Required study metric is missing'); return value; };
+  const asPercent = (value: number | null) => value === null ? 'N/A' : `${(value * 100).toFixed(2)}%`;
   return (
     <div className="evaluator-dashboard">
       <ProjectStorySimulation />
@@ -151,16 +157,16 @@ export function EvaluatorDashboard({ navigate }: { navigate: Navigate }) {
           <div className="demo-lab-heading"><Badge state="EXECUTED · n=5" /><span>Mean test metrics across seeds 42–46</span></div>
           <div className="demo-bars">
             {[
-              ['Accuracy', 81.42, '#5545DA'], ['Macro-F1', 64.12, '#19B8C7'],
-              ['Malignant recall', 55.24, '#148664'], ['ASR', 27.14, '#DF6949'],
+              ['Accuracy', required(mainTrust.accuracy[0]) * 100, '#5545DA'], ['Macro-F1', required(mainTrust.macro_f1[0]) * 100, '#19B8C7'],
+              ['Malignant recall', required(mainTrust.malignant_recall[0]) * 100, '#148664'], ['ASR', required(mainTrust.asr[0]) * 100, '#DF6949'],
             ].map(([label, value, color]) => (
               <div key={label as string}>
-                <span>{label as string}</span><div><i style={{ width: `${value}%`, background: color as string }} /></div><strong>{value}%</strong>
+                <span>{label as string}</span><div><i style={{ width: `${value}%`, background: color as string }} /></div><strong>{Number(value).toFixed(2)}%</strong>
               </div>
             ))}
           </div>
           <p>Trust-aware aggregation under Dirichlet α=0.5 at 20% malicious clients. Main-study result, five completed seeds. The adaptive and sensitivity results are available as separate comparisons.</p>
-          <p>Under the adaptive attack, Trust ASR rises to 31.52% and its final-window malicious-client detection falls to 0%. Inspect that stage before judging robustness.</p>
+          <p>Under the adaptive attack, Trust ASR reaches {asPercent(adaptiveTrust.asr[0])} and its final-window malicious-client detection is {asPercent(adaptiveTrust.detection_rate[0])}. Inspect that stage before judging robustness.</p>
           <button className="text-btn" onClick={() => navigate('results')}>Explore the results workspace <ArrowRight size={15} /></button>
         </Panel>
       </div>

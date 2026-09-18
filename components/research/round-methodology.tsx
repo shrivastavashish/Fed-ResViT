@@ -7,8 +7,9 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
-import { Panel, Badge, Note } from './common';
+import { Panel, Badge, Note, Pick } from './common';
 import { ConnectedRound } from './connected-round';
+import { SimulationEvidence } from './simulation-evidence';
 import { Slider } from '@/components/ui/slider';
 const phases = [
   ['Global model broadcast', 'All ten clients receive the same ResNet-50 + ViT-small global state.'],
@@ -25,8 +26,8 @@ const phases = [
     'The notebook converts each floating model state into a local delta relative to the broadcast global state.',
   ],
   [
-    'Adaptive update blending',
-    'For the adaptive attack, poisoned deltas are blended toward the honest-update geometric median using the largest admissible retention scale.',
+    'Attack-specific update processing',
+    'The main attack uses poisoned local training updates. In the adaptive study, malicious deltas are additionally blended toward the honest-update geometric median.',
   ],
   [
     'Robust reference',
@@ -57,6 +58,7 @@ export function RoundMethodology() {
   const [motion, setMotion] = useState(false);
   const [round, setRound] = useState(1),
     [progress, setProgress] = useState(0);
+  const [attackMode, setAttackMode] = useState<'static' | 'adaptive'>('static');
   useEffect(() => {
     const m = matchMedia('(prefers-reduced-motion: reduce)');
     const update = () => setMotion(!m.matches);
@@ -111,10 +113,11 @@ export function RoundMethodology() {
       >
         <p>
           Follow the latest notebook method as one connected ten-stage process,
-          from global-model broadcast and local hybrid training to adaptive
+          from global-model broadcast and local hybrid training to targeted
           poisoning, Trust scoring, robust aggregation, validation and resumable
           round-boundary recovery.
         </p>
+        <div className="filter-row"><Pick label="Attack process" value={attackMode} items={[["static","Main · targeted label flip"],["adaptive","Adaptive · update blend"]]} onChange={v => {setAttackMode(v as 'static' | 'adaptive');setStep(0);setRound(1);setProgress(0);setPlay(false)}}/><span>Both modes are executed under Dirichlet partitioning at 20% malicious clients.</span></div>
         <div className="round-visual-controls">
           <button
             className="secondary-btn"
@@ -191,7 +194,7 @@ export function RoundMethodology() {
             <span>{String(step + 1).padStart(2, '0')}</span>
             <div>
               <h3>{phases[step][0]}</h3>
-              <p>{phases[step][1]}</p>
+              <p>{step === 4 ? (attackMode === 'adaptive' ? 'Adaptive stage: malicious deltas are blended toward the honest-update geometric median before aggregation.' : 'Main stage: no adaptive blend is applied; label-flip-trained client updates proceed to the selected aggregator.') : phases[step][1]}</p>
             </div>
           </div>
           <ConnectedRound
@@ -205,6 +208,7 @@ export function RoundMethodology() {
             phi={phi}
             weights={weights}
             round={round}
+            attackMode={attackMode}
           />
           <div className="connected-stage-progress">
             <span
@@ -346,6 +350,7 @@ export function RoundMethodology() {
           </Note>
         </Panel>
       </details>
+      <SimulationEvidence key={attackMode} initial={attackMode === 'adaptive' ? 'adaptive-20' : 'dirichlet-20'} title="Measured outcome of this attack process" />
     </>
   );
 }

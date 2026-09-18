@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { Panel, Badge, Note, Pick } from './common';
 import { HybridSimulation } from './hybrid-simulation';
+import { SimulationEvidence } from './simulation-evidence';
 import { Slider } from '@/components/ui/slider';
 const stages = [
   'Broadcast global model',
@@ -314,6 +315,7 @@ export function FederationSimulation() {
         presentation values. Malicious labels are MEL / BCC / AKIEC → NV; an
         assigned attacker is distinct from a client flagged by the Trust model.
       </Note>
+      <SimulationEvidence title="Measured federation outcomes" />
     </Panel>
   );
 }

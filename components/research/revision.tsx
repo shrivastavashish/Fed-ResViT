@@ -16,6 +16,7 @@ import { StudyCoverage } from './scientific-atlas';
 import { EvaluatorDashboard } from './evaluator-dashboard';
 import { SecuritySimulation } from './security-simulation';
 import { ResultsExplorer } from './results-explorer';
+import { SimulationEvidence } from './simulation-evidence';
 import finalStudy from '@/lib/final-study-results.json';
 import {
   protocol,
@@ -357,14 +358,7 @@ function AdaptiveAttack() {
             <Badge state="ILLUSTRATIVE DATA" />
             <h3>Update blending</h3>
             <code>Δ′ = reference + λ(Δpoison − reference)</code>
-            <Range
-              label="Illustrative poison retention λ"
-              value={retention}
-              min={0}
-              max={1}
-              step={0.05}
-              onChange={setRetention}
-            />
+            <Pick label="Attack candidate retention λ" value={String(retention)} items={[["1","1.00"],["0.75","0.75"],["0.5","0.50"],["0.25","0.25"],["0.1","0.10"],["0","0.00"]]} onChange={v => setRetention(Number(v))}/>
             <div className="revision-blend">
               <span style={{ width: `${retention * 100}%` }} />
             </div>
@@ -373,7 +367,7 @@ function AdaptiveAttack() {
               {((1 - retention) * 100).toFixed(0)}% reference component
             </p>
             <small>
-              This slider illustrates the equation; it does not evaluate an
+              These are the notebook&apos;s actual candidate scales. This graphic illustrates the equation; it does not evaluate an
               update or predict evasion.
             </small>
           </div>
@@ -494,6 +488,7 @@ function TrustCalculator() {
         five rounds; the single illustrative score above is not a detection
         history.
       </Note>
+      <SimulationEvidence title="Measured detector behavior across conditions" />
     </Panel>
   );
 }

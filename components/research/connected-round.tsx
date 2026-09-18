@@ -12,6 +12,7 @@ export function ConnectedRound({
   phi,
   weights,
   round,
+  attackMode,
 }: {
   step: number;
   progress: number;
@@ -23,6 +24,7 @@ export function ConnectedRound({
   phi: number[];
   weights: number[];
   round: number;
+  attackMode: 'static' | 'adaptive';
 }) {
   const id = useId().replaceAll(':', '');
   const currentClient = Math.min(9, Math.floor(progress / 2));
@@ -187,7 +189,7 @@ export function ConnectedRound({
                   : step === 3
                     ? 'Sending local update Δ'
                     : step === 4 && attack
-                      ? 'Adaptive blend toward honest reference'
+                      ? attackMode === 'adaptive' ? 'Adaptive blend toward honest reference' : 'Poisoned local update · no blend'
                       : step === 5
                         ? 'Included in robust reference set'
                         : step === 6

@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react';
 import { Pause, Play, RotateCcw } from 'lucide-react';
 import { Badge } from './common';
+import { SimulationEvidence } from './simulation-evidence';
 
 const stages = [
   { short: 'Lesion data', title: 'Lesion-disjoint evidence preparation', detail: 'HAM10000 is split by lesion identity before the seven-class image pipeline, preventing images of the same lesion from crossing train, validation and test sets.', formula: 'HAM10000 → lesion-aware 70:15:15 → 224 × 224 RGB', facts: ['7 lesion classes', 'ImageNet normalization', 'Strong augmentation'] },
@@ -12,7 +13,7 @@ const stages = [
   { short: 'Poisoning', title: 'Malignant labels are redirected toward NV', detail: 'Under the targeted attack, malicious clients change MEL, BCC and AKIEC training labels to the benign NV target before creating their local updates.', formula: '{ MEL, BCC, AKIEC } → NV  ·  flip probability = 1.0', facts: ['0–30% malicious', 'Targeted label flipping', 'Adaptive blend study'] },
   { short: 'Robust reference', title: 'Updates are compared around a geometric median', detail: 'The server estimates a robust reference from the client updates and measures each floating-state delta with RMS-normalized distance.', formula: 'Dᵢ = ‖Δᵢ − wref‖₂ / √Nparams', facts: ['Geometric median', 'RMS distance', '3 reference iterations'] },
   { short: 'Trust defense', title: 'Distance becomes trust, memory and influence', detail: 'Median/MAD thresholds create a soft trust score. Reputation carries client history, and their product determines the update’s effective aggregation weight.', formula: 'φᵢ(Dᵢ)  ·  rᵢᵗ⁺¹ = 0.85rᵢᵗ + 0.15φᵢᵗ  ·  aᵢ = rᵢφᵢ', facts: ['Adaptive MAD thresholds', 'Soft trust φ', 'Five-round flag history'] },
-  { short: 'Global evidence', title: 'The defended model is evaluated under matched conditions', detail: 'The updated global model is compared with FedAvg, Krum, Trimmed Mean and coordinate Median across paired seeds, partitions and attack fractions.', formula: 'Performance + malignant recall + ASR + detector quality', facts: ['5 aggregators', '5 paired seeds', 'Traceable artifacts'] },
+  { short: 'Global evidence', title: 'The defended model is evaluated under matched conditions', detail: 'The updated global model is compared with FedAvg, Krum, Trimmed Mean and coordinate Median across paired seeds, partitions and attack fractions. The adaptive stage tests whether a defense-aware attacker can evade detection.', formula: 'Performance + malignant recall + ASR + detector quality', facts: ['265 distinct runs', '5 paired seeds', '3 study stages'] },
 ] as const;
 
 const clientPositions = [[430,122],[480,100],[535,116],[566,160],[561,213],[526,250],[472,256],[426,230],[405,185],[410,148]] as const;
@@ -39,7 +40,7 @@ export function ProjectStorySimulation() {
 
   return <section className={`project-story ${playing ? 'simulating' : ''}`} aria-label="Interactive Fed-ResViT scientific system simulation">
     <div className="project-story-head">
-      <div><Badge state="FED-RESVIT SCIENTIFIC SYSTEM"/><h1>Trust-aware federated learning for robust skin lesion classification</h1><p>Explore how hybrid visual intelligence, privacy-preserving collaboration and update-level Trust work together against targeted data poisoning.</p></div>
+      <div><Badge state="FED-RESVIT SCIENTIFIC SYSTEM"/><h1>Trust-aware federated learning for robust skin lesion classification</h1><p>Explore how hybrid visual intelligence, image-local collaboration and update-level Trust respond to targeted data poisoning across three completed study stages.</p></div>
       <div className="story-controls"><button onClick={() => setPlaying((value) => !value)} aria-label={playing ? 'Pause scientific simulation' : 'Play scientific simulation'}>{playing ? <Pause size={16}/> : <Play size={16}/>} {playing ? 'Pause' : 'Run simulation'}</button><button onClick={() => { setStep(0); setPlaying(false); }}><RotateCcw size={16}/> Reset</button></div>
     </div>
     <div className="science-console">
@@ -58,7 +59,7 @@ export function ProjectStorySimulation() {
           <g className={active(6)} onClick={() => select(6)} role="button" tabIndex={0}><rect x="744" y="345" width="138" height="94" rx="15"/><text x="813" y="374" textAnchor="middle">Global evaluation</text><text x="813" y="398" textAnchor="middle" className="science-sub">Accuracy · Macro-F1</text><text x="813" y="416" textAnchor="middle" className="science-sub">Recall · ASR · detection</text></g>
           <circle className="science-packet" cx={[126,394,574,487,700,876,813][step]} cy={[180,182,180,330,180,180,330][step]} r="7" filter="url(#scienceGlow)"/>
         </svg>
-        <div className="science-legend"><span><i className="honest"/>Honest update</span><span><i className="malicious"/>Malicious update</span><span><i className="defense"/>Trust defense</span><span>Configuration and method flow · no invented result</span></div>
+        <div className="science-legend"><span><i className="honest"/>Honest update</span><span><i className="malicious"/>Malicious update · illustrative 20% assignment</span><span><i className="defense"/>Trust defense</span><span>Method flow · no per-client measured replay</span></div>
       </div>
       <aside className="science-readout" aria-live="polite"><div className="science-readout-index"><span>{String(step+1).padStart(2,'0')}</span><small>OF {String(stages.length).padStart(2,'0')}</small></div><h2>{stages[step].title}</h2><p>{stages[step].detail}</p><code>{stages[step].formula}</code><div className="science-facts">{stages[step].facts.map((fact)=><span key={fact}>{fact}</span>)}</div><div className="science-status"><i/><span>{playing?'Simulation running at 1×':'Select a stage or run the simulation'}</span></div></aside>
     </div>
@@ -66,5 +67,6 @@ export function ProjectStorySimulation() {
       {['Input','Scientific operation','Output / evidence'].map((label,index)=><div key={label}><span>{label}</span><strong>{stageFlow[step][index]}</strong>{index<2&&<b>→</b>}</div>)}
     </div>
     <div className="story-stepper" role="tablist" aria-label="Fed-ResViT scientific stages">{stages.map((stage,index)=><button role="tab" aria-selected={step===index} key={stage.short} onClick={()=>select(index)}><span>{String(index+1).padStart(2,'0')}</span>{stage.short}</button>)}</div>
+    <SimulationEvidence title="What the completed experiments measured" />
   </section>;
 }

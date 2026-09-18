@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react';
 import { Pause, Play, RotateCcw, ShieldCheck } from 'lucide-react';
 import { Badge, Note } from './common';
+import { SimulationEvidence } from './simulation-evidence';
 
 const phases = [
   ['Poison labels', 'MEL, BCC and AKIEC labels are changed to NV on two illustrative malicious clients.'],
@@ -17,7 +18,7 @@ const distances = [.28,.34,.31,.37,.33,.3,.83,.29,.76,.35];
 
 export function SecuritySimulation() {
   const [phase, setPhase] = useState(0);
-  const [playing, setPlaying] = useState(true);
+  const [playing, setPlaying] = useState(false);
   const [client, setClient] = useState(6);
   useEffect(() => {
     if (!playing) return;
@@ -28,7 +29,7 @@ export function SecuritySimulation() {
   const score = malicious ? (client === 6 ? .18 : .31) : .96;
   return <section className="security-story">
     <div className="security-story-head">
-      <div><Badge state="ATTACK-TO-DEFENSE SIMULATION"/><h2>See how a poisoned client loses influence</h2><p>A connected demonstration of the latest notebook’s targeted attack and Trust pipeline.</p></div>
+      <div><Badge state="ATTACK-TO-DEFENSE SIMULATION"/><h2>How poisoning reaches the Trust defense</h2><p>This static 20% attack example shows the method. Measured outcomes below reveal where the defense succeeds and where it fails.</p></div>
       <div className="story-controls"><button onClick={() => setPlaying(!playing)}>{playing ? <Pause size={16}/> : <Play size={16}/>} {playing ? 'Pause' : 'Play'}</button><button onClick={() => {setPhase(0);setPlaying(false);}}><RotateCcw size={16}/> Reset</button></div>
     </div>
     <div className="security-sim-grid">
@@ -53,6 +54,7 @@ export function SecuritySimulation() {
       </div>
     </div>
     <div className="security-phase-tabs">{phases.map(([title],index)=><button key={title} aria-pressed={phase===index} onClick={()=>{setPhase(index);setPlaying(false)}}><span>{index+1}</span>{title}</button>)}</div>
-    <Note>Values in this simulation explain the mechanism and are illustrative. Measured distances, scores, flags and contributions will be loaded from each run’s round history.</Note>
+    <Note>The client distances, scores and assignments above are illustrative; they are not reconstructed from a completed run. In the measured adaptive-attack stage, Trust detected 0% of malicious clients. A trust-weighted method does not guarantee that every malicious update loses influence.</Note>
+    <SimulationEvidence title="Observed security outcomes" />
   </section>;
 }
